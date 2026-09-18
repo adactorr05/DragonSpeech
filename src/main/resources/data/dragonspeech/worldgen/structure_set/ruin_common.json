@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "dragonspeech:ruin_common",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 348905,
+    "spacing": 32,
+    "separation": 8,
+    "spread_type": "linear"
+  }
+}

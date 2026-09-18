@@ -1,0 +1,13 @@
+{
+  "true_name": "thetta",
+  "hashed_true_name": "9ad3cd7570801c1b20af9c111cb1c40f3f924a47c3b83d8cab0d5a82e5476b12",
+  "meaning": "this, here; the bound target at hand",
+  "category": "scope",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "isbinda",
+  "hashed_true_name": "b6d72179a29709a2a47264c53533ff1b51a5d5738fbd6379d29613c229d2436c",
+  "meaning": "to freeze a single bound target utterly",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:frysta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:freeze"
+}

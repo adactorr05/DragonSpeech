@@ -1,0 +1,17 @@
+{
+  "true_name": "sveigja",
+  "hashed_true_name": "8a3f63c7792d9fc2ed3ecb6057a04a0ffaaeb0592aa2128bb50c6c62306924c9",
+  "meaning": "to bend a moving path aside without stopping it",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:ferd"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "targeting": "redirect"
+}

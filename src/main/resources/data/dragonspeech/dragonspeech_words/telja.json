@@ -1,0 +1,16 @@
+{
+  "true_name": "telja",
+  "hashed_true_name": "e6a2e027328567b8dc00c2977f2b0f74943847ca02b909fd32c9ca93a1bb5e7f",
+  "meaning": "to reckon what is carried, not just worn - the search widens to the whole pack",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:draga"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

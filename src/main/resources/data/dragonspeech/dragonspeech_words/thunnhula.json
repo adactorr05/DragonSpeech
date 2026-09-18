@@ -1,0 +1,13 @@
+{
+  "true_name": "thunnhula",
+  "hashed_true_name": "a9f124c135b2d1cd16325617e0d699fefb755759c5d4419b3a89fbbedf52664c",
+  "meaning": "a thin veil - the wearer's true name is the easier found by those who go looking",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

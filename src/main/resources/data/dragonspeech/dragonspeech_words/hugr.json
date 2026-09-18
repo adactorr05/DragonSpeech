@@ -1,0 +1,13 @@
+{
+  "true_name": "hugr",
+  "hashed_true_name": "ab462aa90ad481ff2d553a11d2e863c6cdb4dd21156a9d4ac403e474a36ae98d",
+  "meaning": "the mind; the seat of thought",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "hold",
+  "hashed_true_name": "4f47f94967e5b557c3ca98abde7060ed2d36e53f0bd874c2cdcedd83268a9097",
+  "meaning": "flesh",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "wound_type": "gash"
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "eldr",
+  "hashed_true_name": "ec037e61ac401b31b5ad699d1bdcd25c270e0fc5a51c06a00778bd025ef30591",
+  "meaning": "fire itself, flame as a substance",
+  "category": "noun_target",
+  "domain": "fire",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "wound_type": "burn",
+  "element": "fire"
+}

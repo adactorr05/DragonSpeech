@@ -1,0 +1,17 @@
+{
+  "true_name": "eldsteinn",
+  "hashed_true_name": "db4634b0726ca4632c966310aa928cbec0c69300ab4587827445882b4ec2a740",
+  "meaning": "fire-stone; the rock of the burning deep, which never stops smouldering",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:eldr",
+    "dragonspeech:steinn"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "block_type": "netherrack"
+}

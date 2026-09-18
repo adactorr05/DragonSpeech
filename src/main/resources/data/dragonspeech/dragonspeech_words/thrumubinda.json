@@ -1,0 +1,19 @@
+{
+  "true_name": "thrumubinda",
+  "hashed_true_name": "fef95b5b615275a9b46888818d773e7da109e29e74378ec24da64b26c5aa56cc",
+  "meaning": "to bind lightning along one precise bolt",
+  "category": "verb",
+  "domain": "air",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:eldingkast"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:lightning",
+  "effect_handler": "dragonspeech:elemental_working",
+  "element": "lightning"
+}

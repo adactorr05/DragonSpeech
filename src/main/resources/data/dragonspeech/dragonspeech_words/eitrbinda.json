@@ -1,0 +1,18 @@
+{
+  "true_name": "eitrbinda",
+  "hashed_true_name": "b240071ea852ea57b8ae5907fb203ad662c1f2225d98f4787b2de0b3101debb7",
+  "meaning": "to bind poison precisely into a target",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:eitra"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:poison",
+  "effect_handler": "dragonspeech:poison"
+}

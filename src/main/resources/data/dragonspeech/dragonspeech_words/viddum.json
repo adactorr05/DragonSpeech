@@ -1,0 +1,15 @@
+{
+  "true_name": "viddum",
+  "hashed_true_name": "82e36afe0323afd0e9f1bfd1d0653f237e4e5e84e80ce7e37ff1d2a1226bca02",
+  "meaning": "all within the wide reach",
+  "category": "scope",
+  "domain": "truth",
+  "precision": 0.5,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "scope_radius": 12
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "fallverja",
+  "hashed_true_name": "1fd614edeaff264abd77f58285027b4717c9d0241f505cad039e0e527b9632ce",
+  "meaning": "to ward against the fall and the earth's pull",
+  "category": "binding",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "ward_type": "fall"
+}

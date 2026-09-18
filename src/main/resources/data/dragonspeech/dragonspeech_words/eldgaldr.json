@@ -1,0 +1,15 @@
+{
+  "true_name": "eldgaldr",
+  "hashed_true_name": "f1c9085669bf339254f8fa40ce1c73542d34ec13336ad9cbf970b16102b3f7a3",
+  "meaning": "to bind a ward against flame and burning into an object",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:eldverja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

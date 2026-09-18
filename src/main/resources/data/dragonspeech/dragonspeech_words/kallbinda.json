@@ -1,0 +1,19 @@
+{
+  "true_name": "kallbinda",
+  "hashed_true_name": "28e58991269149fbc8dec8bfbae2bf15b7f71167baa7f7aaa280ec83d262d20c",
+  "meaning": "to call and bind a creature to service",
+  "category": "verb",
+  "domain": "death",
+  "precision": 0.78,
+  "prerequisite_words": [
+    "dragonspeech:kalla",
+    "dragonspeech:vaettr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:summon",
+  "effect_handler": "dragonspeech:summon"
+}

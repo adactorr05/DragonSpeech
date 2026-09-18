@@ -1,0 +1,19 @@
+{
+  "true_name": "thombinda",
+  "hashed_true_name": "d1989621ef850be63e955ee87c63873467d6fa774b1b81561a99d59807a0cabf",
+  "meaning": "to bind true absence precisely into the form, place, or mark that is named",
+  "category": "verb",
+  "domain": "void",
+  "precision": 0.95,
+  "prerequisite_words": [
+    "dragonspeech:thomr",
+    "dragonspeech:aflbinda"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "element": "void"
+}

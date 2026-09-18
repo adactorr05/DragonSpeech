@@ -1,0 +1,16 @@
+{
+  "true_name": "herda",
+  "hashed_true_name": "ac3b91965eed0d5aa56d382092576bcf8297946708da8b090a8a68e4f15e1641",
+  "meaning": "to stiffen and slow, crude and undirected",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:petrify",
+  "effect_handler": "dragonspeech:petrify"
+}

@@ -1,0 +1,18 @@
+{
+  "true_name": "steinbinda",
+  "hashed_true_name": "c17fb2a552c5c3086f01ad98dec286c03dea9f88840f6fd7f16770046e044f39",
+  "meaning": "to bind flesh utterly into stone",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:steinherda"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:petrify",
+  "effect_handler": "dragonspeech:petrify"
+}

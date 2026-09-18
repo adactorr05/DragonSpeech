@@ -1,0 +1,16 @@
+{
+  "true_name": "hugvarna",
+  "hashed_true_name": "74a4862a1c697ec815cb14ca51ce7ba4fb9a7c2891f3d07768149ff7726b108d",
+  "meaning": "to wall one's own mind against another",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.8,
+  "prerequisite_words": [
+    "dragonspeech:hugsnert"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

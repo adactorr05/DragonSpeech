@@ -1,0 +1,16 @@
+{
+  "true_name": "lifflyta",
+  "hashed_true_name": "05e9263b6820a765f64e469a3797246958187de229824c2616fa1b0ad836dbb6",
+  "meaning": "to carry stolen life into oneself",
+  "category": "modifier",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:lifssuga"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

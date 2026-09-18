@@ -1,0 +1,15 @@
+{
+  "true_name": "ljos",
+  "hashed_true_name": "064f434c8c30934def3c9769d21a62719564a2ddfe0ef91993f4084a5ac491f2",
+  "meaning": "light itself",
+  "category": "noun_target",
+  "domain": "fire",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "light"
+}

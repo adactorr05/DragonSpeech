@@ -1,0 +1,17 @@
+{
+  "true_name": "aflsuga",
+  "hashed_true_name": "924f067de4bc3c22831b9f0d1bbfa2cdfe6a6d0a92a64568889ab469e0e4bdfa",
+  "meaning": "to drain strength; to tear the force from a living thing",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.65,
+  "prerequisite_words": [
+    "dragonspeech:thrysta"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:drain_stamina"
+}

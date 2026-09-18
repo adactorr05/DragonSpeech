@@ -1,0 +1,18 @@
+{
+  "true_name": "veggbinda",
+  "hashed_true_name": "cc8d772fb9835bd9e9be714d66cc957d14920a0411bffebe0e73f527ed999c47",
+  "meaning": "to raise a true wall of bound matter",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:veggja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:wall",
+  "effect_handler": "dragonspeech:wall"
+}

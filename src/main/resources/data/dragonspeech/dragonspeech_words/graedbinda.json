@@ -1,0 +1,17 @@
+{
+  "true_name": "graedbinda",
+  "hashed_true_name": "77b704c55299185d7a9539a6bb0c4cfbb7af21f46abc539ccd12c71a1cb94a76",
+  "meaning": "precise, tightly bounded mending of flesh",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:graeda"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:life_mend",
+  "effect_handler": "dragonspeech:heal"
+}

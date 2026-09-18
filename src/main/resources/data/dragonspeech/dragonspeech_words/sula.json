@@ -1,0 +1,16 @@
+{
+  "true_name": "sula",
+  "hashed_true_name": "1aad4558445e7d4f58e8f6f56cd064a93675c84b4f559f991020d86a35790e38",
+  "meaning": "to stack matter beneath oneself, crude and unsteady",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:pillar",
+  "effect_handler": "dragonspeech:pillar"
+}

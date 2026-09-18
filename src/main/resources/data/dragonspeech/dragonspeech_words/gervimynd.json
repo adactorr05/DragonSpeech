@@ -1,0 +1,18 @@
+{
+  "true_name": "gervimynd",
+  "hashed_true_name": "42e248dc187555497b35c68f5e1a25d5c2f622513e56e7db302b75ca464bb268",
+  "meaning": "to weave a false image indistinguishable from truth",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:blekkja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:deception",
+  "effect_handler": "dragonspeech:confuse"
+}

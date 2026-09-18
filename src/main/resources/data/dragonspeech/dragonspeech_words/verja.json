@@ -1,0 +1,14 @@
+{
+  "true_name": "verja",
+  "hashed_true_name": "8d7c1178d4e1467009e1613db74d92866c8a55a98de49ab4ee454b1e1f48be04",
+  "meaning": "to ward; to bind protection around a target",
+  "category": "binding",
+  "domain": "binding",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "ward_type": "projectile"
+}

@@ -1,0 +1,18 @@
+{
+  "true_name": "vopnbinda",
+  "hashed_true_name": "6749fe7155c45538c0cd85e28cb14e02cda32290623c0dec3455950f93e60326",
+  "meaning": "to hurl a bound weapon along a single true path",
+  "category": "verb",
+  "domain": "weapon",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:vopnkasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:hurl_weapon",
+  "effect_handler": "dragonspeech:hurl_weapon"
+}

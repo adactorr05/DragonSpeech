@@ -1,0 +1,16 @@
+{
+  "true_name": "hugrista",
+  "hashed_true_name": "9670f4b6b53e864a3cf6709059e1f8f110834a1c3d1d8dea6624b39b1a48f3f9",
+  "meaning": "to read the surface of a thought",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.7,
+  "prerequisite_words": [
+    "dragonspeech:hugleita"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

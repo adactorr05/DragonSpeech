@@ -1,0 +1,15 @@
+{
+  "true_name": "til",
+  "hashed_true_name": "f15635b0de55e689f80bf40cb03040153c237d7910ebdc1a45d946779b603a6b",
+  "meaning": "toward; unto",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "toward_caster"
+}

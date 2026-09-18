@@ -1,0 +1,15 @@
+{
+  "true_name": "skjoldr",
+  "hashed_true_name": "b55cab2d542bef31c3fcdf696228e76b3d04812c40f48aaa1d61c4bfdb5c1c18",
+  "meaning": "to raise a shield of light, real and standing, before oneself",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:barrier"
+}

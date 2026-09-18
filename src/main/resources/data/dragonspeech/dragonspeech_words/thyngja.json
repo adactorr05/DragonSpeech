@@ -1,0 +1,16 @@
+{
+  "true_name": "thyngja",
+  "hashed_true_name": "956c4c71dc753c11d727e4360f748a1ccd8c1c2e4ac167054fdb153f204c6344",
+  "meaning": "to weigh down, crude and undirected",
+  "category": "verb",
+  "domain": "gravity",
+  "precision": 0.45,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:gravity_scale",
+  "effect_handler": "dragonspeech:gravity_scale"
+}

@@ -1,0 +1,14 @@
+{
+  "true_name": "regn",
+  "hashed_true_name": "3aa17a8e4aaace28278585cf99c021edad1d57b3b9bd9968ca1fd31fac26b2db",
+  "meaning": "rain; water that falls",
+  "category": "noun_target",
+  "domain": "water",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

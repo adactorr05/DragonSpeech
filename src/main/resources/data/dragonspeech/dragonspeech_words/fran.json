@@ -1,0 +1,15 @@
+{
+  "true_name": "fran",
+  "hashed_true_name": "91a235f353ba4dbcf417da4d743d1b10a4369317eaf7f3a36559378dc518ea58",
+  "meaning": "away from; outward from the named mark",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "away"
+}

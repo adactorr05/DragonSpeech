@@ -1,0 +1,14 @@
+{
+  "true_name": "thungi",
+  "hashed_true_name": "2b48d40587392a41fd79b1ad957c81fc916b3bd2417cc85e6d7526e14f4b186e",
+  "meaning": "weight; the burden of mass",
+  "category": "noun_target",
+  "domain": "gravity",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

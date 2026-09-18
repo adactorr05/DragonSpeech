@@ -1,0 +1,18 @@
+{
+  "true_name": "kyrra",
+  "hashed_true_name": "903acdbf40cdcb52c662dfe8156dff118cc1635e907c123724922536c5226d14",
+  "meaning": "to still utterly; to hold a thing outside time's flow",
+  "category": "verb",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:tidbinda"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:temporal_working",
+  "tempo": -2.0
+}

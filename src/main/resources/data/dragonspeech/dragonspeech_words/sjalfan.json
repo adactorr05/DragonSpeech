@@ -1,0 +1,15 @@
+{
+  "true_name": "sjalfan",
+  "hashed_true_name": "fcf2fe1c409896ed7dee71e33c347e73db3d6e97db2a36cd3175696f69ae83bd",
+  "meaning": "oneself; the speaker alone",
+  "category": "scope",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "scope_self": true
+}

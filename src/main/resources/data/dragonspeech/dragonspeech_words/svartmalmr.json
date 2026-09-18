@@ -1,0 +1,18 @@
+{
+  "true_name": "svartmalmr",
+  "hashed_true_name": "f3f6d024b48ccd9a4e34c70048ca3d4d7a3f460f91f922251f3f2ff852e6ccff",
+  "meaning": "netherite; black ore that survives the burning deep",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.93,
+  "prerequisite_words": [
+    "dragonspeech:malmr",
+    "dragonspeech:eldsteinn"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tool_material": "netherite"
+}

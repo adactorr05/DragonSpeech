@@ -1,0 +1,13 @@
+{
+  "true_name": "sjonhverfing",
+  "hashed_true_name": "7ea9a71c808d8c9d72654dac86ec729c5c57512ea237b95b98a0ae02c9a401a5",
+  "meaning": "illusion; a false-seeming",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

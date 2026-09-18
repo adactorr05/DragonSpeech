@@ -1,0 +1,13 @@
+{
+  "true_name": "stadr",
+  "hashed_true_name": "2f78ddb6fb45b8c20f5d72e97907d69dc70eae41c1fcdaf382e29ead442c3d95",
+  "meaning": "a place; a fixed point",
+  "category": "noun_target",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

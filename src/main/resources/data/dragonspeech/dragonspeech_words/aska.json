@@ -1,0 +1,14 @@
+{
+  "true_name": "aska",
+  "hashed_true_name": "a20889e9d30310f7b764d3dcb6012581cfffec074830730d2654c45e8b5d00a5",
+  "meaning": "ash; what fire leaves behind",
+  "category": "noun_target",
+  "domain": "fire",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "voddr",
+  "hashed_true_name": "0db5ddf5bc5d9b9fca4677b6bd5e491b461da8f9f16e1ed0af6fa84ea405f005",
+  "meaning": "a long piercing point; the form of a spear or lance",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "shape": "lance"
+}

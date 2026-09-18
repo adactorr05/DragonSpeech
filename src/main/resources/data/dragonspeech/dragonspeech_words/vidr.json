@@ -1,0 +1,16 @@
+{
+  "true_name": "vidr",
+  "hashed_true_name": "73923a138ef944c2058c91fb8ba3f2ee882847649140d3d5366f102698973d4f",
+  "meaning": "wood; the living tree",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "block_type": "wood",
+  "tool_material": "wood"
+}

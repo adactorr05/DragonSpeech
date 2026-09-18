@@ -1,0 +1,30 @@
+{
+  "primary_color": 1447446,
+  "secondary_color": 16737256,
+  "attribute_overrides": {
+    "minecraft:generic.max_health": 75.0
+  },
+  "immune_damage_types": [
+    "minecraft:out_of_world",
+    "minecraft:cactus",
+    "minecraft:sweet_berry_bush",
+    "minecraft:dragon_breath"
+  ],
+  "habitats": [
+    {
+      "type": "any_of",
+      "any_of": [
+        {
+          "type": "nearby_blocks",
+          "point_multiplier": 0.5,
+          "block_tag": "dragonspeech:end_dragon_habitat_blocks"
+        },
+        {
+          "type": "dimension",
+          "points": 5,
+          "dimension": "minecraft:the_end"
+        }
+      ]
+    }
+  ]
+}

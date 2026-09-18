@@ -1,0 +1,18 @@
+{
+  "true_name": "vikja",
+  "hashed_true_name": "baa4f9617d3c68fc7ed5a8e132b5e38760a4d2dd6189ff054d569923226d4a17",
+  "meaning": "to step aside from here to there",
+  "category": "verb",
+  "domain": "motion",
+  "precision": 0.7,
+  "prerequisite_words": [
+    "dragonspeech:hopa"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:teleport",
+  "effect_handler": "dragonspeech:teleport"
+}

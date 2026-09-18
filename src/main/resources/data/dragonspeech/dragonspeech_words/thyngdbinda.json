@@ -1,0 +1,18 @@
+{
+  "true_name": "thyngdbinda",
+  "hashed_true_name": "691b2d31cdc72acbdc790072e012dc122e70d82e469d9295d9d07d45e713c4bc",
+  "meaning": "to bind the pull of gravity itself, exact and sustained",
+  "category": "verb",
+  "domain": "gravity",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:thyngja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:gravity_scale",
+  "effect_handler": "dragonspeech:gravity_scale"
+}

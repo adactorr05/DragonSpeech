@@ -1,0 +1,15 @@
+{
+  "true_name": "myrkr",
+  "hashed_true_name": "e5d2e3bf5109605e89ef36b2b25fff0418ab601daec693fa9b0d029538fdf7a6",
+  "meaning": "darkness",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "shadow"
+}

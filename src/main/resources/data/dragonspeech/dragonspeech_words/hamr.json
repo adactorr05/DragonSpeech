@@ -1,0 +1,14 @@
+{
+  "true_name": "hamr",
+  "hashed_true_name": "87d39800c6852a6c3e14a7540777ff1a0b0f19f15d1e887463737f8dd07f436c",
+  "meaning": "the skin; the living shape a body wears",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

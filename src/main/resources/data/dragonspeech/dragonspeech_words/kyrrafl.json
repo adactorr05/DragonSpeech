@@ -1,0 +1,13 @@
+{
+  "true_name": "kyrrafl",
+  "hashed_true_name": "4da3000b9f164fb7b977107a0f261765f857cd47093e31daa426ff1b3dbf8e84",
+  "meaning": "quiet strength - stamina gathers back into you faster while this is worn",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

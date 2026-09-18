@@ -1,0 +1,13 @@
+{
+  "true_name": "letta",
+  "hashed_true_name": "10bf6a034bf8d33c940c36e10ea725375923d93deb82b450197d2c5a63c99a87",
+  "meaning": "cease, be still",
+  "category": "control",
+  "domain": "force",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

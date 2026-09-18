@@ -1,0 +1,14 @@
+{
+  "true_name": "draumr",
+  "hashed_true_name": "4b733eedfea83e068792bfca8912599f79e7c8c069b35d44f7d517e1c0a63799",
+  "meaning": "a dream",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

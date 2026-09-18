@@ -1,0 +1,13 @@
+{
+  "primary_color": 346624,
+  "secondary_color": 693760,
+  "immune_damage_types": [
+    "minecraft:cactus",
+    "minecraft:sweet_berry_bush",
+    "minecraft:dragon_breath"
+  ],
+  "attribute_overrides": {
+    "minecraft:generic.max_health": 90.0,
+    "minecraft:generic.armor": 10.0
+  }
+}

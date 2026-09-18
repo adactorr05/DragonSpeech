@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "dragonspeech:ruined_tower_2",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 512094,
+    "spacing": 38,
+    "separation": 10,
+    "spread_type": "linear"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "lifssuga",
+  "hashed_true_name": "d99ee9a16718ded9a85c63c0c6b05c605995616c9451b6874e7dd2f06289a228",
+  "meaning": "to drain life; to tear the force of living from a thing",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.65,
+  "prerequisite_words": [
+    "dragonspeech:eitra"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:drain_life"
+}

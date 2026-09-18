@@ -1,0 +1,15 @@
+{
+  "true_name": "vatnhrer",
+  "hashed_true_name": "f918b9de4509383ce24a24d553ea0939875d7c675b5618a702603885e604e82f",
+  "meaning": "water stirs, unsettled and undirected",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.35,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:water_flow",
+  "effect_handler": "dragonspeech:push"
+}

@@ -1,0 +1,18 @@
+{
+  "true_name": "kula",
+  "hashed_true_name": "4320cb851c5c00c6d7ef71147771c7244607ade8c56cc908cfeba677d0e65163",
+  "meaning": "to shape as an orb; a slow gathered sphere",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.8,
+  "prerequisite_words": [
+    "dragonspeech:kasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "orb"
+}

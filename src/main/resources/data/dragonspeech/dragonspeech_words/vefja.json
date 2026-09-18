@@ -1,0 +1,17 @@
+{
+  "true_name": "vefja",
+  "hashed_true_name": "3f9aedc37dfc1ea61e95c9bca6f8b3c80b5ba1f1c9276391e3cf53a9dcfb2710",
+  "meaning": "to wrap or weave a working closely around a thing",
+  "category": "modifier",
+  "domain": "binding",
+  "precision": 0.82,
+  "prerequisite_words": [
+    "dragonspeech:fjotur"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "shape": "shell"
+}

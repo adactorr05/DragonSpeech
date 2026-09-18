@@ -1,0 +1,13 @@
+{
+  "true_name": "lifheill",
+  "hashed_true_name": "9c9e93f24ffe18d23e5f6d805cba5a26067ed838a5c405e101338675476fae5f",
+  "meaning": "life's favor - calling life back to what has left costs you far less than it otherwise would",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

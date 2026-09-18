@@ -1,0 +1,14 @@
+{
+  "true_name": "stodugt",
+  "hashed_true_name": "c3fd3eb8cbaacbed0969bbd4ec2d9519d6d74c8aec04e2d9a68bddd75dcf9b93",
+  "meaning": "with constant, unwavering force",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

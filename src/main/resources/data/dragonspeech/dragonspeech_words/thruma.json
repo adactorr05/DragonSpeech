@@ -1,0 +1,13 @@
+{
+  "true_name": "thruma",
+  "hashed_true_name": "15e3724486e994bf73723d66aa3fbc54ec47695f5e1e7f92024669585db5846a",
+  "meaning": "thunder",
+  "category": "noun_target",
+  "domain": "air",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

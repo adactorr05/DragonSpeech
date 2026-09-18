@@ -1,0 +1,15 @@
+{
+  "true_name": "graeda",
+  "hashed_true_name": "3ed17b678a1d62d82b21c949cdc61a20b6c33397881b588760d3d619c82b9628",
+  "meaning": "a rough, imprecise mending of flesh",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:life_mend",
+  "effect_handler": "dragonspeech:heal"
+}

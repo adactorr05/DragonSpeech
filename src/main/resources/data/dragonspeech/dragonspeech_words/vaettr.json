@@ -1,0 +1,13 @@
+{
+  "true_name": "vaettr",
+  "hashed_true_name": "74066b7670276dbc61c6b6b7303d299b9ed7628bef2e182bd9583718165a9b87",
+  "meaning": "a spirit; the shape a summoned creature takes",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

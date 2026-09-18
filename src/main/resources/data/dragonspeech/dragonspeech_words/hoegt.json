@@ -1,0 +1,14 @@
+{
+  "true_name": "hoegt",
+  "hashed_true_name": "077a55a73c54ef7f0b59e16fe2c8fa360c0f56b73cc7a285489d7fc6a644545a",
+  "meaning": "gently; with care",
+  "category": "modifier",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": -0.3,
+  "eldunari_amplified": false
+}

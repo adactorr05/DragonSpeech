@@ -1,0 +1,13 @@
+{
+  "true_name": "duljabol",
+  "hashed_true_name": "f5605c161cae2de014c707a484b9c49da5bffafdd4763bcccdf9d40565f8f34e",
+  "meaning": "a curse of concealment - hides another working already bound into the same object from any eye that looks for it, though it never stops working",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

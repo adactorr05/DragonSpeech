@@ -1,0 +1,14 @@
+{
+  "true_name": "gala",
+  "hashed_true_name": "32124edbd094561626574df8f21bed07e3d2d64c8606298dbf4cd24135188097",
+  "meaning": "to chant a working into lasting shape - the general idea of enchanting, not any one working in particular",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:apply_enchant"
+}

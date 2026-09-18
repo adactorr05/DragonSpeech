@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 2, "max": 4 },
+      "entries": [
+        { "type": "minecraft:item", "weight": 10, "name": "minecraft:iron_ingot",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 4 } } ] },
+        { "type": "minecraft:item", "weight": 8, "name": "minecraft:bread",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2, "max": 5 } } ] },
+        { "type": "minecraft:item", "weight": 6, "name": "minecraft:emerald",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } } ] },
+        { "type": "minecraft:item", "weight": 6, "name": "minecraft:gold_ingot",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } } ] },
+        { "type": "minecraft:item", "weight": 8, "name": "minecraft:arrow",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 4, "max": 12 } } ] },
+        { "type": "minecraft:item", "weight": 6, "name": "minecraft:torch",
+          "functions": [ { "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 3, "max": 8 } } ] },
+        { "type": "minecraft:item", "weight": 4, "name": "minecraft:iron_pickaxe" }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "weight": 3, "name": "dragonspeech:word_tablet_worn" },
+        { "type": "minecraft:item", "weight": 2, "name": "dragonspeech:scholars_fragment" },
+        { "type": "minecraft:item", "weight": 1, "name": "dragonspeech:gold_ring" },
+        { "type": "minecraft:item", "weight": 1, "name": "dragonspeech:gold_necklace" },
+        { "type": "minecraft:empty", "weight": 5 }
+      ]
+    }
+  ]
+}

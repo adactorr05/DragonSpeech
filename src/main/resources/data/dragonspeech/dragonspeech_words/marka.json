@@ -1,0 +1,15 @@
+{
+  "true_name": "marka",
+  "hashed_true_name": "0d377be3c314a9f25cc74ba89403ee3cebe70cb1443dd2f32d8209474935f339",
+  "meaning": "to mark; to leave a lasting sign upon",
+  "category": "verb",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:mark"
+}

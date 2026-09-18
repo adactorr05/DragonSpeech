@@ -1,0 +1,16 @@
+{
+  "true_name": "kringferd",
+  "hashed_true_name": "083caf6be3ed31cbbc177b945c97b2a1357a3c49c8340c6e560b64653481bb68",
+  "meaning": "motion around a centre; an orbit",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:ferd"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

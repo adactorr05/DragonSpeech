@@ -1,0 +1,220 @@
+ILLUSION MAGIC — DESIGN NOTES (NOT YET BUILT)
+================================================
+
+Status: not implemented. This is a design doc to pick up in a later
+session, written from a real back-and-forth that settled every major
+architectural question. Everything under "CONFIRMED DESIGN" below is
+locked in; everything under "OPEN QUESTIONS / MY OWN ASSUMPTIONS" still
+needs a decision before or during implementation.
+
+Goes in: docs/ILLUSION_MAGIC.txt (repo docs folder, same place as
+ANCIENT_LANGUAGE_STYLE_GUIDE.md and MIND_DUEL_PHASE6.md).
+
+
+THE CORE IDEA
+-------------
+
+An illusion barrier hides a region of the world by moving it somewhere
+else entirely, rather than trying to fake its appearance in place.
+
+The original approach discussed was "make the blocks inside literally
+invisible, so it looks like normal terrain from outside" — this was
+explicitly rejected as too hard to do well (it needs intercepting real
+chunk rendering, one of the genuinely hardest things to do cleanly in a
+Fabric mod, and gets worse the moment you ask what a half-detected
+player should see, or what a flickering torch inside the barrier looks
+like from outside).
+
+The approach settled on instead: when an illusion barrier is cast, every
+chunk inside its volume is COPIED into a linked pocket dimension, at the
+SAME coordinates the barrier occupies in its source dimension. The
+original chunks stay physically in place in the source dimension the
+whole time the illusion is up, but are hidden behind a solid/hazy
+barrier shell (visually similar to the existing blue MagicBarrierEntity,
+not a fake-terrain render) so nobody can just walk in or see through it
+by accident. The pocket-dimension copy is what players actually
+interact with once they're let through - it can diverge freely from the
+original (built on, fought in, looted) while the illusion is up.
+
+
+THE THREE VOID DIMENSIONS
+--------------------------
+
+Not one pocket dimension shared by everything - three:
+
+- one mirroring the Overworld
+- one mirroring the Nether
+- one mirroring the End
+
+Each mirror dimension is the same coordinate size as the real dimension
+it links to. When a barrier is cast at a given set of coordinates, its
+copied chunks land at those SAME coordinates in the matching void
+mirror. Since two real illusion barriers can never occupy the same
+overworld/nether/end coordinates in the first place (they'd collide in
+the source dimension long before either could be cast), this guarantees
+two illusions can never accidentally merge or overlap in the mirror
+either - coordinate identity is the whole safety mechanism, no separate
+allocation/bookkeeping needed.
+
+Any number of illusions can coexist in the same mirror dimension this
+way, entirely separated by their own real-world coordinates.
+
+The mirror dimensions themselves are void - nothing generates there on
+its own; they only ever contain what's been copied in by a barrier.
+
+
+ENTERING AND LEAVING
+---------------------
+
+- You cannot walk through an illusion barrier by default - it blocks
+  passage like the existing defensive barriers.
+- Casting a "pass through" spell while near the barrier grants passage.
+  Once cast, walking into the barrier's boundary teleports you into the
+  linked pocket-dimension copy, arriving at the matching coordinates.
+- To leave, you simply walk back out through the barrier boundary from
+  inside the pocket dimension - this sends you back to the original
+  (source) dimension at the matching coordinates.
+- This is why the copied volume includes one buffer chunk around the
+  barrier's own footprint in addition to the barrier's interior - the
+  buffer is the actual walkable boundary zone where the "step back
+  through" transition happens, not just padding.
+
+
+GROWING AND SHRINKING
+-----------------------
+
+The barrier's size is tied to its own footprint, the same way the
+existing defensive barriers can be grown/shrunk. For an illusion
+barrier specifically:
+
+- Growing it copies the newly-included chunks (plus a new buffer ring)
+  into the mirror dimension, extending the hidden volume.
+- Shrinking it either deletes the chunks that fall outside the new
+  footprint, or keeps them as extra buffer space - either is acceptable;
+  no strong preference expressed, implementer's call.
+
+
+ENTITIES
+--------
+
+- Any entity present in the volume at the MOMENT the illusion is cast -
+  players, mobs, animals, anything - gets pulled into the pocket
+  dimension along with the copied terrain. It is not terrain-only; a
+  Shade or a cow standing in the footprint when you cast this comes
+  with it.
+- Anyone who walks in afterward needs the "pass through" spell like
+  normal - the initial pull-in only applies to whoever/whatever was
+  already standing there at cast time.
+
+
+DISPELLING
+----------
+
+To dispel an illusion barrier, you speak the SAME illusion word(s) used
+to raise it, PLUS the general dispel word (plus whatever scopes/
+modifiers apply) - not a separate bespoke "undo" word. This mirrors how
+wards are already lowered (control + binding word together releases
+your own ward of that type).
+
+On dispel:
+- Everything currently inside that barrier's pocket-dimension copy -
+  terrain AND entities - is copied back to the source dimension,
+  REPLACING whatever is there now (i.e. the original hidden terrain is
+  overwritten by whatever the pocket copy had become, not restored to
+  its pre-illusion state - the pocket copy is authoritative once the
+  barrier's been up for any length of time).
+- Any player (or entity) still physically inside the pocket dimension at
+  the moment of dispel is pulled out and returned to the source
+  dimension at the matching coordinates, same as walking out normally
+  would have done. Nobody is left stranded in an orphaned, unlinked
+  space.
+
+
+THE GENERAL DISPEL WORD
+-------------------------
+
+The dispel word introduced for illusions is NOT illusion-specific - it
+should also work as a general "remove a working" word for:
+
+- marks (both removing your own placed mark, and removing a mark
+  someone else placed - on yourself or on something else - exact scope
+  rules TBD when this is built)
+- traps (whatever the current or future "trap" mechanic in this mod
+  turns out to be - needs to be checked against at implementation time,
+  not assumed)
+
+This is a genuinely new grammar capability (a general-purpose "undo
+another working" word), not just an illusion-specific mechanic, and
+should be designed with that generality in mind from the start rather
+than retrofitted onto illusions alone later.
+
+
+DETECTION
+---------
+
+A detection spell, cast while near a hidden barrier, reveals it as a
+hazy white barrier shell (visually distinct from both the normal
+"nothing here" appearance and the eventual "pass through" state) for as
+long as the detection effect lasts. Being near the barrier is a
+requirement for detection to work at all - this is not a long-range
+sense.
+
+
+THE ELVEN CITY
+---------------
+
+A new structure, built to spawn already hidden behind one of these
+illusion barriers - the barrier and its pocket-dimension link are part
+of how the structure generates, not something a player casts on top of
+an existing normal structure. Its own generation approach (hand-placed
+template vs. proper vanilla worldgen structure) is still an open
+question - see below.
+
+
+NEW WORDS NEEDED
+-----------------
+
+At minimum, this needs new dictionary entries for:
+- casting an illusion barrier (likely its own binding-family word,
+  parallel to verja/eldverja/etc., given how closely this mirrors the
+  existing ward-raising grammar)
+- detecting a hidden illusion
+- passing through an illusion (temporary permission to cross)
+- the general dispel word (illusions + marks + traps)
+
+None of these have been named yet - word creation (Old Norse-style
+naming, correct precision/domain/discovery-method values, fitting the
+existing "How sentences work" grammar patterns) should happen together
+with implementation, not decided blind ahead of time.
+
+
+OPEN QUESTIONS / MY OWN ASSUMPTIONS (not yet confirmed)
+---------------------------------------------------------
+
+These came up during design but were left for implementation time
+rather than settled now:
+
+- Does simulation continue inside a pocket dimension while nobody is
+  present (do villagers/mobs keep acting, do crops grow, does redstone
+  run), or does it effectively freeze the way an unloaded chunk would?
+  Vanilla's own chunk-loading/ticking rules may answer this for free
+  depending on how the mirror dimension's chunks get force-loaded (or
+  don't) - needs checking against whatever version of the game this
+  gets built against.
+- Exact collision/detection mechanism for "you are standing at the
+  barrier boundary, walking further should teleport you" - likely an
+  entity-tick or movement-event check against the barrier's stored
+  bounding box, similar in spirit to how the existing MagicBarrierEntity
+  already blocks movement, but needs its own design for the "let
+  through if recently cast pass-through" state (a temporary buff/flag
+  on the player, presumably, checked at the crossing moment).
+- Chunk copying itself (structure blocks, block entities with their own
+  NBT, any block that stores per-block state) needs real engineering
+  attention - this is a well-trodden category of Minecraft modding
+  problem (structure-block-style copying) and far more tractable than
+  the rejected fake-terrain-rendering approach, but still needs care,
+  especially for anything with tile-entity data.
+- Elven city generation approach (hand-authored NBT/structure template
+  the mod ships with vs. a true vanilla worldgen structure that
+  generates naturally in new chunks) - very different scope and was
+  intentionally left open rather than decided during this design pass.

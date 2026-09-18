@@ -1,0 +1,36 @@
+{
+  "primary_color": 657930,
+  "secondary_color": 2759219,
+  "immune_damage_types": [
+    "minecraft:out_of_world",
+    "minecraft:drown",
+    "minecraft:fall",
+    "minecraft:cactus",
+    "minecraft:sweet_berry_bush",
+    "minecraft:dragon_breath"
+  ],
+  "habitats": [
+    {
+      "type": "any_of",
+      "any_of": [
+        {
+          "type": "dimension",
+          "points": 5,
+          "dimension": "minecraft:the_end"
+        },
+        {
+          "type": "world_height",
+          "points": 5,
+          "below": true,
+          "height": -60
+        },
+        {
+          "type": "world_height",
+          "points": 5,
+          "below": true,
+          "height": 5
+        }
+      ]
+    }
+  ]
+}

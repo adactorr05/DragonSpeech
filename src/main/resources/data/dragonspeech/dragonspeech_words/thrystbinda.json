@@ -1,0 +1,17 @@
+{
+  "true_name": "thrystbinda",
+  "hashed_true_name": "466537b0b42f3d328dc03eb2a2aaf73252cdcbd686b6d7b23ea3ff8a778dd99c",
+  "meaning": "to exert force along a single, precise, bound path",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:thrysta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:force_exert",
+  "effect_handler": "dragonspeech:push"
+}

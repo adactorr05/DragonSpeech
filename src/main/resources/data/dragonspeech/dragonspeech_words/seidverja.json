@@ -1,0 +1,17 @@
+{
+  "true_name": "seidverja",
+  "hashed_true_name": "2b6dc168bcb19cd23461719fb9cf721486bb10dd7aa3d7b54aca4246b54e9fb6",
+  "meaning": "to ward against workings of the old tongue",
+  "category": "binding",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "ward_type": "magic"
+}

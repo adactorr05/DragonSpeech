@@ -1,0 +1,19 @@
+{
+  "true_name": "steinherda",
+  "hashed_true_name": "0a29e2c9b475eee540ad91a6a0e42107d9220639ed58400cc548a9b027e8f452",
+  "meaning": "to harden flesh toward stone, unevenly",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.75,
+  "prerequisite_words": [
+    "dragonspeech:herda",
+    "dragonspeech:steinn"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:petrify",
+  "effect_handler": "dragonspeech:petrify"
+}

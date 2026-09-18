@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "F#F",
+    " F "
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:gold_nugget"
+    },
+    "#": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "dragonspeech:gold_necklace"
+  }
+}

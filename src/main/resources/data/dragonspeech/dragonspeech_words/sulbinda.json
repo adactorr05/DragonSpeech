@@ -1,0 +1,18 @@
+{
+  "true_name": "sulbinda",
+  "hashed_true_name": "9f3f72c06cd5e928667d88a9a39f45147bbd657f408289f02d9dc67442be5f6f",
+  "meaning": "to raise a true pillar of bound matter, and ride it skyward",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:sula"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:pillar",
+  "effect_handler": "dragonspeech:pillar"
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "seint",
+  "hashed_true_name": "14a96530d44e5197696777ad384315759d21476159e599510ffd56b1a2f04aab",
+  "meaning": "slowly; drawn out",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tempo": -1.0
+}

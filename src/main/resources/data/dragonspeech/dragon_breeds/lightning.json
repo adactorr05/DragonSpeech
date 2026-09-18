@@ -1,0 +1,10 @@
+{
+  "primary_color": 3817298,
+  "secondary_color": 16773222,
+  "attribute_overrides": { "minecraft:generic.movement_speed": 0.28 },
+  "immune_damage_types": ["minecraft:lightning_bolt", "minecraft:drown", "minecraft:cactus", "minecraft:sweet_berry_bush", "minecraft:dragon_breath"],
+  "habitats": [
+    { "type": "raining", "points": 2 },
+    { "type": "nearby_lightning", "points": 5, "radius": 12.0 }
+  ]
+}

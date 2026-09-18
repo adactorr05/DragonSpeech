@@ -1,0 +1,16 @@
+{
+  "true_name": "varn",
+  "hashed_true_name": "af5b09cdc48b0cc42010899562a051eac9dc7b48da89be2d099902ab97702bbc",
+  "meaning": "a barrier; a standing boundary that something is not meant to cross",
+  "category": "noun_target",
+  "domain": "binding",
+  "precision": 0.72,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "ancient_text",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

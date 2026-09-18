@@ -1,0 +1,16 @@
+{
+  "true_name": "kongurvaettr",
+  "hashed_true_name": "250ec0de25b9ecd1e57c800bbafbab0f6f46944bf6370f9a93ae00400e8cbbf7",
+  "meaning": "a spider; a spirit bound in many legs and web",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "spider"
+}

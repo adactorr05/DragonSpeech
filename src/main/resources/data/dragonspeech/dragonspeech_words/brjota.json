@@ -1,0 +1,15 @@
+{
+  "true_name": "brjota",
+  "hashed_true_name": "456ae0edde614c1d662f6561f5aa52fddec3acf140ef5b81eedad33687f28f6d",
+  "meaning": "to sunder; to break stone and matter apart",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.65,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:sunder"
+}

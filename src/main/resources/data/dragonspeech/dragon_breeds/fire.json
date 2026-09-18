@@ -1,0 +1,8 @@
+{
+  "primary_color": 9511936,
+  "secondary_color": 16751641,
+  "immune_damage_types": ["minecraft:on_fire", "minecraft:in_fire", "minecraft:lava", "minecraft:hot_floor", "minecraft:cactus", "minecraft:sweet_berry_bush", "minecraft:dragon_breath"],
+  "habitats": [
+    { "type": "in_fluid", "point_multiplier": 1.0, "fluid_tag": "minecraft:lava" }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "vindkast",
+  "hashed_true_name": "088786c415152b018f3f98cf68f47dda786fc4c52a0567188b124a5ac9901bd7",
+  "meaning": "to hurl with a directed gust",
+  "category": "verb",
+  "domain": "air",
+  "precision": 0.75,
+  "prerequisite_words": [
+    "dragonspeech:blasa"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:push"
+}

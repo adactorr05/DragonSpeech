@@ -1,0 +1,15 @@
+{
+  "true_name": "samvefja",
+  "hashed_true_name": "b8e81d8baaea77054b83be10b3eff0fb42b8448669c525a2569d00cc214024ff",
+  "meaning": "to weave together; two elements as one working",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "weave": true
+}

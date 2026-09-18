@@ -1,0 +1,16 @@
+{
+  "true_name": "vopnkasta",
+  "hashed_true_name": "5b77712d8dbfb718128536944665cf751e6206573eff6626dc97039be16da417",
+  "meaning": "to hurl a weapon, crude and undirected",
+  "category": "verb",
+  "domain": "weapon",
+  "precision": 0.45,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:hurl_weapon",
+  "effect_handler": "dragonspeech:hurl_weapon"
+}

@@ -1,0 +1,16 @@
+{
+  "true_name": "hugleita",
+  "hashed_true_name": "27df5df8dc1a024f84bac9fbf77f1ffcf4e18dd192fa6b4861d7ddfb39a05578",
+  "meaning": "to deliberately seek out and touch a mind",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.7,
+  "prerequisite_words": [
+    "dragonspeech:hugsnert"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:mind_reach"
+}

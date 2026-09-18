@@ -1,0 +1,18 @@
+{
+  "true_name": "geisla",
+  "hashed_true_name": "5651c791b2410555d3f932c521442d0bc34eff17e92570fcdcecac1c010c946d",
+  "meaning": "to cast as a ray; a straight unbroken beam",
+  "category": "verb",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:kasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "ray"
+}

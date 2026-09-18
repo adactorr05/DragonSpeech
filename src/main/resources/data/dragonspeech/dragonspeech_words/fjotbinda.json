@@ -1,0 +1,17 @@
+{
+  "true_name": "fjotbinda",
+  "hashed_true_name": "31bf7a1fbc08358ff22e33ea0fd210578e3a3b146333229d690d933e0b829d3a",
+  "meaning": "to bind a working as a flexible tether between two marks",
+  "category": "modifier",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:fjotur"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "shape": "tether"
+}

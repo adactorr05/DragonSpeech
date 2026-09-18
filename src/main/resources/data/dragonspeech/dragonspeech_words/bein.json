@@ -1,0 +1,15 @@
+{
+  "true_name": "bein",
+  "hashed_true_name": "e6fce208e850f30ee609db11cea342a93c3bf1628f806e767b6228c68fc6e8de",
+  "meaning": "bone",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "wound_type": "bone"
+}

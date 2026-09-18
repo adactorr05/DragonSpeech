@@ -1,0 +1,14 @@
+{
+  "true_name": "hugsnert",
+  "hashed_true_name": "14fc9134a30305750cebe81719df890d2b71d4bcbf83845cf6a84e5d67fdbd15",
+  "meaning": "a faint mental brush; unfocused sensing of a mind",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:mind_reach"
+}

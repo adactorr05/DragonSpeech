@@ -1,0 +1,17 @@
+{
+  "true_name": "skuggvaettr",
+  "hashed_true_name": "20a19e9e30c9eb25aa7ccb80da71e0fdc9d24439df65ab7ccd9b4075b61eb000",
+  "meaning": "an enderman; a spirit bound in shadow, standing outside the world it steps through",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr",
+    "dragonspeech:skuggi"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "enderman"
+}

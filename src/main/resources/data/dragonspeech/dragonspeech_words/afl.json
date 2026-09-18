@@ -1,0 +1,15 @@
+{
+  "true_name": "afl",
+  "hashed_true_name": "42bd935371d1dc0935f937a41b8ce8f096bf4d513c7fee31d2360f33c12746da",
+  "meaning": "raw strength; force unshaped",
+  "category": "noun_target",
+  "domain": "force",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "force"
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "molva",
+  "hashed_true_name": "3c7c6593f9e054732a695597f44d803491d58a1ff05174db3ebbf147aeebdd10",
+  "meaning": "to crudely shatter and crumble",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:sunder"
+}

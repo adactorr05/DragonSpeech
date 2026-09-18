@@ -1,0 +1,18 @@
+{
+  "true_name": "varnbinda",
+  "hashed_true_name": "282b7a4bed3d973cbfaf06c971f81cb2615d89b0ba9407f2cddda70ff866359f",
+  "meaning": "to bind and raise a barrier as a fixed boundary in the place named",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:varn",
+    "dragonspeech:skjoldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:barrier"
+}

@@ -1,0 +1,14 @@
+{
+  "true_name": "aflbinda",
+  "hashed_true_name": "bb9e37d50d1d5f52e38593355c2e3ea4a478cb1cd972aa61182e8a0e16a3e8e4",
+  "meaning": "to bind a working to one's own strength; to sustain it from stamina instead of fixed stored power",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

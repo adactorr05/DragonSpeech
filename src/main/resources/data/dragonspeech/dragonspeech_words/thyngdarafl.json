@@ -1,0 +1,16 @@
+{
+  "true_name": "thyngdarafl",
+  "hashed_true_name": "2c65006ef5657ccd45d939cac9aa07d2c61e6abcf781c08ca8168449765231b2",
+  "meaning": "gravity; the force that pulls all things down",
+  "category": "noun_target",
+  "domain": "gravity",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:afl"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

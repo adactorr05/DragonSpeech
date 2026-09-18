@@ -1,0 +1,14 @@
+{
+  "true_name": "glod",
+  "hashed_true_name": "45ef1bc5306749a15ab9ce9806efafe7d52b99ea19bb118c9037183696b1cb5c",
+  "meaning": "ember; fire sleeping in coal",
+  "category": "noun_target",
+  "domain": "fire",
+  "precision": 0.75,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

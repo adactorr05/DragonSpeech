@@ -1,0 +1,16 @@
+{
+  "true_name": "bur",
+  "hashed_true_name": "5e7e4bf257cd2e021243eca7ab9ad9ed45da6a06bcc0e8082cc29e6cedf4a283",
+  "meaning": "a cage; a working that holds what is within, not what is without",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:skjoldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

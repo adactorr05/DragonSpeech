@@ -1,0 +1,14 @@
+{
+  "true_name": "sannr",
+  "hashed_true_name": "4e0fc04db179f99adc38b83918d3345baec428331fb56961aa8729e83df76a94",
+  "meaning": "truth; what cannot be unsaid",
+  "category": "noun_target",
+  "domain": "truth",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

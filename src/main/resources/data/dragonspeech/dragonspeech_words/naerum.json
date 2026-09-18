@@ -1,0 +1,15 @@
+{
+  "true_name": "naerum",
+  "hashed_true_name": "bb3c76aceca2f58226199b5007c2c1cf8ed4e3464052561de35dd13822589c31",
+  "meaning": "all that is near at hand",
+  "category": "scope",
+  "domain": "truth",
+  "precision": 0.7,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "scope_radius": 4
+}

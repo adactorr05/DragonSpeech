@@ -1,0 +1,15 @@
+{
+  "true_name": "frae",
+  "hashed_true_name": "ddb0c6dfd2320063172541be3f2f03c17b942e76980752176a0ec41a2a3da4e1",
+  "meaning": "seed; life waiting",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "life"
+}

@@ -1,0 +1,16 @@
+{
+  "true_name": "flata",
+  "hashed_true_name": "c24571ddd086fc100d7d83ba4957d221d6d1133d06b80d8916066c8d95a415e2",
+  "meaning": "to flatten; to draw the working out flat rather than around",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:skjoldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "lifga",
+  "hashed_true_name": "7f7425cf25e9cfd0ca4a3e48b3411dd4ab213a7cb848f91238fb3ca43285a55d",
+  "meaning": "to rouse the flesh, crude and desperate",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.35,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:heal"
+}

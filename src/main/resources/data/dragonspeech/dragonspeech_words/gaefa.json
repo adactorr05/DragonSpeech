@@ -1,0 +1,13 @@
+{
+  "true_name": "gaefa",
+  "hashed_true_name": "311a82dc981d52168933d1e3b8e379f13a511cf0c950f601d6ed812b4063d0cb",
+  "meaning": "a working of fortune - real vanilla Fortune, more from the earth than the earth would otherwise give",
+  "category": "verb",
+  "domain": "fate",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,13 @@
+{
+  "true_name": "hvassa",
+  "hashed_true_name": "7eea2d2e4c0a8798d4637f0b9b475294c62b7225cc019ed71a809a63ff795656",
+  "meaning": "to make an edge bite deeper - the working behind a weapon's real vanilla Sharpness",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

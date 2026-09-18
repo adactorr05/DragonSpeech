@@ -1,0 +1,17 @@
+{
+  "true_name": "kyndla",
+  "hashed_true_name": "5dc17fbba7641f9621ff8b64a033731284e9b8968604e77209122975d0ae8ada",
+  "meaning": "to kindle; spark caught to flame",
+  "category": "verb",
+  "domain": "fire",
+  "precision": 0.6,
+  "prerequisite_words": [
+    "dragonspeech:vidbrenn"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:fire_ignite",
+  "effect_handler": "dragonspeech:ignite"
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "hoggaldr",
+  "hashed_true_name": "97a21047e6b36a623c30af76c18c48f9af26909be3d834a97745577a788e0657",
+  "meaning": "to bind a ward against the striking blow into an object",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:hoggverja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

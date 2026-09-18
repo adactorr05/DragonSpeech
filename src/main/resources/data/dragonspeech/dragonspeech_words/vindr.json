@@ -1,0 +1,15 @@
+{
+  "true_name": "vindr",
+  "hashed_true_name": "3f2e03a932cca54b7e012f7cd56d3081ad4d7749bb79abfe4426f5887b8534f2",
+  "meaning": "wind; air in motion",
+  "category": "noun_target",
+  "domain": "air",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "wind"
+}

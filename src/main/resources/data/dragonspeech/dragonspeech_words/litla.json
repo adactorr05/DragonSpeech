@@ -1,0 +1,14 @@
+{
+  "true_name": "litla",
+  "hashed_true_name": "8fb05facbbc1148475252f360b7e7bdbc46156744f29f607920175e084a24f81",
+  "meaning": "slightly; to a small degree",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": -0.6,
+  "eldunari_amplified": false
+}

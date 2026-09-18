@@ -1,0 +1,15 @@
+{
+  "true_name": "oxi",
+  "hashed_true_name": "925d55e5a1f18756edc81f7d193f6ba5b1fa4a6d6aba61c5cce9814da8c3be36",
+  "meaning": "axe; a heavy blade for the felling stroke",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tool_type": "axe"
+}

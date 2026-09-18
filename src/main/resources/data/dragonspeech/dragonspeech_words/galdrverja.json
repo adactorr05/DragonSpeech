@@ -1,0 +1,15 @@
+{
+  "true_name": "galdrverja",
+  "hashed_true_name": "10ff91f40559a87f76a65a94653d344804997ad034a1e6ff383e289df93aaf26",
+  "meaning": "to bind a ward into an object, so it carries the working rather than merely raising it",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

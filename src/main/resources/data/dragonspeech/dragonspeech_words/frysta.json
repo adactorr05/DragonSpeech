@@ -1,0 +1,17 @@
+{
+  "true_name": "frysta",
+  "hashed_true_name": "83e00a6ee2aa050b8d51a8476c3ca3495acd1db45123fe14709a669bc63df5dc",
+  "meaning": "to freeze; to still a thing with cold",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.7,
+  "prerequisite_words": [
+    "dragonspeech:kaldna"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:freeze"
+}

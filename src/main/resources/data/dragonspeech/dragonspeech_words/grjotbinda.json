@@ -1,0 +1,18 @@
+{
+  "true_name": "grjotbinda",
+  "hashed_true_name": "e9226a4dfce5bbeb301db3b8e7221b0b1f89e7890edb3dfd813ceae57f6aa0d6",
+  "meaning": "to hurl bound matter along a single true path",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:grjotkasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:hurl_block",
+  "effect_handler": "dragonspeech:hurl_block"
+}

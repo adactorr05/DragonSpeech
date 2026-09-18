@@ -1,0 +1,15 @@
+{
+  "true_name": "frama",
+  "hashed_true_name": "9ed39705c4bcc051dd226202c94c3121a029f6ffaedc3bec14d7146387d7811e",
+  "meaning": "forwards; along the gaze",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "forward"
+}

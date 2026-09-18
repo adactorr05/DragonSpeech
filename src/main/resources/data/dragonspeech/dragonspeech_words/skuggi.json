@@ -1,0 +1,15 @@
+{
+  "true_name": "skuggi",
+  "hashed_true_name": "008717e0ebce246b12186f28745ef0b2930f685cefbb5256eeb73d7546aaac72",
+  "meaning": "shadow; the shape darkness takes",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "shadow"
+}

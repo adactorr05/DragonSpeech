@@ -1,0 +1,18 @@
+{
+  "true_name": "skyja",
+  "hashed_true_name": "792854cfd3ab0a05fd893542cf020b400c45030af0c8609c19c88c371a6c152d",
+  "meaning": "to cloud; a lingering hanging mist",
+  "category": "verb",
+  "domain": "air",
+  "precision": 0.8,
+  "prerequisite_words": [
+    "dragonspeech:kasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "cloud"
+}

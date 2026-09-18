@@ -1,0 +1,14 @@
+{
+  "true_name": "hugsun",
+  "hashed_true_name": "3882ff0a1b0c027b168fb529d07534e1dd15ff4fa8df3b448d2891f818b3bc62",
+  "meaning": "a thought",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

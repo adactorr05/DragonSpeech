@@ -1,0 +1,16 @@
+{
+  "true_name": "snara",
+  "hashed_true_name": "87c8e5d98ba1b25ee97029081d6c6faef8f2147bd581312cc17d08f9f2722491",
+  "meaning": "a flexible living tendril or vine",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.82,
+  "prerequisite_words": [
+    "dragonspeech:vidr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

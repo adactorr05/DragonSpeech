@@ -1,0 +1,14 @@
+{
+  "true_name": "eidr",
+  "hashed_true_name": "60cba6cdf26e277db5f761f65ef53dd7f52bb9c1b7079dd306d6f7880c5fc22c",
+  "meaning": "an oath; a binding freely taken",
+  "category": "noun_target",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

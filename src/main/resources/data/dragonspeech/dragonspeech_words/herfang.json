@@ -1,0 +1,13 @@
+{
+  "true_name": "herfang",
+  "hashed_true_name": "ec856613405b2be6e618355253fb01e9a24f3ecd50816317ec7a652e2922558b",
+  "meaning": "a taker's own luck, bound into a blade - real vanilla Looting",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

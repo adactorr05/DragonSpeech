@@ -1,0 +1,15 @@
+{
+  "true_name": "sprengaldr",
+  "hashed_true_name": "0e195420a39576e5c8007924487dfc7f8bd4e9879047112f9c984cffeeb17348",
+  "meaning": "to bind a ward against the bursting force into an object",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:sprengverja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "eldvaettr",
+  "hashed_true_name": "109105ac4d373516fdddbb8cdfa11f27ed2bc844009989d2724fd058d3da9854",
+  "meaning": "a blaze; a spirit bound in living fire",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr",
+    "dragonspeech:eldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "blaze"
+}

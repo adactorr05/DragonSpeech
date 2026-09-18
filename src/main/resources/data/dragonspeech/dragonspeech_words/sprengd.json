@@ -1,0 +1,15 @@
+{
+  "true_name": "sprengd",
+  "meaning": "the burst-wound; flesh torn by the bursting force",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.85,
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "wound_type": "blast",
+  "prerequisite_words": [],
+  "hashed_true_name": "2b87dbbd4a5864d126d58a1cd799ef31e32718bf4192f8fbe8819ef8eac1d6c5",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

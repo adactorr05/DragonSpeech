@@ -1,0 +1,14 @@
+{
+  "true_name": "varla",
+  "hashed_true_name": "f88434f3ed5a39d036344743045d9294058d80723bfd68bbaabfaa3ba32c4df9",
+  "meaning": "barely; the least possible measure",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": -0.8,
+  "eldunari_amplified": false
+}

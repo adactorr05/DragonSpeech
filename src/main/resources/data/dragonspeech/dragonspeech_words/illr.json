@@ -1,0 +1,16 @@
+{
+  "true_name": "illr",
+  "hashed_true_name": "520601883aab57eda42b76de77a741159d8af657f476e4742ccc635bc636ce12",
+  "meaning": "ill; cursed, foul in nature",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:marka"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

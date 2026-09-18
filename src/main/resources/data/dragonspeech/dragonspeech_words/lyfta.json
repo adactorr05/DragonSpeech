@@ -1,0 +1,15 @@
+{
+  "true_name": "lyfta",
+  "hashed_true_name": "24188a7a3b4751d2747dad39789df790041bae677e427eec80df8bf05306f3da",
+  "meaning": "to lift; to raise a thing against its weight",
+  "category": "verb",
+  "domain": "motion",
+  "precision": 0.65,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:lift"
+}

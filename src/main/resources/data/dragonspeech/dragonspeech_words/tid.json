@@ -1,0 +1,14 @@
+{
+  "true_name": "tid",
+  "hashed_true_name": "28f6720cfe9fda86866d6046427618e1da0df9fffe2671930e685beee5da9b4c",
+  "meaning": "time; the river all things stand in",
+  "category": "noun_target",
+  "domain": "time",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

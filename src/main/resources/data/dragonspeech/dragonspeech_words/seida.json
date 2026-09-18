@@ -1,0 +1,14 @@
+{
+  "true_name": "seida",
+  "hashed_true_name": "2a35befb0a93ee2f84a9b9392d7d5826689493f96696df0a295874dab503fe4c",
+  "meaning": "to conjure out of nothing; magic answering in place of matter",
+  "category": "modifier",
+  "domain": "weapon",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "stormr",
+  "hashed_true_name": "7a14dff0b52a584ad091431263589954f84b6e18ba2996032f408645798e111c",
+  "meaning": "storm; the sky's anger",
+  "category": "noun_target",
+  "domain": "air",
+  "precision": 0.75,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "wind"
+}

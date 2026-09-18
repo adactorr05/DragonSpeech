@@ -1,0 +1,15 @@
+{
+  "true_name": "tvefalt",
+  "hashed_true_name": "3a9ccbd6f92a0305e5c3aab32d326794567648ada79ad791d3c8d341a3c042bf",
+  "meaning": "twofold; doubled in measure",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.4,
+  "eldunari_amplified": false,
+  "repeat_count": 2
+}

@@ -1,0 +1,13 @@
+{
+  "true_name": "grafleysa",
+  "hashed_true_name": "b34743246a588ab4a257c78576e5e0baf14dd135b3847d4615ba93ba872f2497",
+  "meaning": "no rest in the grave - the wearer can never be called back once the crossing is made, while this is worn",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "steinn",
+  "hashed_true_name": "9004b42dcb00d933d4322e628687019eff9ffe5b5f8be9de876632f24bb8fd33",
+  "meaning": "stone",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "block_type": "stone",
+  "tool_material": "stone",
+  "element": "earth"
+}

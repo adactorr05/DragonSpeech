@@ -1,0 +1,16 @@
+{
+  "true_name": "grjotkasta",
+  "hashed_true_name": "454094000c4b2cf4359adc9ee1d42ada0a1e8174280ed9c27c377f89a7f83785",
+  "meaning": "to hurl broken matter, crude and undirected",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.45,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:hurl_block",
+  "effect_handler": "dragonspeech:hurl_block"
+}

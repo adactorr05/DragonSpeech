@@ -1,0 +1,16 @@
+{
+  "true_name": "blidr",
+  "hashed_true_name": "8ed1cfd15abb720bae3ef32275a1c32fdbddf3e6fa756520a0d281b92e7a0ae1",
+  "meaning": "kind; blessed, gentle in nature",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:marka"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

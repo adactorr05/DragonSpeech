@@ -1,0 +1,18 @@
+{
+  "true_name": "regnfalla",
+  "hashed_true_name": "72243278262bede168602fe5d924a4370a3b1db9b8d4427a2dce2cb00d1435af",
+  "meaning": "to fall like rain; many scattered descending strikes",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:regn"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "rain"
+}

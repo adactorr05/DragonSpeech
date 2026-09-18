@@ -1,0 +1,16 @@
+{
+  "true_name": "sveira",
+  "hashed_true_name": "456ad3e254f641c52b3659c9f6ce2cdd90dda83f9558a1ad06c55142e3ad3e92",
+  "meaning": "to spiral or revolve around a line or centre",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.84,
+  "prerequisite_words": [
+    "dragonspeech:ferd"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

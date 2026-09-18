@@ -1,0 +1,15 @@
+{
+  "true_name": "skofla",
+  "hashed_true_name": "6ba86e171aa3da2abfd12199360e94d43cc50db41981f4ee51cb2873a4662f8d",
+  "meaning": "shovel; a broad blade for the turning of earth",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.80,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tool_type": "shovel"
+}

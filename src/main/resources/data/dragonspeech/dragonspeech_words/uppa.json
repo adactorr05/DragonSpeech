@@ -1,0 +1,15 @@
+{
+  "true_name": "uppa",
+  "hashed_true_name": "1e5ea9a1d25782683722779ede1bb017f986eb0a0d900f6829be351bb8ce67e4",
+  "meaning": "upwards; against the pull of the earth",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "up"
+}

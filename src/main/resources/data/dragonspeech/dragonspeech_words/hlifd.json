@@ -1,0 +1,13 @@
+{
+  "true_name": "hlifd",
+  "hashed_true_name": "2ef8fd5d241c22d125d375d2ac1babb0d1d32e0aee6f5e0570cd411e1e2cbe17",
+  "meaning": "a shielding working - the real vanilla Protection, bound into armor and nothing else",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

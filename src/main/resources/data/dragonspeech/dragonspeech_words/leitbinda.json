@@ -1,0 +1,17 @@
+{
+  "true_name": "leitbinda",
+  "hashed_true_name": "7eba75419c19431ed39d727cbac935045f343df74ce06a3df26c064b6f57c3af",
+  "meaning": "to bind the working to seek its mark",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:marklaust"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "targeting": "homing"
+}

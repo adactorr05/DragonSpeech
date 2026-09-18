@@ -1,0 +1,15 @@
+{
+  "true_name": "sandr",
+  "hashed_true_name": "ce6413cc0c988c3c7e5b8e80aedb5667c4c2796fac57c2db807ca343096a5f1a",
+  "meaning": "sand; stone worn to grains",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "block_type": "sand"
+}

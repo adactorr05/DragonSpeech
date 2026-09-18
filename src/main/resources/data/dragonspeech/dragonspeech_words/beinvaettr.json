@@ -1,0 +1,17 @@
+{
+  "true_name": "beinvaettr",
+  "hashed_true_name": "4f5470747b61899c570534e395267e1b3e311ffe3fa78095a00b8f0d697b7ce7",
+  "meaning": "a skeleton; a spirit bound in bone",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr",
+    "dragonspeech:bein"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "skeleton"
+}

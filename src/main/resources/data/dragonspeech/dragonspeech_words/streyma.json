@@ -1,0 +1,17 @@
+{
+  "true_name": "streyma",
+  "hashed_true_name": "bafb6a3670d1ee9b4199ac418f3fe0ae0b7acc61b4a239a004262829aabfa5d9",
+  "meaning": "to stream; to flow with real intent",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.65,
+  "prerequisite_words": [
+    "dragonspeech:vatnhrer"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:water_flow",
+  "effect_handler": "dragonspeech:push"
+}

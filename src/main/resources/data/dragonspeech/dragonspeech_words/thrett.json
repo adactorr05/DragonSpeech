@@ -1,0 +1,16 @@
+{
+  "true_name": "thrett",
+  "hashed_true_name": "891e60e618510e953b7ef7cc6f2bb6e893b9fa8e5647f4f1f375ae8c2897756f",
+  "meaning": "dense; compressed into little space without spreading",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.86,
+  "prerequisite_words": [
+    "dragonspeech:afl"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.15,
+  "eldunari_amplified": false
+}

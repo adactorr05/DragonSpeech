@@ -1,0 +1,16 @@
+{
+  "true_name": "gera",
+  "hashed_true_name": "ec4b02841b69e0ec398bfd633b4ca3295fcf6e0cc1dab429f5a854c60b9a9c37",
+  "meaning": "to shape crudely, unstable and rough",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.4,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:shape_matter",
+  "effect_handler": "dragonspeech:shape_block"
+}

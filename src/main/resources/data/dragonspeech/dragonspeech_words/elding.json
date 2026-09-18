@@ -1,0 +1,14 @@
+{
+  "true_name": "elding",
+  "hashed_true_name": "79bbd3450297af1b772d56f89231510ac7f6bc0fec53bb3e3cd07e3e2808dd7e",
+  "meaning": "lightning itself",
+  "category": "noun_target",
+  "domain": "air",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "element": "lightning"
+}

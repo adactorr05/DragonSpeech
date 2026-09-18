@@ -1,0 +1,14 @@
+{
+  "true_name": "minni",
+  "hashed_true_name": "9c8c267bbd86276019474071fe20305c3d8a4656b414cc22c92fec3680549fce",
+  "meaning": "memory; what the mind keeps",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

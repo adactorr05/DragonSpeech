@@ -1,0 +1,17 @@
+{
+  "true_name": "steinbrjota",
+  "hashed_true_name": "1459f4ce5d1448255893988b6a6d0d5d4042d2c3c574c9fb1beed2e3233592bd",
+  "meaning": "to sunder stone along its truest seam",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:brjota"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:sunder"
+}

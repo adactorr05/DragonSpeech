@@ -1,0 +1,13 @@
+{
+  "true_name": "eldbit",
+  "hashed_true_name": "e5cc8af37db3a4c32eff789b0ac03aca43f545ad79c0c73d0eff5cfbb73a7207",
+  "meaning": "a burning bite - real vanilla Fire Aspect, bound into a blade",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

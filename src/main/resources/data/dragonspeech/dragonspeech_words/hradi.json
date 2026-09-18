@@ -1,0 +1,15 @@
+{
+  "true_name": "hradi",
+  "hashed_true_name": "6630fc8265a7d32f87df1be9a8efb545069c99149afbfad836a0c1f046a6971d",
+  "meaning": "speed",
+  "category": "noun_target",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tempo": 0.5
+}

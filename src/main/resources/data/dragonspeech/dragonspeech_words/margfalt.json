@@ -1,0 +1,15 @@
+{
+  "true_name": "margfalt",
+  "hashed_true_name": "b21fc94d36f06d6b67ed75b585ca73d9d09518abac792b8ae4cbb9c432f4639b",
+  "meaning": "manifold; many times over - stronger than tvefalt's doubling",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.8,
+  "eldunari_amplified": false,
+  "repeat_count": 3
+}

@@ -1,0 +1,18 @@
+{
+  "true_name": "umljomi",
+  "hashed_true_name": "06f475f3b96f062795009acddf510547c60eb7231afc169b03ea0e1d2ff9d569",
+  "meaning": "a surrounding field; a steady aura",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:kasta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "aura"
+}

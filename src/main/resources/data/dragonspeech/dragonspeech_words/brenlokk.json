@@ -1,0 +1,17 @@
+{
+  "true_name": "brenlokk",
+  "hashed_true_name": "2182155b7b5e3498129cb8c7b13eda05b7cb6e34edcf99be2cfeffb01050ee80",
+  "meaning": "controlled combustion of a single bound target",
+  "category": "verb",
+  "domain": "fire",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:kyndla"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:fire_ignite",
+  "effect_handler": "dragonspeech:ignite"
+}

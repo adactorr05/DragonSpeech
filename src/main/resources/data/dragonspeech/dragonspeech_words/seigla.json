@@ -1,0 +1,13 @@
+{
+  "true_name": "seigla",
+  "hashed_true_name": "2327d5989ac294c36627f7afe8cacc97e981efa50a7f59240deb6d6e7843dcec",
+  "meaning": "toughness bound into a thing, so it wears slower than it should - real vanilla Unbreaking",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

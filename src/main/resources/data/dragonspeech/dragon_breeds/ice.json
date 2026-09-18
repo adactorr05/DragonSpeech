@@ -1,0 +1,5 @@
+{
+  "primary_color": 16777215,
+  "secondary_color": 57855,
+  "immune_damage_types": ["minecraft:drown", "minecraft:freeze", "minecraft:cactus", "minecraft:sweet_berry_bush", "minecraft:dragon_breath"]
+}

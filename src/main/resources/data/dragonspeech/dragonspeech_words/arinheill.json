@@ -1,0 +1,13 @@
+{
+  "true_name": "arinheill",
+  "hashed_true_name": "131053a6f580cd0c0b258adb893d443856d3938006a1cebd2edbf9239b87d2b4",
+  "meaning": "the hearth's favor - hunger fades slower while this is worn",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

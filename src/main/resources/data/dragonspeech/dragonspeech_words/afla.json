@@ -1,0 +1,14 @@
+{
+  "true_name": "afla",
+  "hashed_true_name": "de34468fb27d86f011affbbf08f4a5f52a377d7ef4d3850c20bfb3885391e606",
+  "meaning": "to empower; to pour strength into a working as stored power",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.86,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

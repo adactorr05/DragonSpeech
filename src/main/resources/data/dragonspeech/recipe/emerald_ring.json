@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "F#F"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:gold_ingot"
+    },
+    "#": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "dragonspeech:emerald_ring"
+  }
+}

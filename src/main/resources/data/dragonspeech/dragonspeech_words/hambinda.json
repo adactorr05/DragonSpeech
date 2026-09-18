@@ -1,0 +1,18 @@
+{
+  "true_name": "hambinda",
+  "hashed_true_name": "07d4d4465fb628b1aba5946d708a7b560715b74be0681114aa60ab04a5cccb71",
+  "meaning": "to bind oneself into another's skin; to wear its shape",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:hugbinda",
+    "dragonspeech:hamr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:possess"
+}

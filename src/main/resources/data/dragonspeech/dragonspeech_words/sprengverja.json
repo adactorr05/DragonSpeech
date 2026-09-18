@@ -1,0 +1,17 @@
+{
+  "true_name": "sprengverja",
+  "hashed_true_name": "3b14dab938ed7feb41e2f74327fe1cc335eb5ebc2332e89eebd12ca26178a183",
+  "meaning": "to ward against the bursting force",
+  "category": "binding",
+  "domain": "force",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "ward_type": "explosion"
+}

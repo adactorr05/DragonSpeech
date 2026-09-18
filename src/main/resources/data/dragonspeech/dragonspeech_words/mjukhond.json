@@ -1,0 +1,13 @@
+{
+  "true_name": "mjukhond",
+  "hashed_true_name": "ad17754253b522b463b94f7c6b02a7104982d0a573c8676205f63d0f94e43ce5",
+  "meaning": "a soft hand at the taking - real vanilla Silk Touch, bound into a tool",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

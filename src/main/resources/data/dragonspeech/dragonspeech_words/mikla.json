@@ -1,0 +1,14 @@
+{
+  "true_name": "mikla",
+  "hashed_true_name": "d4c18af6ea7f2a514ece06f169e91d9e88747cd6309476c276df7a32a110e2a1",
+  "meaning": "greatly; to a high degree",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.6,
+  "eldunari_amplified": false
+}

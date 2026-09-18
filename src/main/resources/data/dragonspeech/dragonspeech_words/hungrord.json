@@ -1,0 +1,13 @@
+{
+  "true_name": "hungrord",
+  "hashed_true_name": "bf8cf729a5ebf17819e2b1e879517b926c785bb505aa9020ae0dc4c23320a464",
+  "meaning": "a hungry word - every working spoken while this is worn costs more than it should, always",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

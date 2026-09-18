@@ -1,0 +1,17 @@
+{
+  "true_name": "endasteinn",
+  "hashed_true_name": "38aee3192fe334bb8dd33b58099fd954590943fccd6f457b6626ce2f8c4619f0",
+  "meaning": "end-stone; the pale stone of the final silence, from beyond the world's edge",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:enda",
+    "dragonspeech:steinn"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "block_type": "end_stone"
+}

@@ -1,0 +1,14 @@
+{
+  "true_name": "andi",
+  "hashed_true_name": "dfa25b8d237aff77c7828813f591b7cec577938be13892b2456eae790c3fa5de",
+  "meaning": "breath; the air within",
+  "category": "noun_target",
+  "domain": "air",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

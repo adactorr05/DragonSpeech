@@ -1,0 +1,14 @@
+{
+  "true_name": "ord",
+  "hashed_true_name": "320f6780ebb246a440f6ea22c2b60483c801a3dae190eb101c59d9d950b98d41",
+  "meaning": "a word; the smallest whole meaning",
+  "category": "noun_target",
+  "domain": "truth",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

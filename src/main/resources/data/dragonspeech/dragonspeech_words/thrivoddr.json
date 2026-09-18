@@ -1,0 +1,15 @@
+{
+  "true_name": "thrivoddr",
+  "hashed_true_name": "5ec9b9b1a81782bde9be66aa93ddf52e05980e602e3b986c97ba417c9f7015e4",
+  "meaning": "trident; a three-pronged spear for the deep",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tool_type": "trident"
+}

@@ -1,0 +1,13 @@
+{
+  "true_name": "vaengheill",
+  "hashed_true_name": "0fba46506a6324def5daaad3f04fa77b0e2f2ec7319619c64ee5b1f2f38ee680",
+  "meaning": "the wing's favor - strengthens the bond to a dragon, and how readily it lends its own strength to you",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

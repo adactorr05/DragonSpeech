@@ -1,0 +1,14 @@
+{
+  "true_name": "eitr",
+  "hashed_true_name": "2ffa8ffc6ddeb12e61a292613e6ea703193d102d01c593420cb302b6544bba83",
+  "meaning": "poison; venom",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "element": "poison"
+}

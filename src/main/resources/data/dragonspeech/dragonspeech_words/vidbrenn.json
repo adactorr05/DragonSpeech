@@ -1,0 +1,15 @@
+{
+  "true_name": "vidbrenn",
+  "hashed_true_name": "e1df564a68ea6d95201fce327dc23b29a975d5474aafc07e466e919b7988b7b6",
+  "meaning": "heat stirs; something grows warm, unfocused",
+  "category": "verb",
+  "domain": "fire",
+  "precision": 0.3,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:fire_ignite",
+  "effect_handler": "dragonspeech:ignite"
+}

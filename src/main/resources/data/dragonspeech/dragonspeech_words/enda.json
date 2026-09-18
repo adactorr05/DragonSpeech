@@ -1,0 +1,14 @@
+{
+  "true_name": "enda",
+  "hashed_true_name": "0d0646a6318f79d91693d4e7de95442d4c0788a4eaee81dd973d009b6f5c3890",
+  "meaning": "to end utterly; the final silence of a working",
+  "category": "control",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

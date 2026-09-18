@@ -1,0 +1,14 @@
+{
+  "true_name": "ferd",
+  "hashed_true_name": "741771a6c28bb2c3cfeed856c989f262679ee7e4b403dde15258562eb4d9aa9b",
+  "meaning": "motion; the act of going",
+  "category": "noun_target",
+  "domain": "motion",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

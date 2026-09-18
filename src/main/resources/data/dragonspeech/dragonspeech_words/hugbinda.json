@@ -1,0 +1,16 @@
+{
+  "true_name": "hugbinda",
+  "hashed_true_name": "20655384f20ee1efe1a8f716f9c4a149ae297a7f323285dc121030fe8a38e05b",
+  "meaning": "to bind mind to mind with total precision",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:hugleita"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:mind_reach"
+}

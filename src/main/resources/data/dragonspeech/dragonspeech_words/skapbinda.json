@@ -1,0 +1,18 @@
+{
+  "true_name": "skapbinda",
+  "hashed_true_name": "771e7df6823b3dbb5852c50cb48db3601c46be722aa9faec0ec7572162fd7fb9",
+  "meaning": "to bind matter precisely into a named shape",
+  "category": "verb",
+  "domain": "earth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:gera"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:shape_matter",
+  "effect_handler": "dragonspeech:shape_block"
+}

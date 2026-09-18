@@ -1,0 +1,14 @@
+{
+  "true_name": "ok",
+  "hashed_true_name": "b8a51ed9732bf4a60428803751d2b325f808b99c5617d6b8194739d56a3f68e4",
+  "meaning": "and; joining one meaning to the next",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

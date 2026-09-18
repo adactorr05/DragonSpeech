@@ -1,0 +1,9 @@
+{
+  "primary_color": 6241300,
+  "secondary_color": 10842923,
+  "attribute_overrides": { "minecraft:generic.flying_speed": 0.392 },
+  "immune_damage_types": ["minecraft:cactus", "minecraft:sweet_berry_bush", "minecraft:dragon_breath"],
+  "habitats": [
+    { "type": "world_height", "points": 3, "below": false, "height": 150 }
+  ]
+}

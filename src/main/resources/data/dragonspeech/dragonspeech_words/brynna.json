@@ -1,0 +1,16 @@
+{
+  "true_name": "brynna",
+  "hashed_true_name": "7166b310adf356de1ebd16fa608c2cf9121ddf32b98bd96008692adaf3d93f5b",
+  "meaning": "to feed the working from strength drawn from life nearby, not your own",
+  "category": "modifier",
+  "domain": "life",
+  "precision": 0.90,
+  "prerequisite_words": [
+    "dragonspeech:aflsuga"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

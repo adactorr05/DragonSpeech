@@ -1,0 +1,14 @@
+{
+  "true_name": "logi",
+  "hashed_true_name": "d28c4535657a9861af9225418425b9f042e58e88257ca88b93e50d605ff911a7",
+  "meaning": "living blaze; fire at its fullest",
+  "category": "noun_target",
+  "domain": "fire",
+  "precision": 0.9,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

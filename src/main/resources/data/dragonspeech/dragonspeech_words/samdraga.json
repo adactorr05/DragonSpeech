@@ -1,0 +1,16 @@
+{
+  "true_name": "samdraga",
+  "hashed_true_name": "addd7c8c8b50a348ec8c811aebc1793613993c57a6ddc88ccd3029ec67215358",
+  "meaning": "to draw separate parts of a working together toward one point; to converge",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:draga"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.08,
+  "eldunari_amplified": false
+}

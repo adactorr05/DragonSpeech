@@ -1,0 +1,14 @@
+{
+  "true_name": "fjotur",
+  "hashed_true_name": "49830ac8e68936cf26cdcd2a0df5e45616ad6f20ffedafdb0102d9abfb960b58",
+  "meaning": "a fetter; a binding imposed",
+  "category": "noun_target",
+  "domain": "binding",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

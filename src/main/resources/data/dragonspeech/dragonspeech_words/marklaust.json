@@ -1,0 +1,15 @@
+{
+  "true_name": "marklaust",
+  "hashed_true_name": "f6d121166661130260a355f33a39c92920be0235330540fe13d9509166ba9b3c",
+  "meaning": "without a bound target; released without a chosen mark",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "targetless": true
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "hoggverja",
+  "hashed_true_name": "7904b0b8abca06735ddbf66b78a8e396a5adec863eab0df52635792557bac3f5",
+  "meaning": "to ward against the striking blow",
+  "category": "binding",
+  "domain": "force",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "ward_type": "melee"
+}

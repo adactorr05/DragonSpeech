@@ -1,0 +1,15 @@
+{
+  "true_name": "kedjubinda",
+  "hashed_true_name": "bb6d07ee9246da2dee75c9fca98f1ee1151db03ad9844a70dc5e97f02740b4c4",
+  "meaning": "to bind in a chain; leaping mark to mark",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "targeting": "chain"
+}

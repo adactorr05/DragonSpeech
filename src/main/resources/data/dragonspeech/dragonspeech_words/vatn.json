@@ -1,0 +1,14 @@
+{
+  "true_name": "vatn",
+  "hashed_true_name": "67e5335c387dd8f0fb417fc7211cd4e20e161ceef215991c6991d83da699b2d4",
+  "meaning": "water itself",
+  "category": "noun_target",
+  "domain": "water",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "element": "water"
+}

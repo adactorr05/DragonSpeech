@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "dragonspeech:ruin_tower",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 918273,
+    "spacing": 36,
+    "separation": 9,
+    "spread_type": "linear"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "true_name": "blekkja",
+  "hashed_true_name": "81596d34481b5eb7c46a1ae29c22105ec609900c21e91c14a5d5530e3fb6a67f",
+  "meaning": "to deceive with a false seeming",
+  "category": "verb",
+  "domain": "mind",
+  "precision": 0.65,
+  "prerequisite_words": [
+    "dragonspeech:villa"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:deception",
+  "effect_handler": "dragonspeech:confuse"
+}

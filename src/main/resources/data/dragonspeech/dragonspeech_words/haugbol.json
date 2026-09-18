@@ -1,0 +1,13 @@
+{
+  "true_name": "haugbol",
+  "hashed_true_name": "e2a3fefc4d0d4b0e61856bece5834b864b987922e87212d7c3a878fbdbde7397",
+  "meaning": "bound to the grave - what carries this can never be taken off, nor lost to death, and whatever else it carries is bound the same way",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

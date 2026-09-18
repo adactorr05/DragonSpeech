@@ -1,0 +1,17 @@
+{
+  "true_name": "heimbinda",
+  "hashed_true_name": "4b3b5f24f8562ad4fbc1b5b4ed92eb0131d5919b7dd37f72b728be2259797cdd",
+  "meaning": "to bind oneself to a known place and return",
+  "category": "verb",
+  "domain": "motion",
+  "precision": 0.92,
+  "prerequisite_words": [
+    "dragonspeech:vikja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:home_anchor"
+}

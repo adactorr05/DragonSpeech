@@ -1,0 +1,13 @@
+{
+  "true_name": "nafnheill",
+  "hashed_true_name": "764daf182dbab1f12eddf086ca62b84872f8938ce28ac9e7d30ce3b2c333a92b",
+  "meaning": "a name half-heard - the true names of those nearby surface to you sooner than they otherwise would",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

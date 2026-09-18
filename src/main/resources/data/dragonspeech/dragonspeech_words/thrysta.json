@@ -1,0 +1,15 @@
+{
+  "true_name": "thrysta",
+  "hashed_true_name": "3b4e028d63af16e8cfb6e9d6fe89a86ca215c760e1dbf2cc0adae380d5d0761d",
+  "meaning": "to press or push with unshaped, raw force",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.5,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:force_exert",
+  "effect_handler": "dragonspeech:push"
+}

@@ -1,0 +1,13 @@
+{
+  "true_name": "hrinda",
+  "hashed_true_name": "be61d517c64701c9af8ca7bd18b3e66e00943d4b7afa0c67d18fe881e829790b",
+  "meaning": "a working of the shove - real vanilla Knockback, bound into a blade",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "flodbinda",
+  "hashed_true_name": "1148a825a4da5b7af7b270b90551853f250a54fde9a25e57acc602c3539c09c4",
+  "meaning": "precisely bound and directed flow",
+  "category": "verb",
+  "domain": "water",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:streyma"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:water_flow",
+  "effect_handler": "dragonspeech:push"
+}

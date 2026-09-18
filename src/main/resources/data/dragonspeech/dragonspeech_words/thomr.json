@@ -1,0 +1,17 @@
+{
+  "true_name": "thomr",
+  "hashed_true_name": "7075b329895073d930633af597afe73d50c63e9c51db0c6282175a84616a9226",
+  "meaning": "true absence; the Void where matter, force, and ordinary working are not",
+  "category": "noun_target",
+  "domain": "void",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:enda"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "void"
+}

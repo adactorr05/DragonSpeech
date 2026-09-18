@@ -1,0 +1,15 @@
+{
+  "true_name": "nidra",
+  "hashed_true_name": "03e4a1fc0e2338bab5571090b1fee557d1907b3a8e29e19ab239d5edca56e140",
+  "meaning": "downwards; toward the deep",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "down"
+}

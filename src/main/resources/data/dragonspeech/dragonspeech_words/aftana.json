@@ -1,0 +1,15 @@
+{
+  "true_name": "aftana",
+  "hashed_true_name": "64c15542a9539f5c1d2f1a69d0af256533148f2a95247ea1c503e675005e4648",
+  "meaning": "backwards; away from the gaze",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "direction": "back"
+}

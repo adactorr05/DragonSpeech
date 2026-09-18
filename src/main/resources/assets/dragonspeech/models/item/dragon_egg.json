@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/dragon_egg"
+  },
+  "overrides": [
+    { "predicate": { "custom_model_data": 1 }, "model": "dragonspeech:item/dragon_egg_red" },
+    { "predicate": { "custom_model_data": 2 }, "model": "dragonspeech:item/dragon_egg_bronze" },
+    { "predicate": { "custom_model_data": 3 }, "model": "dragonspeech:item/dragon_egg_blue" },
+    { "predicate": { "custom_model_data": 4 }, "model": "dragonspeech:item/dragon_egg_white" },
+    { "predicate": { "custom_model_data": 5 }, "model": "dragonspeech:item/dragon_egg_green" },
+    { "predicate": { "custom_model_data": 6 }, "model": "dragonspeech:item/dragon_egg_black" },
+    { "predicate": { "custom_model_data": 7 }, "model": "dragonspeech:item/dragon_egg_ender" }
+  ]
+}

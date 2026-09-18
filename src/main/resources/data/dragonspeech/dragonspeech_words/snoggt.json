@@ -1,0 +1,15 @@
+{
+  "true_name": "snoggt",
+  "hashed_true_name": "3f9048c82b424f79dfa4d7119b20cc75e9e5534858ed4b11e668310f1ab73485",
+  "meaning": "swiftly; in a single breath",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tempo": 1.0
+}

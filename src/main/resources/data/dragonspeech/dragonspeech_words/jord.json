@@ -1,0 +1,16 @@
+{
+  "true_name": "jord",
+  "hashed_true_name": "16414fe66fdb6dc6949c7581f125ba28479a5b1df5d76bacff89cf4f00adbbff",
+  "meaning": "earth; the living soil",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "block_type": "dirt",
+  "element": "earth"
+}

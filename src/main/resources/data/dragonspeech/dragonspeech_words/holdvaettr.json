@@ -1,0 +1,17 @@
+{
+  "true_name": "holdvaettr",
+  "hashed_true_name": "8b2f3cb15b452c82b4ed76f48608978a40261539c577002f72bd4ffe69a284b5",
+  "meaning": "a zombie; a spirit bound in rotten flesh",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr",
+    "dragonspeech:hold"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "zombie"
+}

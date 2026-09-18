@@ -1,0 +1,15 @@
+{
+  "true_name": "sverd",
+  "hashed_true_name": "d87f52ff19230cf8435bd364c32e59b637d596364b613b7d279a73811f8bf9af",
+  "meaning": "sword; a blade for the hand",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "tool_type": "sword"
+}

@@ -1,0 +1,15 @@
+{
+  "true_name": "is",
+  "hashed_true_name": "cddf40764350d8cde6a7584c62d9933b198469c0bfacbb2ee9b074c56e99acf8",
+  "meaning": "ice; water made still",
+  "category": "noun_target",
+  "domain": "water",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "ice"
+}

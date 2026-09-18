@@ -1,0 +1,14 @@
+{
+  "true_name": "narro",
+  "hashed_true_name": "0d9ad6a05e7034069f276939aa52566c2493ad85b77356ac4bdeefcf62e10e7d",
+  "meaning": "to kindle, to set alight",
+  "category": "verb",
+  "domain": "fire",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:ignite"
+}

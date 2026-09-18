@@ -1,0 +1,16 @@
+{
+  "true_name": "teningr",
+  "hashed_true_name": "4defcc95045926140638c8ba31a6d91f9c284b787936e82b26c4dc62937b5823",
+  "meaning": "a cube; six faces, sharp and true",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:skjoldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,16 @@
+{
+  "true_name": "kringla",
+  "hashed_true_name": "51432af304c4023e4f44eec7d90905566f4a9a715e3e78c1c81deec81035c216",
+  "meaning": "a circle drawn to hold; the working stands as a lingering field rather than a single touch",
+  "category": "modifier",
+  "domain": "motion",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:umhverf"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

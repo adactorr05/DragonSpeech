@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "com.dragonspeech.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"MindControlInputSuppressMixin",
+		"PossessedMobRenderMixin",
+		"AbstractContainerScreenAccessor",
+		"InventoryScreenAccessoryMixin",
+		"CreateWorldScreenMagicDifficultyMixin",
+		"DragonCameraRollMixin",
+		"ModelPartMixin",
+		"TitleScreenConfigButtonMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

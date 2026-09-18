@@ -1,0 +1,13 @@
+{
+  "true_name": "lygi",
+  "hashed_true_name": "bcfc077b4a713472ba104242871130a8d37fd0957010845412a0e4057a7d22d1",
+  "meaning": "a lie; a spoken falsehood",
+  "category": "noun_target",
+  "domain": "mind",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

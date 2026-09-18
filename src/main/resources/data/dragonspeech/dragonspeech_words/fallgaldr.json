@@ -1,0 +1,15 @@
+{
+  "true_name": "fallgaldr",
+  "hashed_true_name": "32b15db2ac849fd4b164f49c26c7e6ee91fe2b35678976ee795f23e1f0a3b366",
+  "meaning": "to bind a ward against the fall and the earth's pull into an object",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:fallverja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

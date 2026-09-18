@@ -1,0 +1,14 @@
+{
+  "true_name": "ofsa",
+  "hashed_true_name": "cdc3dcc104c8e70290af0eed1fbc0d72c4b22c99567f21814ce1b49c2fbbe3d7",
+  "meaning": "with fury; to the utmost violence",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.7,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 1.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,13 @@
+{
+  "true_name": "merkiheill",
+  "hashed_true_name": "77da93ffa3d1845cf839df6e4377e048d95996182c0bab409372a9288fd9f13b",
+  "meaning": "a lasting sign - marks you place hold longer, and marks upon others are plainer to your eye",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

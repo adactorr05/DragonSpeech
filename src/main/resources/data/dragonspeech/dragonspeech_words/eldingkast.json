@@ -1,0 +1,19 @@
+{
+  "true_name": "eldingkast",
+  "hashed_true_name": "44399889a7bfc27a6abf345dee1f48e0c25ee41c0305e8cc36e8c8aace793be4",
+  "meaning": "to hurl a bolt of lightning",
+  "category": "verb",
+  "domain": "air",
+  "precision": 0.75,
+  "prerequisite_words": [
+    "dragonspeech:glitra"
+  ],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "synonym_group": "dragonspeech:lightning",
+  "effect_handler": "dragonspeech:elemental_working",
+  "element": "lightning"
+}

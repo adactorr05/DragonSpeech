@@ -1,0 +1,15 @@
+{
+  "true_name": "kral",
+  "hashed_true_name": "6c44332afd42f83d0b5e377d86f8f3690fc5736b31ddc0fbe434a2defc92a782",
+  "meaning": "claw or talon; a hooked cutting weapon of the hand",
+  "category": "noun_target",
+  "domain": "weapon",
+  "precision": 0.82,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "shape": "claw"
+}

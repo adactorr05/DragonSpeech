@@ -1,0 +1,17 @@
+{
+  "true_name": "haldthrysta",
+  "hashed_true_name": "2801d5aa605b53361b318d13cbd22cb997246eefca6847ec831129f9ae125f03",
+  "meaning": "to hold force steady; a sustained, unyielding pressure",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.75,
+  "prerequisite_words": [
+    "dragonspeech:thrysta"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:channel_push"
+}

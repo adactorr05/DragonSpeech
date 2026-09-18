@@ -1,0 +1,14 @@
+{
+  "true_name": "nafn",
+  "hashed_true_name": "3eeffb635a55fa53c637f3ffb8464dd3f63e9f99f6014de2df42ed3927a93106",
+  "meaning": "a name; the shape of a thing in speech",
+  "category": "noun_target",
+  "domain": "truth",
+  "precision": 0.95,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

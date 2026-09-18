@@ -1,0 +1,18 @@
+{
+  "true_name": "aftrlifga",
+  "meaning": "to call life back to what has left; the crossing reversed",
+  "category": "verb",
+  "domain": "life",
+  "precision": 0.75,
+  "prerequisite_words": [
+    "dragonspeech:graedbinda",
+    "dragonspeech:nar"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "effect_handler": "dragonspeech:resurrect",
+  "hashed_true_name": "a270976c64295c9184a7d86d6b4fdda4db63c1defad050175b6b30a9981837b5",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

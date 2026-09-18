@@ -1,0 +1,16 @@
+{
+  "true_name": "aflflyta",
+  "hashed_true_name": "456437283c5dd812ea1a6e5bdd023d00c7766e09cb6396b94375e66f33200b4d",
+  "meaning": "to carry stolen strength into oneself",
+  "category": "modifier",
+  "domain": "force",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:aflsuga"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,16 @@
+{
+  "true_name": "ulfvaettr",
+  "hashed_true_name": "4ec027eb8b8c5618bf83c0d4cc764fc4e2248055d43c6fb998e2ec9810fe5ab5",
+  "meaning": "a wolf; a spirit bound in fang and fur",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:vaettr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "eldunari_amplified": false,
+  "summon_type": "wolf"
+}

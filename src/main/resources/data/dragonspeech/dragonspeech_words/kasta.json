@@ -1,0 +1,16 @@
+{
+  "true_name": "kasta",
+  "hashed_true_name": "debfdea9132d425b89ca845e80d6b92769f62d3142a84660e1cf609b84fc10c4",
+  "meaning": "to cast forth; to hurl a working as a bolt",
+  "category": "verb",
+  "domain": "force",
+  "precision": 0.75,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:elemental_working",
+  "shape": "bolt"
+}

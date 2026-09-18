@@ -1,0 +1,13 @@
+{
+  "true_name": "hugopna",
+  "hashed_true_name": "10f913de8503316953d20fd3af325232fb783b250318791b5fa0ad266829456d",
+  "meaning": "an open mind - the wearer's own mind cannot be walled, and lies the easier open to another's reaching",
+  "category": "verb",
+  "domain": "binding",
+  "precision": 0.88,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "eldunari_amplified": false
+}

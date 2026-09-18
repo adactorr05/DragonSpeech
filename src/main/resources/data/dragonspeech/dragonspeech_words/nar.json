@@ -1,0 +1,15 @@
+{
+  "true_name": "nar",
+  "hashed_true_name": "cba19dd54b9e4a171d7f1c5222dc89daef2fe865e53ddabcb8cb4afcb3593c96",
+  "meaning": "the dead; what life has left",
+  "category": "noun_target",
+  "domain": "death",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "element": "death"
+}

@@ -1,0 +1,14 @@
+{
+  "true_name": "malmr",
+  "hashed_true_name": "fac5a8455212262e17856df548cc6a22ca3feb5b406fe8dbc3af289c80c137f3",
+  "meaning": "metal; ore in the vein",
+  "category": "noun_target",
+  "domain": "earth",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "trivial",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

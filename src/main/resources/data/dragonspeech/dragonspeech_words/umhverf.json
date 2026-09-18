@@ -1,0 +1,15 @@
+{
+  "true_name": "umhverf",
+  "hashed_true_name": "fce0289cfd98724006b851e526ca35a24b8ad0046e075a7179969b077678d47c",
+  "meaning": "all that surrounds; everything within reach",
+  "category": "scope",
+  "domain": "truth",
+  "precision": 0.55,
+  "prerequisite_words": [],
+  "discovery_method": "elven_trial",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "scope_radius": 8
+}

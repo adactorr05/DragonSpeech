@@ -1,0 +1,14 @@
+{
+  "true_name": "djup",
+  "hashed_true_name": "f55a134f7542d7a99f7beb2f7b6fe1e4b4523fd9d36022b3296f09f2a866967d",
+  "meaning": "the deep; water beyond light",
+  "category": "noun_target",
+  "domain": "water",
+  "precision": 0.8,
+  "prerequisite_words": [],
+  "discovery_method": "ancient_text",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

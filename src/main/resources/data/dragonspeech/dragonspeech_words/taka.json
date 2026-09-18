@@ -1,0 +1,14 @@
+{
+  "true_name": "taka",
+  "hashed_true_name": "a0a0e773b1036571433e6ef00a51186c46354733f4c6c53d1bdb57790b02eae4",
+  "meaning": "to take up what is already yours, rather than call it from nothing",
+  "category": "modifier",
+  "domain": "weapon",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

@@ -1,0 +1,17 @@
+{
+  "true_name": "tidbinda",
+  "hashed_true_name": "e315184070e2766650a2874908419ff60458323bac579e0bd47784fd0659ab92",
+  "meaning": "to bind time; to bend its flow around a thing",
+  "category": "verb",
+  "domain": "time",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:tid"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:temporal_working"
+}

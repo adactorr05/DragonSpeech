@@ -1,0 +1,16 @@
+{
+  "true_name": "kringlott",
+  "hashed_true_name": "2b8a89340362e463ab51f8a907a424bd38fe1eb0a185d9b7e8af3d2d40642518",
+  "meaning": "round; drawn whole about a center, the same on every side",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 0.85,
+  "prerequisite_words": [
+    "dragonspeech:skjoldr"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

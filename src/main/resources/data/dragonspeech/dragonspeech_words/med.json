@@ -1,0 +1,14 @@
+{
+  "true_name": "med",
+  "hashed_true_name": "d0840af08e32717c6fb15e2cea4b5169117a4fcfebd6eff13c3a5c149dd2f5a2",
+  "meaning": "with; by means of",
+  "category": "modifier",
+  "domain": "truth",
+  "precision": 1.0,
+  "prerequisite_words": [],
+  "discovery_method": "ruin_tablet",
+  "risk_tier": "trivial",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

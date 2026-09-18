@@ -1,0 +1,15 @@
+{
+  "true_name": "blod",
+  "hashed_true_name": "fffe8f3ba17d8587c2f23fdea6cc58eaee0de124a38a686b58e977966a53d89e",
+  "meaning": "blood",
+  "category": "noun_target",
+  "domain": "life",
+  "precision": 0.85,
+  "prerequisite_words": [],
+  "discovery_method": "mentor_npc",
+  "risk_tier": "moderate",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "wound_type": "piercing"
+}

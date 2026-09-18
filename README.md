@@ -173,6 +173,7 @@ The current fixed domain set is:
 | **Weapon** | Material/tool/weapon language used by weapon-oriented workings. |
 
 Advanced domains are intentionally separate so mastery in one dangerous art does not automatically train another.
+Other magic systems may be added as I build it.
 
 ---
 
@@ -216,7 +217,7 @@ Barrier composition supports different shapes and more advanced behavior, includ
 
 ### Enchanting through language
 
-Dragon Speech has its own magic-enchantment layer. Language can bind magical effects or real vanilla enchantment behavior into suitable items. The current code includes support for custom blessings/curses, wards, hidden enchantments, and mappings to vanilla enchantments such as Sharpness, Protection, Knockback, Mending, Efficiency, Silk Touch, Looting, Fire Aspect, and Unbreaking where the appropriate words are used.
+Dragon Speech has its own magic-enchantment layer. Language can bind magical effects or real vanilla enchantment behavior into suitable items. The current update includes support for custom blessings/curses, enchanted wards, hidden enchantments, and mappings to vanilla enchantments such as Sharpness, Protection, Knockback, Mending, Efficiency, Silk Touch, Looting, Fire Aspect, and Unbreaking where the appropriate words are used.
 
 ---
 
@@ -237,7 +238,6 @@ It is not merely another damage spell. It operates on magical language and worki
 
 Knowledge of the Word of Words can be learned, invalidated by a reshuffle, anchored/bound to memory, favorited, and synchronized through an authoritative server session. The implementation also includes admin/testing controls for rebuilding or reshuffling its knowledge state.
 
-For the design and lifecycle details, see [`docs/WORD_OF_WORDS_REBUILD.md`](docs/WORD_OF_WORDS_REBUILD.md).
 
 ---
 
@@ -245,30 +245,22 @@ For the design and lifecycle details, see [`docs/WORD_OF_WORDS_REBUILD.md`](docs
 
 Mind magic is one of the largest systems in the project.
 
-Press **K** by default while looking at a valid target to **reach out with your mind**. Contact is not automatically equivalent to control: resistance and mental combat can lead into a multi-stage mind duel.
+Once you learn the skill, Press **K** by default while looking at a valid target to **reach out with your mind**. Contact is not automatically equivalent to control: resistance and mental combat can lead into a multi-stage mind duel.
 
 Current mind systems include:
 
 - mental contact and resistance;
 - defense-breach gameplay;
-- hidden-core searching;
-- decoys and mental traps;
-- struggle/control phases;
 - reading thoughts;
 - command effects;
 - temporary spellcasting suppression;
 - true-name interaction;
-- possession;
+- possession/player control;
 - player and mob mind fortitude;
-- sentience tiers;
-- mindscape types and training;
+- sentience tiers for stronger willed creatures;
 - multiplayer mind links;
-- team mind duels;
+- team mind duels (not fully built);
 - client GUIs and synchronization.
-
-### Hidden Core
-
-The Hidden Core phase gives the defender a mindscape containing the real core, decoys, empty thoughts, and potentially prepared mental traps. Attackers search and probe while defenders can shift the core or create additional deception.
 
 ### Team mind combat
 
@@ -278,13 +270,12 @@ Players can form consent-based mind links. Reaching a linked defender can redire
 
 Mind fortitude is not player-only. Living entities are assigned sentience tiers, and the project exposes registries/interfaces that allow other entity types to receive specialized mind behavior.
 
-See [`docs/MIND_DUEL_PHASE6.md`](docs/MIND_DUEL_PHASE6.md) for the detailed implementation status.
 
 ---
 
 ## True Names
 
-Players have generated **true names** integrated into the mind system.
+Players have generated **true names** integrated into the mind system. (it will be re-built to be more dynamic later)
 
 True names are handled with the same hashing discipline used by vocabulary rather than being treated as ordinary plaintext spell data. The system includes:
 
@@ -338,7 +329,6 @@ There are currently **seven data-driven dragon breeds**:
 - End
 - Void
 
-Each breed can define properties through JSON, including colors, attribute overrides, damage immunities, and habitat requirements.
 
 Eggs are placeable blocks and use a hatching block entity. Habitat checks can evaluate conditions such as:
 
@@ -354,6 +344,7 @@ Eggs are placeable blocks and use a hatching block entity. Habitat checks can ev
 - combinations of multiple habitat requirements.
 
 This allows hatching conditions to be expanded through data rather than hard-coding every breed's incubation rule directly into the egg block.
+Dragon Eggs can be found in Strongholds, but beware, not all dragon eggs can bond to you. 
 
 ---
 
@@ -370,7 +361,7 @@ The codebase includes a dedicated Dragon Heart vessel entity and a client screen
 ## Races
 
 Players can choose one of four origins:
-
+(this is not fully built, but will be at a later time)
 | Race | Magical affinity | Trait direction |
 | --- | --- | --- |
 | **Human** | No fixed domain discount | Faster general attunement growth / adaptability. |
@@ -389,9 +380,9 @@ Race data persists with the player, and the project includes race-selection/info
 Dragon Speech includes several naturally spawning magical/sentient entity types:
 
 - **Elves** — forest-spawning NPCs tied to advanced language content.
-- **Elder Elves** — rarer forest NPCs.
-- **Human Mages** — the most commonly encountered Dragon Speech caster NPCs in the Overworld.
-- **Shades** — rare hostile entities.
+- **Elder Elves** — rarer forest NPCs that are stronger.
+- **Human Mages** — the most commonly encountered Dragon Speech caster NPCs in the Overworld. Some can be good, some bad.
+- **Shades** — rare hostile entities. These are supposed to be extremely dangerous and should not be messed with alone.
 - **Wild Dragons** — rare creatures concentrated in mountain-family biomes.
 
 NPC casting uses shared spell infrastructure rather than a completely separate fake-magic implementation. The codebase also includes extensible entity behavior and mind-duel brain registries for specialized AI.
@@ -500,7 +491,7 @@ Configuration currently covers gameplay/difficulty tuning and client-facing opti
 - **Java:** 21 or newer
 - **Fabric Loader:** 0.19.3 or newer for the current project configuration
 - **Fabric API:** required
-- **Mod Menu:** optional
+- **Mod Menu:** optional. Also have my own config. 
 
 ### Client / singleplayer
 
@@ -513,7 +504,7 @@ Configuration currently covers gameplay/difficulty tuning and client-facing opti
 ### Multiplayer
 
 Dragon Speech contains server-authoritative gameplay state, custom networking, entities, world generation, and client interfaces. Install the mod and required dependencies on both the server and participating clients unless a future release explicitly states otherwise.
-
+Recommended for servers for dragon battles, magic fights, ect. Its not fully tested for multiplayer, but any issues that arise, just let me know.
 ---
 
 ## Building from Source
@@ -554,54 +545,6 @@ The project uses **official Mojang mappings**.
 
 ---
 
-## Project Structure
-
-The codebase is split into server/common and client source sets.
-
-```text
-src/main/java/com/dragonspeech/
-├── accessory/     Custom accessory slots/items
-├── api/           Addon and behavior integration points
-├── cast/          Cast execution/results
-├── channel/       Sustained/channelled workings
-├── command/       Main command trees
-├── config/        Common configuration
-├── death/         Death/revival systems
-├── detection/     Magical detection
-├── dragon/        Dragons, bonds, eggs, breeds and AI
-├── effect/        Individual magical effect handlers
-├── eldunari/      Dragon Heart systems
-├── enchant/       Magic enchantments and wards
-├── engine/        Spell forms, fields, collision and advanced workings
-├── entity/        Custom entities/barriers
-├── growth/        Attunement and progression
-├── guess/         Unknown-word guessing/backlash
-├── item/          Tablets, fragments and scrolls
-├── loot/          Loot injection/discovery support
-├── mind/          Mind duels, true names, possession and mind links
-├── network/       Client/server payloads and casting hooks
-├── race/          Human/Elf/Dwarf/Urgal origins
-├── stamina/       Magic resource and drain systems
-├── vocabulary/    Per-player learned vocabulary
-├── ward/          Ward state and protection
-├── word/          Word definitions, domains and registry
-├── worldgen/      Shrines, structures and natural spawning
-└── wow/           Word of Words systems
-
-src/client/java/com/dragonspeech/client/
-├── construct/     Spell construction UI
-├── dragon/        Dragon model/rendering/VFX
-├── fx/            Custom spell particles/rendering
-├── grimoire/      Grimoire and true-name UI
-├── grid/          Casting grid UI/cache
-├── gui/           Dragon bond/heart screens
-├── hud/           Stamina HUD
-├── mind/          Mind-duel visuals/screens
-└── wow/           Word of Words UI
-```
-
----
-
 ## Data-Driven Content
 
 A large portion of Dragon Speech is data-driven.
@@ -616,14 +559,6 @@ src/main/resources/data/dragonspeech/dragonspeech_words/
 
 Word JSON controls data such as meaning, domain, precision, discovery route, effect binding, prerequisites, and guessing risk.
 
-### Dragon breeds
-
-Breed definitions live under:
-
-```text
-src/main/resources/data/dragonspeech/dragon_breeds/
-```
-
 These files can define visual colors, attributes, immunities, and habitat rules.
 
 ### Structures and worldgen
@@ -635,26 +570,6 @@ src/main/resources/data/dragonspeech/
 ```
 
 This separation is intentional: code defines the core rules and safe execution boundaries, while data selects and configures content within those systems.
-
----
-
-## Documentation
-
-The repository contains additional design and implementation notes in [`docs/`](docs/).
-
-Especially useful files include:
-
-- [`DICTIONARY.md`](docs/DICTIONARY.md) — generated complete Ancient Language dictionary.
-- [`ANCIENT_LANGUAGE_STYLE_GUIDE.md`](docs/ANCIENT_LANGUAGE_STYLE_GUIDE.md) — conventions for designing new vocabulary.
-- [`WORD_OF_WORDS_REBUILD.md`](docs/WORD_OF_WORDS_REBUILD.md) — Word of Words architecture and lifecycle.
-- [`MIND_DUEL_PHASE6.md`](docs/MIND_DUEL_PHASE6.md) — mind-duel implementation status.
-- [`DRAGON_FLUX_PORT_PASS1.md`](docs/DRAGON_FLUX_PORT_PASS1.md) — notes on compositional VFX/mechanics brought into Dragon Speech's own language system.
-- [`BARRIER_COLLISION_COMPOSITION_PASS_1_7_3.md`](docs/BARRIER_COLLISION_COMPOSITION_PASS_1_7_3.md) — spell/barrier collision and construct composition.
-- [`VOID_BARRIER_LANGUAGE_PASS_1_7_4.md`](docs/VOID_BARRIER_LANGUAGE_PASS_1_7_4.md) — advanced barrier, Void and Fate language.
-- [`BARRIER_ANALYSIS_REINFORCEMENT_PASS_1_7_5.md`](docs/BARRIER_ANALYSIS_REINFORCEMENT_PASS_1_7_5.md) — barrier analysis and reinforcement.
-- [`BARRIER_CONSTRUCT_FORM_PASS_1_7_6.md`](docs/BARRIER_CONSTRUCT_FORM_PASS_1_7_6.md) — spinning constructs and multiplicity behavior.
-
-`DICTIONARY.md` is generated from live word data and should not be edited manually. Use the generator scripts in `docs/` when the vocabulary changes.
 
 ---
 

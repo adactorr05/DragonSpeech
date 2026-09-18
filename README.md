@@ -54,7 +54,7 @@ The casting system evaluates the entire sentence. A short but imprecise command 
 
 The live dictionary currently contains **238 words** across physical, elemental, mental, temporal, gravitational, fate, void, binding, life, death, and other domains.
 
-See [`docs/DICTIONARY.md`](docs/DICTIONARY.md) for the generated full vocabulary.
+
 
 ---
 

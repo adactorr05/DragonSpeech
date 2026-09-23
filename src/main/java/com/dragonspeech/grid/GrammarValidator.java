@@ -16,7 +16,14 @@ public final class GrammarValidator {
 
     public static Optional<String> validate(CastingGridState state) {
         if (!state.assignments().containsKey(GridSlot.VERB)) {
-            return Optional.of("A spell needs a verb.");
+            // `seida` can act as the creation action when a weapon/tool form is named. It remains
+            // a modifier in data so existing `vopnbinda ... seida ...` grammar is unchanged.
+            var composition = state.toComposition();
+            boolean namesWeapon = composition.words().stream().anyMatch(w -> w.toolType().isPresent());
+            boolean directConjure = composition.occurrencesOf("seida") > 0 && namesWeapon;
+            boolean directTakeAndThrow = composition.occurrencesOf("taka") > 0 && namesWeapon;
+            boolean wardBinding = !composition.wordsOf(com.dragonspeech.word.WordCategory.BINDING).isEmpty();
+            if (!directConjure && !directTakeAndThrow && !wardBinding) return Optional.of("A spell needs a verb.");
         }
         return Optional.empty();
     }

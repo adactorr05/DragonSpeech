@@ -45,7 +45,7 @@ public final class MagicWardGate {
      * target at all.
      */
     private static final Set<String> EXEMPT_EFFECTS = Set.of(
-            "hurl_block", "wall", "shape_block", "sunder", "barrier", "summon"
+            "hurl_block", "hurl_weapon", "elemental_working", "wall", "shape_block", "sunder", "barrier", "summon", "danger_word"
     );
 
     /** How much ward durability a blocked non-damage effect costs - there's no "incoming damage" number to drain against for something like marka, so this is a flat, moderate cost (roughly a light hit's worth) rather than free-forever blocking. */
@@ -67,37 +67,61 @@ public final class MagicWardGate {
         }
 
         List<ActiveWard> list = new ArrayList<>(WardAccess.get(target).wards());
+        long now = target.level().getGameTime();
         for (int i = 0; i < list.size(); i++) {
             ActiveWard ward = list.get(i);
-            if (ward.type() != WardType.MAGIC || ward.isBroken()) {
+            if (ward.type() != WardType.MAGIC) continue;
+            if (ward.isExpired(now) || ward.isBroken()) {
+                list.remove(i--);
                 continue;
             }
 
-            float energyCost = Math.min(ward.remainingEnergy(), NON_DAMAGE_BLOCK_COST);
-            float shortfall = NON_DAMAGE_BLOCK_COST - energyCost;
-            // COMPILE FIX: DrainResolver.applyLethalDrain is ServerPlayer-
-            // only - see WardService.absorb's matching guard for the
-            // full reasoning (mobs don't have the player stamina system
-            // aflbinda's fallback draws from).
-            boolean canDrainStamina = ward.staminaBound() && target instanceof ServerPlayer;
-            if (shortfall > 0.0001f && !canDrainStamina) {
-                continue; // can't fully cover the block cost - try the next stacked ward, same rule as WardService.absorb
-            }
-
-            ActiveWard updated = ward.afterAbsorbing(energyCost);
-            list.set(i, updated);
-            if (shortfall > 0.0001f) {
-                com.dragonspeech.stamina.DrainResolver.applyLethalDrain((ServerPlayer) target, shortfall);
+            boolean covered = false;
+            switch (ward.sustainMode()) {
+                case DURATION -> {
+                    list.set(i, ward.afterAbsorbing(0f));
+                    covered = true;
+                }
+                case RESERVE -> {
+                    if (ward.remainingEnergy() >= NON_DAMAGE_BLOCK_COST) {
+                        list.set(i, ward.afterAbsorbing(NON_DAMAGE_BLOCK_COST));
+                        covered = true;
+                    } else {
+                        list.remove(i--); // reserve is insufficient: it collapses trying
+                    }
+                }
+                case CASTER -> {
+                    if (!(target.level() instanceof net.minecraft.server.level.ServerLevel level)) break;
+                    ServerPlayer boundCaster = level.getServer().getPlayerList().getPlayer(ward.casterId());
+                    if (boundCaster == null) break;
+                    var stamina = com.dragonspeech.stamina.StaminaAccess.get(boundCaster);
+                    if (stamina.stamina() < NON_DAMAGE_BLOCK_COST) {
+                        com.dragonspeech.stamina.StaminaAccess.set(boundCaster, stamina.withStamina(0f));
+                        list.remove(i--);
+                        boundCaster.sendSystemMessage(Component.literal("Your stamina-bound magic ward collapses as your stamina runs dry."));
+                    } else {
+                        com.dragonspeech.stamina.StaminaAccess.set(boundCaster, stamina.withStamina(stamina.stamina() - NON_DAMAGE_BLOCK_COST));
+                        list.set(i, ward.afterAbsorbing(0f));
+                        covered = true;
+                    }
+                }
             }
 
             WardAccess.set(target, new PlayerWards(List.copyOf(list)).withBrokenRemoved());
             WardService.pushSync(target);
+            if (!covered) continue;
+
             WardService.playBlockFeedback(target, WardType.MAGIC);
             if (target instanceof ServerPlayer defender) {
                 defender.sendSystemMessage(Component.literal("Your ward against magic turns the working aside."));
             }
             return true;
         }
+        WardAccess.set(target, new PlayerWards(List.copyOf(list)).withBrokenRemoved());
+        WardService.pushSync(target);
+        if (target instanceof com.dragonspeech.mob.casting.Warded warded
+                && com.dragonspeech.mob.casting.MobWards.absorbSpecific(
+                    warded.activeWards(), target, WardType.MAGIC, NON_DAMAGE_BLOCK_COST)) return true;
         return false;
     }
 }

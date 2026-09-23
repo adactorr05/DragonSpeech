@@ -97,12 +97,15 @@ public abstract class LivingEntityDamageMixin {
         if (amount <= 0f || !((Object) this instanceof LivingEntity defender)) {
             return;
         }
+        if (com.dragonspeech.danger.DangerWordService.isApplyingDirectDamage()) return;
         Optional<WardType> type = WardDamageMapper.fromDamageSource(source);
+        if (com.dragonspeech.ward.WardInterception.isApplyingElementPayload() && type.orElse(null) == WardType.MAGIC) return;
         if (type.isEmpty() || (type.get() == WardType.MAGIC && dragonspeech$magicWardBypassed(defender, source))) {
             return;
         }
         float absorbed = WardService.absorb(defender, type.get(), amount);
         if (absorbed >= amount - 0.0001f) {
+            if (type.get() == WardType.PROJECTILE) WardService.deflectProjectile(defender, source.getDirectEntity());
             cir.setReturnValue(false);
         }
         // Not fully covered (absorbed == 0, per WardService.absorb's new
@@ -135,6 +138,7 @@ public abstract class LivingEntityDamageMixin {
         if (amount <= 0f) {
             return amount;
         }
+        if (com.dragonspeech.danger.DangerWordService.isApplyingDirectDamage()) return amount;
 
         // Lightweight (spoken) ward absorption moved to
         // dragonspeech$wardBlockFully above, which cancels the whole
@@ -144,6 +148,7 @@ public abstract class LivingEntityDamageMixin {
         // way. Only item-enchanted wards (galdrverja etc.) are handled
         // here now.
         Optional<WardType> type = WardDamageMapper.fromDamageSource(source);
+        if (com.dragonspeech.ward.WardInterception.isApplyingElementPayload() && type.orElse(null) == WardType.MAGIC) type = Optional.empty();
         float through = amount;
         if (type.isPresent()) {
             float itemWardAbsorbed = com.dragonspeech.enchant.MagicWardCombat.absorb(player, type.get(), through);

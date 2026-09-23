@@ -1,6 +1,7 @@
 package com.dragonspeech.effect;
 
 import com.dragonspeech.DragonSpeech;
+import com.dragonspeech.engine.Element;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,6 +66,8 @@ public class ShockEffectHandler implements EffectHandler {
         int affected = 0;
         for (EffectTarget target : invocation.targets()) {
             if (target instanceof EffectTarget.OfEntity(Entity entity)) {
+                if (entity instanceof net.minecraft.world.entity.LivingEntity living
+                        && com.dragonspeech.ward.WardInterception.blocksElement(living, Element.LIGHTNING, 6f)) continue;
                 LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(serverLevel);
                 if (bolt == null) {
                     continue;

@@ -176,12 +176,12 @@ public enum MagicAffinity {
     public void applyConstructHit(ServerPlayer caster, LivingEntity target, float power) {
         float p = Math.max(.5f, power);
         if (element != null) {
-            // The projectile already dealt its physical hit.  Use a reduced elemental pulse so the
-            // spoken material changes behavior without simply doubling the entire weapon hit.
             element.hitEntity(caster, target, p * .45f);
             return;
         }
+        if (com.dragonspeech.ward.WardInterception.blocks(target, com.dragonspeech.ward.WardType.MAGIC, p)) return;
         switch (this) {
+            case ARCANE -> target.hurt(caster.level().damageSources().indirectMagic(caster, caster), p * .55f);
             case TIME -> {
                 target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 70, 2));
                 target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 70, 1));

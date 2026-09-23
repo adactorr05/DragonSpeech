@@ -81,7 +81,16 @@ public final class WardRingRenderer {
             case "fall" -> new Vector3f(0.40f, 0.85f, 0.40f);       // green
             case "explosion" -> new Vector3f(0.95f, 0.55f, 0.15f);  // orange
             case "melee" -> new Vector3f(0.80f, 0.85f, 0.90f);      // pale steel
-            case "magic" -> new Vector3f(0.65f, 0.35f, 0.90f);      // violet
+            case "magic" -> new Vector3f(0.35f, 0.90f, 0.48f);
+            case "lightning" -> new Vector3f(0.65f, 0.82f, 1.00f); case "wind" -> new Vector3f(0.72f, 0.92f, 0.90f);
+            case "ice" -> new Vector3f(0.45f, 0.80f, 1.00f); case "water" -> new Vector3f(0.20f, 0.52f, 0.95f);
+            case "poison" -> new Vector3f(0.48f, 0.82f, 0.22f); case "force" -> new Vector3f(0.35f, 0.95f, 0.58f);
+            case "earth" -> new Vector3f(0.55f, 0.38f, 0.20f); case "light" -> new Vector3f(1.00f, 0.95f, 0.64f);
+            case "shadow" -> new Vector3f(0.26f, 0.18f, 0.36f); case "death" -> new Vector3f(0.36f, 0.15f, 0.25f);
+            case "life" -> new Vector3f(0.30f, 0.95f, 0.50f); case "void" -> new Vector3f(0.25f, 0.12f, 0.55f);
+            case "danger_lifskad" -> new Vector3f(0.78f,0.25f,0.32f); case "danger_lifrof" -> new Vector3f(0.72f,0.18f,0.40f);
+            case "danger_lifslit" -> new Vector3f(0.62f,0.14f,0.50f); case "danger_lifstilla" -> new Vector3f(0.49f,0.12f,0.58f);
+            case "danger_lifthagn" -> new Vector3f(0.33f,0.08f,0.48f);
             default -> new Vector3f(0.7f, 0.7f, 0.7f);
         };
     }

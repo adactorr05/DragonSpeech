@@ -1,0 +1,15 @@
+{
+  "true_name": "lifrof",
+  "hashed_true_name": "e8491c4d138e2ff306e1e3980317f081b63623f0ba2c0cd91af99102faadf63b",
+  "meaning": "to tear the living force partly loose from the body",
+  "precision": 0.9,
+  "category": "verb",
+  "domain": "death",
+  "prerequisite_words": [],
+  "discovery_method": "danger_word",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:danger_word"
+}

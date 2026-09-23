@@ -18,6 +18,7 @@ import com.dragonspeech.ward.PlayerWards;
 import com.dragonspeech.ward.WardAccess;
 import com.dragonspeech.ward.WardService;
 import com.dragonspeech.ward.WardType;
+import com.dragonspeech.weapon.ConjuredWeaponItems;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -184,7 +186,7 @@ public final class WordOfWordsService {
                 }
                 float energy = type == WardType.REVIVAL ? 1f : 120f;
                 WardService.place(target, type, energy, 1, true, false);
-                yield "A " + type.getSerializedName() + " ward is written onto " + target.getName().getString() + ".";
+                yield "A " + wardDisplayName(player, type) + " is written onto " + target.getName().getString() + ".";
             }
             case "add_sigil" -> {
                 Element element = Element.valueOf(param.toUpperCase());
@@ -256,7 +258,7 @@ public final class WordOfWordsService {
                 yield "Local time is nearly halted around you for twelve seconds.";
             }
             case "time_reverse_local" -> restore(level, s.snapshot());
-            case "reveal_wards" -> revealWards(target);
+            case "reveal_wards" -> revealWards(player, target);
             case "reveal_traps" -> revealTraps(level, s.anchor());
             case "reveal_target" -> "Target: " + target.getName().getString() + ", health " + String.format(java.util.Locale.ROOT, "%.1f/%.1f", target.getHealth(), target.getMaxHealth()) + ", wards " + wardCount(target) + ".";
             case "bind_magic_target" -> {
@@ -274,6 +276,23 @@ public final class WordOfWordsService {
                     yield "The target is bound to this place for " + durationText(ticks) + ".";
                 }
                 yield "This binding currently requires a mob target.";
+            }
+            case "conjured_add_duration" -> {
+                ItemStack held = heldConjured(player);
+                long add = Long.parseLong(param);
+                ConjuredWeaponItems.addDuration(held, level.getGameTime(), add);
+                yield "The held construct is granted " + durationText((int)Math.min(Integer.MAX_VALUE, add)) + " more existence.";
+            }
+            case "conjured_bind_stamina" -> {
+                ItemStack held = heldConjured(player);
+                ConjuredWeaponItems.bindToCaster(held, player.getUUID());
+                yield "The held construct is bound directly to your stamina. It no longer has a duration or independent reserve.";
+            }
+            case "conjured_freeze_duration" -> {
+                ItemStack held = heldConjured(player);
+                boolean freeze = Boolean.parseBoolean(param);
+                ConjuredWeaponItems.setDurationFrozen(held, level.getGameTime(), freeze);
+                yield freeze ? "The held construct's duration is frozen in place." : "The held construct's duration begins flowing again.";
             }
             case "restore_health" -> {
                 float missing = target.getMaxHealth() - target.getHealth();
@@ -319,6 +338,7 @@ public final class WordOfWordsService {
                 }
                 case "add_ward" -> {
                     WardType type = WardType.valueOf(param.toUpperCase());
+                    if (type.isDangerWordWard() && !knowsDangerWardName(player, type)) yield "The Word cannot key a ward to a Danger Word whose name you do not know.";
                     yield type == WardType.REVIVAL && !(target instanceof ServerPlayer)
                         ? "A revival binding needs a living player-thread to anchor to." : null;
                 }
@@ -341,6 +361,19 @@ public final class WordOfWordsService {
                     int t = parseTicks(param, 600);
                     boolean durationOk = t == 600 || t == 2400 || t == 6000;
                     yield target instanceof Mob && durationOk ? null : "That binding needs a mob target and an available duration.";
+                }
+                case "conjured_add_duration" -> {
+                    long t = Long.parseLong(param);
+                    yield !ConjuredWeaponItems.isTemporary(heldConjured(player)) || t < 20 || t > 20L * 60L * 60L
+                        ? "Hold a conjured weapon and choose an allowed duration." : null;
+                }
+                case "conjured_bind_stamina" -> ConjuredWeaponItems.isTemporary(heldConjured(player))
+                    ? null : "You must be holding a conjured weapon.";
+                case "conjured_freeze_duration" -> {
+                    ItemStack held = heldConjured(player);
+                    boolean ok = ConjuredWeaponItems.isTemporary(held)
+                        && ConjuredWeaponItems.sustainMode(held) == com.dragonspeech.spell.SustainMode.DURATION;
+                    yield ok ? null : "Only a duration-based conjured weapon can have its duration frozen.";
                 }
                 case "time_fast" -> { long t = Long.parseLong(param); yield (t == 1000 || t == 6000) ? null : "That time step is not available."; }
                 case "halt_target" -> {
@@ -396,6 +429,9 @@ public final class WordOfWordsService {
                 case "reveal_target" -> 20f;
                 case "bind_magic_target" -> 300f * durationScale(parseTicks(param, 1200), 1200);
                 case "bind_target" -> 260f * durationScale(parseTicks(param, 600), 600);
+                case "conjured_add_duration" -> 140f * durationScale((int)Math.min(Integer.MAX_VALUE, Long.parseLong(param)), 1200);
+                case "conjured_bind_stamina" -> 320f;
+                case "conjured_freeze_duration" -> Boolean.parseBoolean(param) ? 420f : 80f;
                 case "restore_health" -> 45f + Math.max(0f, target.getMaxHealth() - target.getHealth()) * 10f;
                 case "restore_self_health" -> 45f + Math.max(0f, player.getMaxHealth() - player.getHealth()) * 10f;
                 case "restore_self_condition" -> 120f;
@@ -407,20 +443,42 @@ public final class WordOfWordsService {
         }
     }
 
+    private static ItemStack heldConjured(ServerPlayer player) {
+        ItemStack main = player.getMainHandItem();
+        if (ConjuredWeaponItems.isTemporary(main)) return main;
+        ItemStack off = player.getOffhandItem();
+        return ConjuredWeaponItems.isTemporary(off) ? off : ItemStack.EMPTY;
+    }
+
     private static LivingEntity targetLiving(ServerLevel level, Session s, ServerPlayer fallback) {
         if (s.targetId() != null && level.getEntity(s.targetId()) instanceof LivingEntity living && living.isAlive()) return living;
         return fallback;
     }
 
-    private static String revealWards(LivingEntity target) {
+    private static String dangerWordForWard(WardType type) {
+        return switch (type) {
+            case DANGER_LIFSKAD -> "lifskad"; case DANGER_LIFROF -> "lifrof"; case DANGER_LIFSLIT -> "lifslit";
+            case DANGER_LIFSTILLA -> "lifstilla"; case DANGER_LIFTHAGN -> "lifthagn"; default -> null;
+        };
+    }
+    private static boolean knowsDangerWardName(ServerPlayer viewer, WardType type) {
+        String word=dangerWordForWard(type); return word==null || com.dragonspeech.vocabulary.VocabularyService.knowsWord(viewer, com.dragonspeech.DragonSpeech.id(word));
+    }
+    private static String wardDisplayName(ServerPlayer viewer, WardType type) {
+        if (!type.isDangerWordWard()) return type.getSerializedName();
+        String word=dangerWordForWard(type);
+        return knowsDangerWardName(viewer,type) ? "ward against " + word : "ward against an unknown Danger Word";
+    }
+
+    private static String revealWards(ServerPlayer viewer, LivingEntity target) {
         List<String> parts = new ArrayList<>();
         for (ActiveWard w : WardAccess.get(target).wards()) {
-            parts.add(w.type().getSerializedName() + " " + Math.round(w.remainingEnergy()) + "/" + Math.round(w.maxEnergy()));
+            parts.add(wardDisplayName(viewer, w.type()) + " " + Math.round(w.remainingEnergy()) + "/" + Math.round(w.maxEnergy()));
         }
         if (target instanceof Warded warded) {
             for (var e : warded.activeWards().entrySet()) {
                 MobWards.WardInstance w = e.getValue();
-                parts.add(e.getKey().name().toLowerCase(java.util.Locale.ROOT) + " " + Math.round(w.durability()) + "/" + Math.round(w.maxDurability()));
+                parts.add(wardDisplayName(viewer, e.getKey()) + " " + Math.round(w.durability()) + "/" + Math.round(w.maxDurability()));
             }
         }
         if (parts.isEmpty()) return target.getName().getString() + " carries no ward.";
@@ -436,7 +494,7 @@ public final class WordOfWordsService {
     private static boolean hasSpecificWard(LivingEntity target, String key) {
         if (key.startsWith("mob:")) {
             if (!(target instanceof Warded warded)) return false;
-            try { return warded.activeWards().containsKey(MobWards.WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT))); }
+            try { return warded.activeWards().containsKey(WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT))); }
             catch (Exception ignored) { return false; }
         }
         try {
@@ -448,7 +506,7 @@ public final class WordOfWordsService {
     private static boolean removeSpecificWard(LivingEntity target, String key) {
         if (key.startsWith("mob:")) {
             if (!(target instanceof Warded warded)) return false;
-            try { return warded.activeWards().remove(MobWards.WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT))) != null; }
+            try { return warded.activeWards().remove(WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT))) != null; }
             catch (Exception ignored) { return false; }
         }
         try {
@@ -463,7 +521,7 @@ public final class WordOfWordsService {
         if (key.startsWith("mob:")) {
             if (!(target instanceof Warded warded)) return false;
             try {
-                MobWards.WardType type = MobWards.WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT));
+                WardType type = WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT));
                 MobWards.WardInstance found = warded.activeWards().get(type);
                 if (found == null) return false;
                 warded.activeWards().put(type, new MobWards.WardInstance(type, found.maxDurability()));
@@ -476,7 +534,8 @@ public final class WordOfWordsService {
             ActiveWard found = wards.wards().stream().filter(w -> w.id().equals(id)).findFirst().orElse(null);
             if (found == null) return false;
             ActiveWard repaired = new ActiveWard(found.id(), found.casterId(), found.type(), found.maxEnergy(), found.maxEnergy(),
-                found.maxCharges(), found.chargesUsed(), found.visibleToOthers(), found.staminaBound());
+                found.maxCharges(), found.chargesUsed(), found.visibleToOthers(), found.sustainMode() == com.dragonspeech.spell.SustainMode.CASTER,
+                found.sustainMode(), found.expiresAt());
             WardAccess.set(target, wards.withReplaced(repaired));
             WardService.pushSync(target);
             return true;
@@ -486,7 +545,7 @@ public final class WordOfWordsService {
     private static float wardRemoveBaseCost(LivingEntity target, String key) {
         if (key.startsWith("mob:") && target instanceof Warded warded) {
             try {
-                MobWards.WardInstance w = warded.activeWards().get(MobWards.WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT)));
+                MobWards.WardInstance w = warded.activeWards().get(WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT)));
                 return w == null ? 35f : 35f + Math.max(10f, w.durability() * 0.45f);
             } catch (Exception ignored) { return 35f; }
         }
@@ -497,7 +556,7 @@ public final class WordOfWordsService {
     private static float wardRestoreBaseCost(LivingEntity target, String key) {
         if (key.startsWith("mob:") && target instanceof Warded warded) {
             try {
-                MobWards.WardInstance w = warded.activeWards().get(MobWards.WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT)));
+                MobWards.WardInstance w = warded.activeWards().get(WardType.valueOf(key.substring(4).toUpperCase(java.util.Locale.ROOT)));
                 return w == null ? 30f : 30f + Math.max(0f, w.maxDurability() - w.durability()) * 0.55f;
             } catch (Exception ignored) { return 30f; }
         }
@@ -610,11 +669,32 @@ public final class WordOfWordsService {
         root.addProperty("stamina", StaminaAccess.get(player).stamina());
         root.addProperty("max_stamina", StaminaAccess.get(player).maxStamina());
 
+        ItemStack held = heldConjured(player);
+        root.addProperty("held_conjured", ConjuredWeaponItems.isTemporary(held));
+        if (ConjuredWeaponItems.isTemporary(held)) {
+            root.addProperty("held_conjured_name", held.getHoverName().getString());
+            root.addProperty("held_conjured_mode", ConjuredWeaponItems.sustainMode(held).name().toLowerCase(java.util.Locale.ROOT));
+            root.addProperty("held_duration_frozen", ConjuredWeaponItems.durationFrozen(held));
+            root.addProperty("held_add_1m_cost", cost(player, s, "conjured_add_duration", "1200"));
+            root.addProperty("held_add_5m_cost", cost(player, s, "conjured_add_duration", "6000"));
+            root.addProperty("held_bind_cost", cost(player, s, "conjured_bind_stamina", ""));
+            root.addProperty("held_freeze_cost", cost(player, s, "conjured_freeze_duration", "true"));
+            root.addProperty("held_unfreeze_cost", cost(player, s, "conjured_freeze_duration", "false"));
+        }
+
+        JsonArray knownDangerWards = new JsonArray();
+        for (com.dragonspeech.danger.DangerWordType danger : com.dragonspeech.danger.DangerWordType.values()) {
+            if (com.dragonspeech.vocabulary.VocabularyService.knowsWord(player, com.dragonspeech.DragonSpeech.id(danger.trueName()))) {
+                JsonObject entry = new JsonObject(); entry.addProperty("type", danger.wardType().getSerializedName()); entry.addProperty("word", danger.trueName()); knownDangerWards.add(entry);
+            }
+        }
+        root.add("known_danger_wards", knownDangerWards);
+
         JsonArray wards = new JsonArray();
         for (ActiveWard ward : WardAccess.get(target).wards()) {
             JsonObject w = new JsonObject();
             w.addProperty("id", ward.id().toString());
-            w.addProperty("type", ward.type().getSerializedName());
+            w.addProperty("type", wardDisplayName(player, ward.type()));
             w.addProperty("remaining", ward.remainingEnergy());
             w.addProperty("max", ward.maxEnergy());
             w.addProperty("remove_cost", cost(player, s, "remove_ward", ward.id().toString()));
@@ -627,7 +707,7 @@ public final class WordOfWordsService {
                 String key = "mob:" + entry.getKey().name().toLowerCase(java.util.Locale.ROOT);
                 JsonObject w = new JsonObject();
                 w.addProperty("id", key);
-                w.addProperty("type", entry.getKey().name().toLowerCase(java.util.Locale.ROOT));
+                w.addProperty("type", wardDisplayName(player, entry.getKey()));
                 w.addProperty("remaining", ward.durability());
                 w.addProperty("max", ward.maxDurability());
                 w.addProperty("remove_cost", cost(player, s, "remove_ward", key));

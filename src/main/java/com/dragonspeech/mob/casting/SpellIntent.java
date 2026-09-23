@@ -35,7 +35,7 @@ import java.util.Set;
  * now a light shove (~0.35 base) rather than a launch (previously 1.2).
  */
 public enum SpellIntent {
-    OFFENSE(Set.of("shock", "ignite", "freeze", "poison", "hurl_block")),
+    OFFENSE(Set.of("shock", "ignite", "freeze", "poison", "hurl_block", "danger_word")),
     CROWD_CONTROL(Set.of("petrify", "confuse", "push")),
     MOBILITY(Set.of("teleport", "lift", "pillar")),
     SELF_HEAL(Set.of("heal")),

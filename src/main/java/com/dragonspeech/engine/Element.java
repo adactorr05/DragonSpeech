@@ -90,8 +90,11 @@ public enum Element implements StringRepresentable {
         if (target instanceof com.dragonspeech.dragon.DragonEntity dragon && dragon.isImmuneToElement(this)) {
             return;
         }
+        if (target instanceof LivingEntity living
+                && com.dragonspeech.ward.WardInterception.blocksElement(living, this, Math.max(1f, power))) return;
         int durationTicks = Math.round(40 + power * 20);
 
+        com.dragonspeech.ward.WardInterception.runElementPayload(() -> {
         switch (this) {
             case FIRE -> {
                 damage(caster, target, power);
@@ -174,6 +177,7 @@ public enum Element implements StringRepresentable {
                 }
             }
         }
+        });
     }
 
     /** Applies this element's mark to the world at a block position. */

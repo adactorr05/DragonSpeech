@@ -84,6 +84,8 @@ public class DragonSpeechClient implements ClientModInitializer {
 		DragonSpeechClientConfig.load();
 
 		com.dragonspeech.client.enchant.MagicEnchantmentTooltips.register();
+		com.dragonspeech.client.weapon.ConjuredWeaponTooltipHooks.register();
+		com.dragonspeech.client.weapon.ConjuredWeaponItemRenderer.register();
 		// "If you leave the world and rejoin, the bond stays. If you
 		// close the whole game, the bond is gone." The log evidence
 		// from testing confirms our own save/load NBT code is correct -

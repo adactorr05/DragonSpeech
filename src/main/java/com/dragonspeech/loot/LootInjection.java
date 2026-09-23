@@ -124,6 +124,16 @@ public final class LootInjection {
                     .add(LootItem.lootTableItem(DragonSpeechItems.SCHOLARS_FRAGMENT)));
             }
 
+            // The vanilla bonus chest loot table has a stable namespaced path even where the
+            // mappings do not expose a convenient BuiltInLootTables constant. When enabled, add
+            // exactly one random mod egg to every generated bonus chest.
+            if (key.location().toString().equals("minecraft:chests/spawn_bonus_chest")
+                    && com.dragonspeech.config.DragonSpeechConfig.bonusChestDragonEggEnabled()) {
+                LootPool.Builder pool = LootPool.lootPool().setRolls(UniformGenerator.between(1, 1));
+                addRandomEggEntries(pool);
+                tableBuilder.withPool(pool);
+            }
+
             if (key.equals(BuiltInLootTables.STRONGHOLD_LIBRARY)) {
                 LootPool.Builder pool = LootPool.lootPool()
                     .setRolls(UniformGenerator.between(1, 1))

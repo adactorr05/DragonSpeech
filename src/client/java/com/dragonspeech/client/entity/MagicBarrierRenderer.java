@@ -129,8 +129,10 @@ public class MagicBarrierRenderer extends EntityRenderer<MagicBarrierEntity> {
             drawCube(pose, tesselator, radius - shrink, false, inner[0], inner[1], inner[2], alpha);
             drawCube(pose, tesselator, radius, false, outer[0], outer[1], outer[2], 0.7f * alpha);
         } else if (shape == BarrierShape.WALL) {
-            drawWall(pose, tesselator, radius - shrink, entity.facingYaw(), outer[0], outer[1], outer[2], alpha);
-            drawWall(pose, tesselator, radius, entity.facingYaw(), outer[0], outer[1], outer[2], 0.7f * alpha);
+            // Keep a faint translucent pane for readable coverage, then overlay the Dragon Flux-style
+            // edge-sharing honeycomb so frontal skjoldr barriers read as constructed hex plates.
+            drawWall(pose, tesselator, radius, entity.facingYaw(), outer[0], outer[1], outer[2], 0.18f * alpha);
+            drawHexWall(pose, tesselator, radius, entity.facingYaw(), outer[0], outer[1], outer[2], Math.min(0.95f, 1.55f * alpha));
         } else {
             drawSphere(pose, tesselator, radius - shrink, true, outer[0], outer[1], outer[2], alpha);
             drawSphere(pose, tesselator, radius - shrink, false, inner[0], inner[1], inner[2], alpha);
@@ -244,6 +246,32 @@ public class MagicBarrierRenderer extends EntityRenderer<MagicBarrierEntity> {
      * instead of that file's own already-modern (but particle-context)
      * version.
      */
+    /** Dragon Flux-inspired pointy-top honeycomb overlay for frontal barrier walls. */
+    private static void drawHexWall(Matrix4f pose, Tesselator tesselator, float radius, float facingYawDeg,
+                                    float r, float g, float b, float a) {
+        float yawRad = (float) Math.toRadians(facingYawDeg);
+        float sideX = Mth.cos(yawRad), sideZ = Mth.sin(yawRad);
+        float cell = Mth.clamp(radius * 0.20f, 0.22f, 0.52f);
+        float sx = (float)Math.sqrt(3.0) * cell, sy = 1.5f * cell;
+        int cols = Math.max(3, Math.min(18, (int)Math.ceil((radius * 2f) / sx) + 2));
+        int rows = Math.max(3, Math.min(14, (int)Math.ceil((radius * 2f) / sy) + 2));
+        BufferBuilder lines = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        for (int row=-rows; row<=rows; row++) for (int col=-cols; col<=cols; col++) {
+            float ox = col*sx + ((row & 1)==0 ? 0f : sx*0.5f), oy=row*sy;
+            if (Math.abs(ox) > radius-cell*0.55f || Math.abs(oy) > radius-cell*0.72f) continue;
+            float[] vx=new float[6], vy=new float[6], vz=new float[6];
+            for(int i=0;i<6;i++){
+                double ang=Math.PI/6.0+i*Math.PI/3.0; float u=ox+(float)Math.cos(ang)*cell;
+                vx[i]=sideX*u; vy[i]=oy+(float)Math.sin(ang)*cell; vz[i]=sideZ*u;
+            }
+            for(int i=0;i<6;i++){ int j=(i+1)%6;
+                lines.addVertex(pose,vx[i],vy[i],vz[i]).setColor(r,g,b,a);
+                lines.addVertex(pose,vx[j],vy[j],vz[j]).setColor(r,g,b,a);
+            }
+        }
+        MeshData mesh=lines.build(); if(mesh!=null) BufferUploader.drawWithShader(mesh);
+    }
+
     private static void drawWall(Matrix4f pose, Tesselator tesselator, float radius, float facingYawDeg,
                                   float r, float g, float b, float a) {
         float yawRad = (float) Math.toRadians(facingYawDeg);

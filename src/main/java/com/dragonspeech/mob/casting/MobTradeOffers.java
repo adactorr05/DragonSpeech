@@ -89,7 +89,7 @@ public final class MobTradeOffers {
         List<ResourceLocation> eligible = new ArrayList<>();
         for (ResourceLocation id : merchant.vocabulary().words()) {
             Word word = WordRegistry.get(id);
-            if (word == null || !isTradeable(word) || alreadyKnown(tradingPlayer, id)) {
+            if (word == null || !isTradeable(merchant, word) || alreadyKnown(tradingPlayer, id)) {
                 continue;
             }
             eligible.add(id);
@@ -103,11 +103,12 @@ public final class MobTradeOffers {
             ^ (tradingPlayer.getUUID().getLeastSignificantBits());
         Random selectionRandom = new Random(seed);
         Collections.shuffle(eligible, selectionRandom);
-
-        for (ResourceLocation id : eligible.stream().limit(MAX_SCROLL_OFFERS).toList()) {
-            Word word = WordRegistry.get(id);
-            offers.add(buildScrollOffer(id, word));
+        List<ResourceLocation> selected = new ArrayList<>();
+        if (merchant.powerTier() == MobPowerTier.ELDER) for (ResourceLocation id : eligible) {
+            Word w = WordRegistry.get(id); if (w != null && w.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.DANGER_WORD) selected.add(id);
         }
+        for (ResourceLocation id : eligible) { if (selected.size() >= MAX_SCROLL_OFFERS) break; if (!selected.contains(id)) selected.add(id); }
+        for (ResourceLocation id : selected) offers.add(buildScrollOffer(id, WordRegistry.get(id)));
 
         offers.addAll(tabletOffersFor(merchant));
 
@@ -127,7 +128,7 @@ public final class MobTradeOffers {
         int knownByPlayer = 0;
         for (ResourceLocation id : merchant.vocabulary().words()) {
             Word word = WordRegistry.get(id);
-            if (word == null || !isTradeable(word)) {
+            if (word == null || !isTradeable(merchant, word)) {
                 continue;
             }
             tradeable++;
@@ -143,13 +144,9 @@ public final class MobTradeOffers {
         return tradingPlayer instanceof ServerPlayer serverPlayer && VocabularyService.knowsWord(serverPlayer, id);
     }
 
-    private static boolean isTradeable(Word word) {
-        if (word.category() == WordCategory.CONTROL) {
-            return false;
-        }
-        if (UNTRADEABLE_PARTICLES.contains(word.trueName())) {
-            return false;
-        }
+    private static boolean isTradeable(SpellcastingMob merchant, Word word) {
+        if (word.category() == WordCategory.CONTROL || UNTRADEABLE_PARTICLES.contains(word.trueName())) return false;
+        if (word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.DANGER_WORD) return merchant.powerTier() == MobPowerTier.ELDER;
         return word.riskTier() != RiskTier.CATASTROPHIC;
     }
 

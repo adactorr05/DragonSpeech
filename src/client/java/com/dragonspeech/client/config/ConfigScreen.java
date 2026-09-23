@@ -1,5 +1,12 @@
 package com.dragonspeech.client.config;
 
+import com.dragonspeech.compat.SentienceConfig;
+import com.dragonspeech.config.DragonSpeechConfig;
+import com.dragonspeech.network.ConfigRequestPayload;
+import com.dragonspeech.network.ConfigUpdatePayload;
+import com.dragonspeech.network.ReloadSentiencePayload;
+import com.dragonspeech.network.ResetAllConfigPayload;
+import com.dragonspeech.network.ResetServerTabPayload;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -16,75 +23,64 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.dragonspeech.compat.SentienceConfig;
-import com.dragonspeech.config.DragonSpeechConfig;
-import com.dragonspeech.network.ConfigRequestPayload;
-import com.dragonspeech.network.ConfigUpdatePayload;
-import com.dragonspeech.network.ReloadSentiencePayload;
-import com.dragonspeech.network.ResetAllConfigPayload;
-import com.dragonspeech.network.ResetServerTabPayload;
-
 /**
- * The DragonSpeech config GUI. Reachable 3 ways per explicit direction:
- * "/dragonspeechconfig" (client command, see DragonSpeechClient),
- * a button on the Title Screen (see TitleScreenConfigButtonMixin), and
- * ModMenu if it's installed (see DragonSpeechModMenuIntegration).
+ * Dragon Speech's main configuration screen.
  *
- * TWO TABS:
- *   CLIENT - purely local (particles, HUD, camera feel, tooltips). Always visible, always editable,
- *            never touches the network at all - see DragonSpeechClientConfig.
- *   SERVER - world-wide settings (see DragonSpeechConfig). ALWAYS visible and editable from the
- *            Title Screen (edits your own local config/dragonspeech.json directly, same as any other
- *            "default config" screen). Once actually connected to a world/server, switches to the
- *            SYNCED, permission-gated path instead and only stays visible if THAT connection
- *            confirms this player is op level 4 - see isConnected()/canShowServerTab().
- *
- * Magic Difficulty's ACTIVE selection is still read-only here (only set via Create World or hand-
- * editing the file) - but per later direction, what each of EASY/NORMAL/HARD actually MEANS is now
- * editable via DifficultyTuningScreen (opened from a button on this tab).
- *
- * RESET BUTTONS (added per explicit direction): "Reset This Page" resets only whichever tab is
- * currently open (Client tab -> DragonSpeechClientConfig only; Server tab -> the 10 GUI-added extra
- * fields only, NOT difficulty tuning or sentience overrides, which have their own independent resets
- * on their own screens). "Reset All Configs" is the universal reset - client settings (always local)
- * plus every server-side area at once (extras, difficulty tuning, sentience overrides).
- *
- * LIVE SLIDERS (fixed per bug report): FloatSlider now takes a label FORMATTER (a function from the
- * live dragged value to display text) instead of a frozen pre-formatted string, so updateMessage() -
- * which vanilla's AbstractSliderButton already calls continuously during a drag - actually produces a
- * different string each time instead of resetting back to the same stale one. Previously the number
- * only ever appeared to update after a full rebuild() (e.g. scrolling or switching tabs), which is
- * exactly the bug that was reported.
- *
- * SCROLL CLAMPING (fixed per bug report): scrollOffset previously had a lower bound of 0 but NO upper
- * bound at all, so scrolling past the end of a tab's content just kept sliding everything further and
- * further up with nothing to stop it - overlapping the tab bar/reset/done row on the way, then
- * disappearing off the top of the panel entirely. maxScroll is now computed from each tab's real
- * content height every rebuild() and enforced in both directions.
+ * The underlying config model is deliberately unchanged: CLIENT values are local-only and SERVER
+ * values still follow the existing offline-direct / online-permission-gated network path. This class
+ * is now only responsible for presenting those settings clearly: grouped sections, readable labels
+ * and descriptions, compact controls, visible Client/Server separation, bounded scrolling, and a
+ * fixed footer that never collides with scrolling content.
  */
 public class ConfigScreen extends Screen {
 
     private enum Tab { CLIENT, SERVER }
 
-    private static final int PANEL_W = 360;
-    private static final int ROW_H = 24;
-    private static final int CONTENT_TOP = 56;
-    private static final int BOTTOM_ROW_H = 46; // reset row (20px) + gap + done row (20px)
+    private static final int MAX_PANEL_W = 690;
+    private static final int MAX_PANEL_H = 530;
+    private static final int HEADER_H = 86;
+    private static final int FOOTER_H = 56;
+    private static final int ROW_H = 48;
+    private static final int SECTION_H = 32;
 
-    private static final int C_BG = 0xE8141018;
-    private static final int C_BORDER = 0xFF4A4238;
-    private static final int C_TEXT = 0xFFE8DEC8;
-    private static final int C_TEXT_DIM = 0xFFA89A80;
+    // The config screen is intentionally its own visual space rather than a reskinned vanilla list.
+    // Client uses cold arcane cyan; Server uses warm ward-gold, so the active scope is readable at
+    // a glance even before reading the tab label.
+    private static final int C_SCREEN = 0xFF05060A;
+    private static final int C_PANEL = 0xF20B0D14;
+    private static final int C_PANEL_INNER = 0xF5121520;
+    private static final int C_HEADER = 0xF6171A26;
+    private static final int C_BORDER = 0xFF3A4052;
+    private static final int C_ROW = 0xC0131722;
+    private static final int C_ROW_ALT = 0xC0181B27;
+    private static final int C_ROW_HOVER = 0xE0222837;
+    private static final int C_TEXT = 0xFFF4F1E8;
+    private static final int C_TEXT_DIM = 0xFF9EA8BA;
+    private static final int C_CLIENT = 0xFF55D8FF;
+    private static final int C_SERVER = 0xFFFFC761;
+    private static final int C_DANGER = 0xFFFF7D83;
+
+    private record RowVisual(int y, int height, String label, String description, boolean alternate) {}
+    private record SectionVisual(int y, String title, String subtitle) {}
+    private record InfoLine(int y, String text, int color) {}
 
     private final Screen parent;
     private Tab activeTab = Tab.CLIENT;
-    private int scrollOffset = 0;
-    private int maxScroll = 0;
+
     private int panelX;
     private int panelY;
+    private int panelW;
     private int panelH;
+    private int contentTop;
+    private int contentBottom;
+    private int scrollOffset;
+    private int maxScroll;
 
-    /** Local mirror of the Server tab, edited live and pushed to the server on every change - avoids re-parsing ServerConfigClientCache mid-drag. */
+    private final List<RowVisual> rows = new ArrayList<>();
+    private final List<SectionVisual> sections = new ArrayList<>();
+    private final List<InfoLine> infoLines = new ArrayList<>();
+
+    // Local mirror of the Server tab, pushed through the same existing config/network path.
     private boolean editAllowRebondAfterDeath;
     private float editFoundHeartMin;
     private float editFoundHeartMax;
@@ -95,43 +91,39 @@ public class ConfigScreen extends Screen {
     private boolean editAllowControlOfPlayers;
     private float editWordLootChance;
     private float editEggHatchSpeed;
-    private float editAiComputeBudget; // stored as float for slider math, always an integer value in practice
-
-    private final List<String> serverInfoLines = new ArrayList<>();
-    private int serverInfoY = 0;
+    private boolean editBonusChestDragonEgg;
+    private float editAiComputeBudget;
 
     public ConfigScreen(Screen parent) {
-        super(Component.literal("Dragon Speech - Config"));
+        super(Component.literal("Dragon Speech Settings"));
         this.parent = parent;
     }
 
     @Override
     protected void init() {
-        this.panelH = Math.min(this.height - 40, 420);
-        this.panelX = (this.width - PANEL_W) / 2;
-        this.panelY = (this.height - panelH) / 2;
+        panelW = Math.min(MAX_PANEL_W, Math.max(300, this.width - 24));
+        panelH = Math.min(MAX_PANEL_H, Math.max(220, this.height - 20));
+        panelW = Math.min(panelW, Math.max(1, this.width - 8));
+        panelH = Math.min(panelH, Math.max(1, this.height - 8));
+        panelX = (this.width - panelW) / 2;
+        panelY = (this.height - panelH) / 2;
+        contentTop = panelY + HEADER_H;
+        contentBottom = panelY + panelH - FOOTER_H;
 
-        // Only ask the server for anything if we're actually connected to one - the Title Screen has
-        // no connection at all, and ConfigRequestPayload would have nowhere to go.
         if (Minecraft.getInstance().player != null) {
             ClientPlayNetworking.send(new ConfigRequestPayload());
         }
         loadEditStateFromCache();
-        if (activeTab == Tab.SERVER && !canShowServerTab()) {
-            activeTab = Tab.CLIENT;
-        }
+        if (activeTab == Tab.SERVER && !canShowServerTab()) activeTab = Tab.CLIENT;
         rebuild();
-    }
-
-    private boolean canShowServerTab() {
-        // Offline (Title Screen) - always available, edits your own local config file directly, same
-        // as any other "default config" screen. Online - only if THIS connection's server confirmed
-        // op level 4 for this player.
-        return !isConnected() || (ServerConfigClientCache.hasData() && ServerConfigClientCache.canEdit());
     }
 
     private boolean isConnected() {
         return Minecraft.getInstance().player != null;
+    }
+
+    private boolean canShowServerTab() {
+        return !isConnected() || (ServerConfigClientCache.hasData() && ServerConfigClientCache.canEdit());
     }
 
     private void loadEditStateFromCache() {
@@ -146,11 +138,9 @@ public class ConfigScreen extends Screen {
             editAllowControlOfPlayers = ServerConfigClientCache.allowControlOfPlayers();
             editWordLootChance = ServerConfigClientCache.wordLootChanceMultiplier();
             editEggHatchSpeed = ServerConfigClientCache.eggHatchSpeedMultiplier();
+            editBonusChestDragonEgg = ServerConfigClientCache.bonusChestDragonEggEnabled();
             editAiComputeBudget = ServerConfigClientCache.aiComputeBudget();
         } else {
-            // Offline - read straight from DragonSpeechConfig's own in-memory state (already loaded
-            // from config/dragonspeech.json at mod init) rather than the network cache, which has
-            // nothing in it yet with no connection to have synced from.
             editAllowRebondAfterDeath = DragonSpeechConfig.allowRebondAfterDeath();
             editFoundHeartMin = DragonSpeechConfig.foundHeartStaminaMin();
             editFoundHeartMax = DragonSpeechConfig.foundHeartStaminaMax();
@@ -161,230 +151,299 @@ public class ConfigScreen extends Screen {
             editAllowControlOfPlayers = DragonSpeechConfig.allowControlOfPlayers();
             editWordLootChance = DragonSpeechConfig.wordLootChanceMultiplier();
             editEggHatchSpeed = DragonSpeechConfig.eggHatchSpeedMultiplier();
+            editBonusChestDragonEgg = DragonSpeechConfig.bonusChestDragonEggEnabled();
             editAiComputeBudget = DragonSpeechConfig.aiComputeBudget();
         }
     }
 
-    /** Called after a fresh ConfigSyncPayload arrives while this screen is open - see DragonSpeechClient. */
+    /** Called when the server answers ConfigRequestPayload while this screen is open. */
     public void onServerSyncReceived() {
         loadEditStateFromCache();
-        if (activeTab == Tab.SERVER && !canShowServerTab()) {
-            activeTab = Tab.CLIENT;
-        }
+        if (activeTab == Tab.SERVER && !canShowServerTab()) activeTab = Tab.CLIENT;
         rebuild();
     }
 
     private void rebuild() {
         clearWidgets();
-        serverInfoLines.clear();
+        rows.clear();
+        sections.clear();
+        infoLines.clear();
 
-        int tabW = canShowServerTab() ? PANEL_W / 2 - 2 : PANEL_W;
-        addRenderableWidget(tip(Button.builder(Component.literal("Client"), b -> switchTab(Tab.CLIENT))
-                .bounds(panelX + 4, panelY + 22, tabW, 20).build(),
-                "Local-only settings - visuals, performance, HUD. Never sent to a server."));
-        if (canShowServerTab()) {
-            addRenderableWidget(tip(Button.builder(Component.literal("Server"), b -> switchTab(Tab.SERVER))
-                    .bounds(panelX + 4 + tabW + 4, panelY + 22, tabW, 20).build(),
-                    "World-wide settings. From the Title Screen this edits your own local defaults; a real server's own settings always take over once you connect."));
-        }
+        int innerX = panelX + 14;
+        int innerW = panelW - 28;
+        int tabGap = 6;
+        int tabW = (innerW - tabGap) / 2;
+        int tabY = panelY + 52;
 
-        int startY = panelY + CONTENT_TOP - scrollOffset;
-        int y = startY;
-        int rowX = panelX + 12;
-        int rowW = PANEL_W - 24;
+        Button clientTab = Button.builder(
+                Component.literal((activeTab == Tab.CLIENT ? "◆ " : "") + "CLIENT  //  THIS DEVICE"),
+                b -> switchTab(Tab.CLIENT))
+            .bounds(innerX, tabY, tabW, 24).build();
+        clientTab.setTooltip(Tooltip.create(Component.literal("Visuals, HUD, camera, and interface settings stored only on this client.")));
+        addRenderableWidget(clientTab);
+
+        Button serverTab = Button.builder(
+                Component.literal((activeTab == Tab.SERVER ? "◆ " : "") + "SERVER  //  WORLD RULES"),
+                b -> switchTab(Tab.SERVER))
+            .bounds(innerX + tabW + tabGap, tabY, tabW, 24).build();
+        serverTab.active = canShowServerTab();
+        serverTab.setTooltip(Tooltip.create(Component.literal(canShowServerTab()
+            ? "World-wide Dragon Speech rules. Online editing requires server operator permission."
+            : "Server settings are visible only after this server confirms operator permission.")));
+        addRenderableWidget(serverTab);
+
+        int y = contentTop - scrollOffset;
+        int controlW = Math.max(150, Math.min(210, innerW / 3));
+        int controlX = panelX + panelW - 14 - controlW;
+        int textX = innerX + 10;
+        int textW = Math.max(120, controlX - textX - 14);
 
         if (activeTab == Tab.CLIENT) {
-            y = clientRow(y, rowX, rowW, "Particle Density", "x", DragonSpeechClientConfig.particleDensity(), 0.0f, 3.0f,
-                    v -> DragonSpeechClientConfig.setParticleDensity(v),
-                    "How many particles spell effects spawn. Lower this to cut down on visual clutter or help performance in big fights.");
+            y = addSection(y, "Visual Effects", "Control how dense and prominent spell visuals are.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Particle Density", "Amount of spell particles. Lower values reduce clutter and GPU load.",
+                DragonSpeechClientConfig.particleDensity(), 0f, 3f,
+                v -> fmt(v) + "×", DragonSpeechClientConfig::setParticleDensity,
+                "0 disables most optional particles; 1 is normal; higher values make effects denser.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Casting Grid Opacity", "Transparency of the panel behind the spell-construction grid.",
+                DragonSpeechClientConfig.castingGridOpacity(), .1f, 1f,
+                v -> Math.round(v * 100f) + "%", DragonSpeechClientConfig::setCastingGridOpacity,
+                "Higher values make the Casting Grid background more opaque.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Ward Ring Visual", "Show the rotating ring around warded entities.",
+                DragonSpeechClientConfig.wardRingVisible(), DragonSpeechClientConfig::setWardRingVisible,
+                "Purely cosmetic. Wards still function when this is disabled.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Mind Contact Beam", "Show the traveling beam while reaching toward another mind.",
+                DragonSpeechClientConfig.contactBeamVisible(), DragonSpeechClientConfig::setContactBeamVisible,
+                "Purely cosmetic; it does not change reach speed or mechanics.");
 
-            addRowWidget(y, tip(CycleButton.onOffBuilder(DragonSpeechClientConfig.staminaHudEnabled())
-                    .create(rowX, y, rowW, 20, Component.literal("Stamina HUD"),
-                            (btn, val) -> DragonSpeechClientConfig.setStaminaHudEnabled(val)),
-                    "Shows or hides the gold stamina bar above your hunger bar."));
-            y += ROW_H;
+            y = addSection(y, "HUD & Camera", "Personal display and dragon-riding comfort settings.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Stamina HUD", "Display your current magical stamina on screen.",
+                DragonSpeechClientConfig.staminaHudEnabled(), DragonSpeechClientConfig::setStaminaHudEnabled,
+                "Shows or hides the stamina bar.");
+            y = addEnumRow(y, textX, textW, controlX, controlW,
+                "HUD Position", "Choose which corner holds the stamina display.",
+                DragonSpeechClientConfig.staminaHudPosition(), DragonSpeechClientConfig.HudPosition.values(),
+                DragonSpeechClientConfig::setStaminaHudPosition,
+                "Moves the stamina HUD without changing its behavior.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Dragon Camera Roll", "How strongly the camera banks while riding a flying dragon.",
+                DragonSpeechClientConfig.dragonCameraRollIntensity(), 0f, 2f,
+                v -> fmt(v) + "×", DragonSpeechClientConfig::setDragonCameraRollIntensity,
+                "Set to 0 to disable camera banking completely.");
 
-            addRowWidget(y, tip(CycleButton.<DragonSpeechClientConfig.HudPosition>builder(pos -> Component.literal(prettyEnum(pos.name())))
-                    .withValues(DragonSpeechClientConfig.HudPosition.values())
-                    .withInitialValue(DragonSpeechClientConfig.staminaHudPosition())
-                    .create(rowX, y, rowW, 20, Component.literal("Stamina HUD Position"),
-                            (btn, val) -> DragonSpeechClientConfig.setStaminaHudPosition(val)),
-                    "Which corner of the screen the stamina bar is drawn in."));
-            y += ROW_H;
-
-            y = clientRow(y, rowX, rowW, "Casting Grid Opacity", "", DragonSpeechClientConfig.castingGridOpacity(), 0.1f, 1.0f,
-                    v -> DragonSpeechClientConfig.setCastingGridOpacity(v),
-                    "How see-through the background panel behind the Casting Grid (spellcasting) screen is.");
-
-            addRowWidget(y, tip(CycleButton.onOffBuilder(DragonSpeechClientConfig.wardRingVisible())
-                    .create(rowX, y, rowW, 20, Component.literal("Ward Ring Visual"),
-                            (btn, val) -> DragonSpeechClientConfig.setWardRingVisible(val)),
-                    "Shows or hides the rotating ring around a warded entity. Purely cosmetic - the ward itself still works the same either way."));
-            y += ROW_H;
-
-            addRowWidget(y, tip(CycleButton.onOffBuilder(DragonSpeechClientConfig.contactBeamVisible())
-                    .create(rowX, y, rowW, 20, Component.literal("Contact Beam Visual"),
-                            (btn, val) -> DragonSpeechClientConfig.setContactBeamVisible(val)),
-                    "Shows or hides the traveling beam while you reach out with your mind toward someone. Purely cosmetic."));
-            y += ROW_H;
-
-            y = clientRow(y, rowX, rowW, "Dragon Camera Roll", "x", DragonSpeechClientConfig.dragonCameraRollIntensity(), 0.0f, 2.0f,
-                    v -> DragonSpeechClientConfig.setDragonCameraRollIntensity(v),
-                    "How much the camera banks/tilts while riding a flying dragon. Set to 0 to disable it entirely, e.g. if it causes motion sickness.");
-
-            addRowWidget(y, tip(CycleButton.onOffBuilder(DragonSpeechClientConfig.enchantTooltipVerbose())
-                    .create(rowX, y, rowW, 20, Component.literal("Verbose Enchant Tooltips"),
-                            (btn, val) -> DragonSpeechClientConfig.setEnchantTooltipVerbose(val)),
-                    "Shows full details (ward durability, blessing level) on item tooltips instead of just the enchantment's name."));
-            y += ROW_H;
+            y = addSection(y, "Interface", "Information shown in menus and item tooltips.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Detailed Enchant Tooltips", "Show durability, levels, and other Dragon Speech enchant details.",
+                DragonSpeechClientConfig.enchantTooltipVerbose(), DragonSpeechClientConfig::setEnchantTooltipVerbose,
+                "Disable for compact enchantment names only.");
         } else {
-            // Read-only Magic Difficulty breakdown - text only, no widget. Rendered in render() from
-            // serverInfoLines (drawn starting at serverInfoY, one line per 10px) so it scrolls together
-            // with everything else on this tab. Reads straight from DragonSpeechConfig when offline
-            // (Title Screen - no sync to read from) or from ServerConfigClientCache when connected.
-            serverInfoY = y;
-            String diffName = isConnected() ? ServerConfigClientCache.difficulty() : DragonSpeechConfig.difficulty().name();
-            float diffHealth = isConnected() ? ServerConfigClientCache.difficultyMinSurvivableHealth() : DragonSpeechConfig.minSurvivableHealth();
-            float diffRegen = isConnected() ? ServerConfigClientCache.difficultyRegenMultiplier() : DragonSpeechConfig.regenMultiplier();
-            float diffCost = isConnected() ? ServerConfigClientCache.difficultyCostMultiplier() : DragonSpeechConfig.costMultiplier();
-            float diffSpacing = isConnected() ? ServerConfigClientCache.difficultyStructureSpacingMultiplier() : DragonSpeechConfig.structureSpacingMultiplier();
-            serverInfoLines.add("Magic Difficulty: " + diffName + " (set via World Creation, not here)");
-            serverInfoLines.add("  Health floor: " + fmt(diffHealth / 2f) + " hearts (0 = overdraft can kill you)");
-            serverInfoLines.add("  Stamina regen: x" + fmt(diffRegen));
-            serverInfoLines.add("  Spell cost: x" + fmt(diffCost));
-            serverInfoLines.add("  Structure rarity: x" + fmt(diffSpacing) + " (higher = rarer)");
-            if (!isConnected()) {
-                serverInfoLines.add("These are your LOCAL defaults - a real server's own settings always win once you connect.");
-            }
-            y += serverInfoLines.size() * 10 + 6;
+            y = addSection(y, "Magic Difficulty", "Current world tier and the rules that tier applies.");
+            y = addDifficultyCard(y, textX, textW, controlX, controlW);
 
-            addRowWidget(y, tip(Button.builder(Component.literal("Edit Magic Difficulty Rules"),
-                    b -> Minecraft.getInstance().setScreen(new DifficultyTuningScreen(this)))
-                    .bounds(rowX, y, rowW, 20).build(),
-                    "Redefine what Easy/Normal/Hard actually do - health floor, regen/cost multipliers, and structure rarity, per tier. Which tier is currently active is still only changed via World Creation."));
-            y += ROW_H;
+            y = addSection(y, "Dragons & Progression", "Bonding, Dragon Hearts, eggs, and world progression.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Allow Rebond After Death", "Allow a new bond after the previous bonded dragon has died.",
+                editAllowRebondAfterDeath, v -> { editAllowRebondAfterDeath = v; pushServerUpdate(); },
+                "A player still cannot have more than one living bonded dragon at a time.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Found Heart Stamina · Minimum", "Lowest stamina roll for Dragon Hearts without a living source dragon.",
+                editFoundHeartMin, 100f, 2000f, v -> Integer.toString(Math.round(v)),
+                v -> { editFoundHeartMin = v; pushServerUpdate(); },
+                "Applies to found/creative hearts that cannot inherit a source dragon's real stamina.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Found Heart Stamina · Maximum", "Highest stamina roll for those source-less Dragon Hearts.",
+                editFoundHeartMax, 100f, 2000f, v -> Integer.toString(Math.round(v)),
+                v -> { editFoundHeartMax = v; pushServerUpdate(); },
+                "Must remain meaningful relative to the minimum; values are clamped by the config layer.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Egg Hatch Speed", "Global multiplier for how quickly dragon eggs progress toward hatching.",
+                editEggHatchSpeed, .1f, 5f, v -> fmt(v) + "×",
+                v -> { editEggHatchSpeed = v; pushServerUpdate(); },
+                "1.00× is the normal configured hatch speed.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Bonus Chest Dragon Egg", "Put one random Dragon Speech egg in a world-start bonus chest.",
+                editBonusChestDragonEgg, v -> { editBonusChestDragonEgg = v; pushServerUpdate(); },
+                "Only matters when Minecraft's Bonus Chest option is enabled for the world.");
 
-            addRowWidget(y, tip(CycleButton.onOffBuilder(editAllowRebondAfterDeath)
-                    .create(rowX, y, rowW, 20, Component.literal("Allow Rebond After Death"),
-                            (btn, val) -> { editAllowRebondAfterDeath = val; pushServerUpdate(); }),
-                    "Whether a player may bond a new dragon after their previous bonded dragon has died. A player can only ever have 1 bonded dragon alive at a time regardless of this setting."));
-            y += ROW_H;
+            y = addSection(y, "Magic Balance", "Global stamina economy, backlash, and discovery pacing.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Stamina Regeneration", "Extra multiplier layered on top of the active difficulty tier.",
+                editRegenExtra, .1f, 5f, v -> fmt(v) + "×",
+                v -> { editRegenExtra = v; pushServerUpdate(); },
+                "1.00× means no additional change beyond difficulty.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Spell Cost", "Extra multiplier applied to every normal Dragon Speech cast.",
+                editCostExtra, .1f, 5f, v -> fmt(v) + "×",
+                v -> { editCostExtra = v; pushServerUpdate(); },
+                "1.00× means no additional change beyond difficulty.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Backlash Severity", "Scales the penalty when a caster overreaches or fails dangerously.",
+                editBacklashSeverity, 0f, 3f, v -> fmt(v) + "×",
+                v -> { editBacklashSeverity = v; pushServerUpdate(); },
+                "0 disables the extra backlash penalty; 1.00× is normal.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "Word Loot Chance", "How often word tablets and scholar fragments appear in loot.",
+                editWordLootChance, 0f, 3f, v -> fmt(v) + "×",
+                v -> { editWordLootChance = v; pushServerUpdate(); },
+                "Loot-table changes take effect after a world load or /reload.");
 
-            y = serverRow(y, rowX, rowW, "Found Heart Stamina Min", "", editFoundHeartMin, 100f, 2000f,
-                    v -> { editFoundHeartMin = v; pushServerUpdate(); },
-                    "The lower end of the random stamina range rolled for a Dragon Heart with no living source dragon (found in the world, or obtained in creative).", true);
-            y = serverRow(y, rowX, rowW, "Found Heart Stamina Max", "", editFoundHeartMax, 100f, 2000f,
-                    v -> { editFoundHeartMax = v; pushServerUpdate(); },
-                    "The upper end of that same random stamina range.", true);
+            y = addSection(y, "Mind Magic", "Player-vs-player mind rules and AI workload limits.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Allow PvP Mind Duels", "Permit players to Reach Out and start Mind Duels against other players.",
+                editAllowPvpDuels, v -> { editAllowPvpDuels = v; pushServerUpdate(); },
+                "Mind Duels against mobs are not affected.");
+            y = addToggleRow(y, textX, textW, controlX, controlW,
+                "Allow Controlling Players", "Permit a successful player Mind Duel to grant remote body control.",
+                editAllowControlOfPlayers, v -> { editAllowControlOfPlayers = v; pushServerUpdate(); },
+                "This is separate from merely allowing the duel itself.");
+            y = addSliderRow(y, textX, textW, controlX, controlW,
+                "AI Compute Budget", "Maximum mind-duel AI decisions processed per pulse across the server.",
+                editAiComputeBudget, 0f, 500f,
+                v -> Math.round(v) <= 0 ? "Unlimited" : Integer.toString(Math.round(v)),
+                v -> { editAiComputeBudget = Math.round(v); pushServerUpdate(); },
+                "0 is unlimited. Lower caps can reduce worst-case server load in very large fights.");
 
-            y = serverRow(y, rowX, rowW, "Regen Multiplier", "x, on top of difficulty", editRegenExtra, 0.1f, 5.0f,
-                    v -> { editRegenExtra = v; pushServerUpdate(); },
-                    "An extra stamina regen multiplier, layered on top of whatever Magic Difficulty already applies. 1.0 = no extra change.", false);
-            y = serverRow(y, rowX, rowW, "Spell Cost Multiplier", "x, on top of difficulty", editCostExtra, 0.1f, 5.0f,
-                    v -> { editCostExtra = v; pushServerUpdate(); },
-                    "An extra spell cost multiplier, layered on top of whatever Magic Difficulty already applies. 1.0 = no extra change.", false);
-            y = serverRow(y, rowX, rowW, "Backlash Severity", "x", editBacklashSeverity, 0.0f, 5.0f,
-                    v -> { editBacklashSeverity = v; pushServerUpdate(); },
-                    "How harsh the stamina/health penalty is for a wrong word guess. 0 removes the penalty entirely.", false);
+            y = addSection(y, "Advanced", "Detailed rules and addon-provided configuration.");
+            y = addActionRow(y, textX, textW, controlX, controlW,
+                "Sentience Tiers", "Assign mind strength and reaction-speed overrides to individual mob types.",
+                "Open Editor", b -> Minecraft.getInstance().setScreen(new SentienceEditorScreen(this)),
+                "Opens the full sentience editor.");
+            y = addActionRow(y, textX, textW, controlX, controlW,
+                "Reload Sentience Config", "Re-read config/dragonspeech/sentience.json without restarting.",
+                "Reload Now", b -> {
+                    if (isConnected()) ClientPlayNetworking.send(new ReloadSentiencePayload());
+                    else SentienceConfig.bootstrap();
+                }, "Reloads sentience overrides immediately.");
 
-            addRowWidget(y, tip(CycleButton.onOffBuilder(editAllowPvpDuels)
-                    .create(rowX, y, rowW, 20, Component.literal("Allow PvP Mind Duels"),
-                            (btn, val) -> { editAllowPvpDuels = val; pushServerUpdate(); }),
-                    "Whether a player may Reach Out and start a Mind Duel against another real player. Duels against mobs are never affected by this."));
-            y += ROW_H;
-
-            addRowWidget(y, tip(CycleButton.onOffBuilder(editAllowControlOfPlayers)
-                    .create(rowX, y, rowW, 20, Component.literal("Allow Controlling Players"),
-                            (btn, val) -> { editAllowControlOfPlayers = val; pushServerUpdate(); }),
-                    "Whether winning a Mind Duel against another player lets you take remote Control of their body. Off by default - this is a much bigger deal than simply dueling."));
-            y += ROW_H;
-
-            y = serverRow(y, rowX, rowW, "Word Loot Chance", "x, needs reload", editWordLootChance, 0.0f, 3.0f,
-                    v -> { editWordLootChance = v; pushServerUpdate(); },
-                    "Multiplies how often word tablets and scholar's fragments appear in loot. Takes effect the next time loot tables reload (world load, or /reload).", false);
-            y = serverRow(y, rowX, rowW, "Egg Hatch Speed", "x", editEggHatchSpeed, 0.1f, 5.0f,
-                    v -> { editEggHatchSpeed = v; pushServerUpdate(); },
-                    "Multiplies how fast dragon eggs hatch on average.", false);
-
-            y = row(y, rowX, rowW, v -> "AI Compute Budget (" + (Math.round(v) <= 0 ? "Unlimited" : Math.round(v)) + ")",
-                    editAiComputeBudget, 0f, 500f,
-                    v -> { editAiComputeBudget = Math.round(v); pushServerUpdate(); },
-                    "Caps how many mind-duel AI actor-decisions run per pulse, server-wide - applies to the built-in heuristic AND any addon-registered AI alike. 0 = unlimited.");
-
-            addRowWidget(y, tip(Button.builder(Component.literal("Edit Sentience Tiers"),
-                    b -> Minecraft.getInstance().setScreen(new SentienceEditorScreen(this)))
-                    .bounds(rowX, y, rowW, 20).build(),
-                    "Opens the full mob list - assign a mind-strength tier and/or a numeric reaction-speed override to any mob, vanilla or modded."));
-            y += ROW_H;
-
-            addRowWidget(y, tip(Button.builder(Component.literal("Reload Sentience Config"),
-                    b -> {
-                        if (isConnected()) {
-                            ClientPlayNetworking.send(new ReloadSentiencePayload());
-                        } else {
-                            SentienceConfig.bootstrap();
-                        }
-                    })
-                    .bounds(rowX, y, rowW, 20).build(),
-                    "Re-reads config/dragonspeech/sentience.json immediately, without needing to restart the server."));
-            y += ROW_H;
-
-            // Addon buttons - one per registered com.dragonspeech.client.api.DragonSpeechAddonScreens
-            // entry (e.g. a Neural Network addon's own editor). ConfigScreen never references any
-            // addon's class by name - if nothing's registered, this loop simply adds nothing, and the
-            // Server tab looks exactly like it does today.
             for (var entry : com.dragonspeech.client.api.DragonSpeechAddonScreens.entries()) {
-                addRowWidget(y, tip(Button.builder(Component.literal(entry.buttonLabel()),
-                        b -> Minecraft.getInstance().setScreen(entry.screenFactory().apply(this)))
-                        .bounds(rowX, y, rowW, 20).build(),
-                        entry.tooltip()));
-                y += ROW_H;
+                y = addActionRow(y, textX, textW, controlX, controlW,
+                    entry.buttonLabel(), "Configuration supplied by an installed Dragon Speech addon.",
+                    "Open", b -> Minecraft.getInstance().setScreen(entry.screenFactory().apply(this)), entry.tooltip());
             }
         }
 
-        // Real content height for THIS tab, independent of the current scrollOffset (it cancels out
-        // in the subtraction below) - see this class's own doc for why this fixes the scroll bug.
-        int contentHeight = y - startY;
-        int visibleHeight = panelH - CONTENT_TOP - BOTTOM_ROW_H;
-        maxScroll = Math.max(0, contentHeight - visibleHeight);
+        int contentHeight = y - (contentTop - scrollOffset);
+        int visibleHeight = contentBottom - contentTop;
+        maxScroll = Math.max(0, contentHeight - visibleHeight + 6);
         if (scrollOffset > maxScroll) {
             scrollOffset = maxScroll;
             rebuild();
             return;
         }
 
-        addRenderableWidget(tip(Button.builder(Component.literal("Reset This Page"), b -> resetThisPage())
-                .bounds(panelX + 8, panelY + panelH - 48, PANEL_W / 2 - 12, 20).build(),
-                activeTab == Tab.CLIENT
-                        ? "Restores every Client-tab setting to its default. Does not touch Server-tab settings."
-                        : "Restores this tab's own settings to their defaults. Does not touch Magic Difficulty rules or sentience overrides - those reset separately on their own screens."));
-        addRenderableWidget(tip(Button.builder(Component.literal("Reset All Configs"), b -> resetAllConfigs())
-                .bounds(panelX + PANEL_W / 2 + 4, panelY + panelH - 48, PANEL_W / 2 - 12, 20).build(),
-                "The universal reset - restores EVERYTHING: Client tab, Server tab, Magic Difficulty rules for all 3 tiers, and every sentience override."));
+        addFooterButtons();
+    }
 
+    private int addSection(int y, String title, String subtitle) {
+        sections.add(new SectionVisual(y, title, subtitle));
+        return y + SECTION_H;
+    }
+
+    private int addSliderRow(int y, int textX, int textW, int controlX, int controlW,
+                             String label, String description, float value, float min, float max,
+                             Function<Float, String> valueFormatter, java.util.function.Consumer<Float> onCommit,
+                             String tooltip) {
+        addRowVisual(y, label, description);
+        if (isRowVisible(y)) {
+            addRenderableWidget(tip(new FloatSlider(controlX, y + 11, controlW, 20, valueFormatter, value, min, max, onCommit), tooltip));
+        }
+        return y + ROW_H;
+    }
+
+    private int addToggleRow(int y, int textX, int textW, int controlX, int controlW,
+                             String label, String description, boolean value,
+                             java.util.function.Consumer<Boolean> onCommit, String tooltip) {
+        addRowVisual(y, label, description);
+        if (isRowVisible(y)) {
+            Button button = Button.builder(Component.literal(value ? "Enabled" : "Disabled"), b -> {
+                onCommit.accept(!value);
+                rebuild();
+            }).bounds(controlX, y + 11, controlW, 20).build();
+            addRenderableWidget(tip(button, tooltip));
+        }
+        return y + ROW_H;
+    }
+
+    private <T> int addEnumRow(int y, int textX, int textW, int controlX, int controlW,
+                               String label, String description, T current, T[] values,
+                               java.util.function.Consumer<T> onCommit, String tooltip) {
+        addRowVisual(y, label, description);
+        if (isRowVisible(y)) {
+            CycleButton<T> cycle = CycleButton.<T>builder(v -> Component.literal(prettyEnum(v.toString())))
+                .withValues(values)
+                .withInitialValue(current)
+                .create(controlX, y + 11, controlW, 20, Component.literal("Position"),
+                    (btn, val) -> onCommit.accept(val));
+            addRenderableWidget(tip(cycle, tooltip));
+        }
+        return y + ROW_H;
+    }
+
+    private int addActionRow(int y, int textX, int textW, int controlX, int controlW,
+                             String label, String description, String buttonText,
+                             Button.OnPress onPress, String tooltip) {
+        addRowVisual(y, label, description);
+        if (isRowVisible(y)) {
+            addRenderableWidget(tip(Button.builder(Component.literal(buttonText), onPress)
+                .bounds(controlX, y + 11, controlW, 20).build(), tooltip));
+        }
+        return y + ROW_H;
+    }
+
+    private int addDifficultyCard(int y, int textX, int textW, int controlX, int controlW) {
+        String diffName = isConnected() ? ServerConfigClientCache.difficulty() : DragonSpeechConfig.difficulty().name();
+        float diffHealth = isConnected() ? ServerConfigClientCache.difficultyMinSurvivableHealth() : DragonSpeechConfig.minSurvivableHealth();
+        float diffRegen = isConnected() ? ServerConfigClientCache.difficultyRegenMultiplier() : DragonSpeechConfig.regenMultiplier();
+        float diffCost = isConnected() ? ServerConfigClientCache.difficultyCostMultiplier() : DragonSpeechConfig.costMultiplier();
+        float diffSpacing = isConnected() ? ServerConfigClientCache.difficultyStructureSpacingMultiplier() : DragonSpeechConfig.structureSpacingMultiplier();
+
+        int h = 78;
+        rows.add(new RowVisual(y, h, "Difficulty: " + prettyEnum(diffName),
+            "Active tier is selected during world creation. The button opens the rules behind each tier.", false));
+        infoLines.add(new InfoLine(y + 37, "Health floor: " + fmt(diffHealth / 2f) + " hearts  ·  Regen: " + fmt(diffRegen) + "×  ·  Cost: " + fmt(diffCost) + "×", C_TEXT_DIM));
+        infoLines.add(new InfoLine(y + 50, "Structure rarity: " + fmt(diffSpacing) + "×" + (!isConnected() ? "  ·  local defaults" : ""), C_TEXT_DIM));
+        if (isRowVisible(y, h)) {
+            addRenderableWidget(tip(Button.builder(Component.literal("Edit Tier Rules"),
+                b -> Minecraft.getInstance().setScreen(new DifficultyTuningScreen(this)))
+                .bounds(controlX, y + 11, controlW, 20).build(),
+                "Redefine Easy/Normal/Hard health floor, stamina regeneration, spell cost, and structure rarity."));
+        }
+        return y + h;
+    }
+
+    private void addRowVisual(int y, String label, String description) {
+        rows.add(new RowVisual(y, ROW_H, label, description, (rows.size() & 1) == 1));
+    }
+
+    private void addFooterButtons() {
+        int gap = 6;
+        int innerX = panelX + 14;
+        int innerW = panelW - 28;
+        int buttonW = (innerW - gap * 2) / 3;
+        int y = panelY + panelH - 32;
+
+        addRenderableWidget(tip(Button.builder(Component.literal("Reset Page"), b -> resetThisPage())
+            .bounds(innerX, y, buttonW, 22).build(),
+            activeTab == Tab.CLIENT
+                ? "Reset only Client settings to defaults."
+                : "Reset the main Server-tab settings. Difficulty and sentience editors keep their own separate resets."));
+        addRenderableWidget(tip(Button.builder(Component.literal("Reset Everything"), b -> resetAllConfigs())
+            .bounds(innerX + buttonW + gap, y, buttonW, 22).build(),
+            "Reset Client settings plus all server extras, difficulty tuning, and sentience overrides."));
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-                .bounds(panelX + PANEL_W / 2 - 50, panelY + panelH - 24, 100, 20).build());
+            .bounds(innerX + (buttonW + gap) * 2, y, buttonW, 22).build());
     }
 
-    private int clientRow(int y, int rowX, int rowW, String labelPrefix, String suffix, float value, float min, float max, java.util.function.Consumer<Float> onCommit, String tooltip) {
-        Function<Float, String> formatter = v -> labelPrefix + " (" + fmt(v) + suffix + ")";
-        addRowWidget(y, tip(new FloatSlider(rowX, y, rowW, 20, formatter, value, min, max, onCommit), tooltip));
-        return y + ROW_H;
+    private boolean isRowVisible(int y) {
+        return isRowVisible(y, ROW_H);
     }
 
-    /** wholeNumbers=true rounds the displayed value instead of showing 2 decimal places (used for the heart-stamina rows, which are always whole numbers in practice). */
-    private int serverRow(int y, int rowX, int rowW, String labelPrefix, String suffix, float value, float min, float max, java.util.function.Consumer<Float> onCommit, String tooltip, boolean wholeNumbers) {
-        Function<Float, String> formatter = wholeNumbers
-                ? v -> labelPrefix + " (" + Math.round(v) + (suffix.isEmpty() ? "" : " " + suffix) + ")"
-                : v -> labelPrefix + " (" + fmt(v) + suffix + ")";
-        addRowWidget(y, tip(new FloatSlider(rowX, y, rowW, 20, formatter, value, min, max, onCommit), tooltip));
-        return y + ROW_H;
-    }
-
-    /** Generic form for rows whose display text isn't a simple "prefix (value suffix)" shape - e.g. AI Compute Budget's "Unlimited" special-case at 0. */
-    private int row(int y, int rowX, int rowW, Function<Float, String> formatter, float value, float min, float max, java.util.function.Consumer<Float> onCommit, String tooltip) {
-        addRowWidget(y, tip(new FloatSlider(rowX, y, rowW, 20, formatter, value, min, max, onCommit), tooltip));
-        return y + ROW_H;
+    private boolean isRowVisible(int y, int height) {
+        return y + height > contentTop && y < contentBottom;
     }
 
     private static <T extends AbstractWidget> T tip(T widget, String text) {
@@ -392,36 +451,13 @@ public class ConfigScreen extends Screen {
         return widget;
     }
 
-    /**
-     * THE ACTUAL FIX for "buttons overlap then continue... out of sight" (the bottom half of that bug
-     * report): maxScroll alone only stops the SCROLL POSITION from going too far - it never stopped a
-     * row's WIDGET from being added to the screen in the first place when its computed y fell outside
-     * the visible content window (e.g. at scrollOffset=0 with more rows than fit). Every scrollable
-     * row now goes through addRowWidget() below, which simply skips adding the widget at all when its
-     * row isn't currently within the visible area - the row still occupies its normal ROW_H of space
-     * for layout/scroll-math purposes, it just isn't drawn or clickable until scrolled into view. Tab
-     * buttons, Reset buttons, and Done are unaffected - they're fixed-position and never go through
-     * this check.
-     */
-    private boolean isRowVisible(int y) {
-        int top = panelY + CONTENT_TOP - 4;
-        int bottom = panelY + panelH - BOTTOM_ROW_H;
-        return y + 20 > top && y < bottom;
-    }
-
-    private void addRowWidget(int y, AbstractWidget widget) {
-        if (isRowVisible(y)) {
-            addRenderableWidget(widget);
-        }
-    }
-
     private void switchTab(Tab tab) {
+        if (tab == Tab.SERVER && !canShowServerTab()) return;
         activeTab = tab;
         scrollOffset = 0;
         rebuild();
     }
 
-    /** "Reset This Page" - only the currently active tab. See this class's own doc for exactly what each tab's reset does and doesn't touch. */
     private void resetThisPage() {
         if (activeTab == Tab.CLIENT) {
             DragonSpeechClientConfig.resetToDefaults();
@@ -434,7 +470,6 @@ public class ConfigScreen extends Screen {
         rebuild();
     }
 
-    /** "Reset All Configs" - the universal reset. Client settings always reset locally (they're never server data); everything else follows the same offline/online split as every other Server-tab edit. */
     private void resetAllConfigs() {
         DragonSpeechClientConfig.resetToDefaults();
         if (isConnected()) {
@@ -448,14 +483,6 @@ public class ConfigScreen extends Screen {
         rebuild();
     }
 
-    /**
-     * Applies the WHOLE current local Server-tab state - matches the "full state on every change"
-     * convention. OFFLINE (Title Screen): writes straight to DragonSpeechConfig via its own setters
-     * (each already clamps + saves to config/dragonspeech.json individually - see that class). ONLINE:
-     * sends it to the server instead, which re-validates permission before applying anything - a
-     * client is never trusted to enforce that on its own, even though the UI already hides this tab
-     * from anyone the server hasn't confirmed as op level 4.
-     */
     private void pushServerUpdate() {
         if (!isConnected()) {
             DragonSpeechConfig.setAllowRebondAfterDeath(editAllowRebondAfterDeath);
@@ -468,9 +495,11 @@ public class ConfigScreen extends Screen {
             DragonSpeechConfig.setAllowControlOfPlayers(editAllowControlOfPlayers);
             DragonSpeechConfig.setWordLootChanceMultiplier(editWordLootChance);
             DragonSpeechConfig.setEggHatchSpeedMultiplier(editEggHatchSpeed);
+            DragonSpeechConfig.setBonusChestDragonEggEnabled(editBonusChestDragonEgg);
             DragonSpeechConfig.setAiComputeBudget((int) editAiComputeBudget);
             return;
         }
+
         JsonObject root = new JsonObject();
         root.addProperty("allow_rebond_after_death", editAllowRebondAfterDeath);
         root.addProperty("found_heart_stamina_min", editFoundHeartMin);
@@ -482,60 +511,217 @@ public class ConfigScreen extends Screen {
         root.addProperty("allow_control_of_players", editAllowControlOfPlayers);
         root.addProperty("word_loot_chance_multiplier", editWordLootChance);
         root.addProperty("egg_hatch_speed_multiplier", editEggHatchSpeed);
+        root.addProperty("bonus_chest_dragon_egg_enabled", editBonusChestDragonEgg);
         root.addProperty("ai_compute_budget", (int) editAiComputeBudget);
         ClientPlayNetworking.send(new ConfigUpdatePayload(root.toString()));
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        // FIX: previously only clamped at 0 (no upper bound at all), so scrolling past the end of a
-        // tab's content just kept going indefinitely - overlapping the tab bar/reset/done row on the
-        // way, then vanishing off the top of the panel. maxScroll (recomputed from real content height
-        // every rebuild()) now bounds both directions.
-        scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int) (scrollY * ROW_H)));
+        if (mouseX < panelX || mouseX > panelX + panelW || mouseY < contentTop || mouseY > contentBottom) {
+            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }
+        scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int) Math.round(scrollY * 30.0)));
         rebuild();
         return true;
     }
 
-    /**
-     * THE REAL FIX (matches DragonBondScreen's own documented fix for the exact same bug):
-     * Screen.render() calls this.renderBackground(...) internally, which calls
-     * renderBlurredBackground() -> gameRenderer.processBlurEffect(). Simply not calling
-     * this.renderBackground(...) from OUR OWN render() below isn't enough - render()'s own
-     * super.render() call (needed to actually draw the buttons/sliders in the renderables list)
-     * independently calls this.renderBackground() again on its own, reintroducing the exact
-     * blur that was supposed to be removed. Overriding renderBackground() itself as a no-op
-     * stops it at the source regardless of which path calls it - the plain solid fill in
-     * render() below is this screen's only background now.
-     */
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // Intentionally empty.
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // Intentionally no vanilla blur. render() below supplies the complete background.
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // Our own plain solid overlay - renderBackground() above is now a no-op, so this is the
-        // only background this screen draws. No blur, matching this mod's other screens.
-        graphics.fill(0, 0, this.width, this.height, 0xFF0A0808);
-        graphics.fill(panelX - 2, panelY - 2, panelX + PANEL_W + 2, panelY + panelH + 2, C_BORDER);
-        graphics.fill(panelX, panelY, panelX + PANEL_W, panelY + panelH, C_BG);
-        graphics.drawCenteredString(this.font, this.title, panelX + PANEL_W / 2, panelY + 6, C_TEXT);
+        long now = System.currentTimeMillis();
+        int accent = activeTab == Tab.CLIENT ? C_CLIENT : C_SERVER;
 
-        // Clip the scrolling info text to the content area so it disappears behind the reset/done row
-        // rather than drawing over it while scrolled. maxScroll now also keeps the WIDGETS themselves
-        // from ever reaching this far in the first place (see rebuild()'s own doc), so this scissor is
-        // now a belt-and-suspenders safety net for the text specifically, not the only thing keeping
-        // content contained.
-        graphics.enableScissor(panelX, panelY + CONTENT_TOP - 14, panelX + PANEL_W, panelY + panelH - BOTTOM_ROW_H - 4);
-        int lineY = serverInfoY;
-        for (String line : serverInfoLines) {
-            graphics.drawString(this.font, line, panelX + 12, lineY, C_TEXT_DIM, false);
-            lineY += 10;
+        renderArcaneBackdrop(graphics, now, accent);
+
+        // Multi-layer frame: dark glass center, faint outer glow, bright scope rail.
+        glowRect(graphics, panelX - 4, panelY - 4, panelX + panelW + 4, panelY + panelH + 4, accent, 26);
+        graphics.fill(panelX - 2, panelY - 2, panelX + panelW + 2, panelY + panelH + 2, C_BORDER);
+        graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, C_PANEL);
+        graphics.fill(panelX + 5, panelY + 5, panelX + panelW - 5, panelY + panelH - 5, C_PANEL_INNER);
+        graphics.fill(panelX + 5, panelY + 5, panelX + panelW - 5, panelY + HEADER_H - 5, C_HEADER);
+
+        // Scope rail + animated pulse travelling down it.
+        graphics.fill(panelX + 5, panelY + 5, panelX + 8, panelY + panelH - 5, withAlpha(accent, 180));
+        int railSpan = Math.max(1, panelH - 28);
+        int pulseY = panelY + 14 + (int) ((now / 10L) % railSpan);
+        graphics.fill(panelX + 4, pulseY - 5, panelX + 9, pulseY + 5, withAlpha(accent, 220));
+
+        // Header identity. The sigil is deliberately geometry-only so no external texture pack is
+        // required and it remains crisp at every GUI scale.
+        drawArcaneSigil(graphics, panelX + 31, panelY + 26, 15, accent, now);
+        graphics.drawString(this.font, "DRAGON SPEECH", panelX + 56, panelY + 13, C_TEXT, false);
+        graphics.drawString(this.font, "CONFIGURATION MATRIX", panelX + 56, panelY + 26, withAlpha(accent, 235), false);
+        String subtitle = activeTab == Tab.CLIENT
+            ? "LOCAL CHANNEL  ·  visuals, HUD, camera and interface"
+            : (isConnected()
+                ? "WORLD CHANNEL  ·  authoritative rules synced from this server"
+                : "WORLD CHANNEL  ·  defaults for worlds hosted by this installation");
+        graphics.drawString(this.font, clip(subtitle, panelW - 150), panelX + 56, panelY + 39, C_TEXT_DIM, false);
+
+        // Draw custom tab beds behind the vanilla click targets. Their active glow animates, while
+        // the real Button widgets stay responsible for accessibility, keyboard focus and clicks.
+        int innerX = panelX + 14;
+        int innerW = panelW - 28;
+        int tabGap = 6;
+        int tabW = (innerW - tabGap) / 2;
+        int tabY = panelY + 52;
+        drawTabBed(graphics, innerX, tabY, tabW, 24, activeTab == Tab.CLIENT, C_CLIENT, now);
+        drawTabBed(graphics, innerX + tabW + tabGap, tabY, tabW, 24, activeTab == Tab.SERVER, C_SERVER, now);
+
+        graphics.enableScissor(panelX + 9, contentTop, panelX + panelW - 9, contentBottom);
+
+        for (SectionVisual section : sections) {
+            if (section.y + SECTION_H <= contentTop || section.y >= contentBottom) continue;
+            boolean visible = section.y >= contentTop - SECTION_H && section.y <= contentBottom;
+            if (!visible) continue;
+            int pulse = 120 + (int) (70 * (0.5 + 0.5 * Math.sin(now / 360.0 + section.y * 0.045)));
+            graphics.fill(panelX + 16, section.y + 4, panelX + panelW - 16, section.y + SECTION_H - 4, 0xB0141822);
+            graphics.fill(panelX + 16, section.y + 4, panelX + 20, section.y + SECTION_H - 4, withAlpha(accent, pulse));
+            graphics.fill(panelX + 22, section.y + SECTION_H - 6, panelX + panelW - 24, section.y + SECTION_H - 5, withAlpha(accent, 54));
+            graphics.drawString(this.font, section.title.toUpperCase(java.util.Locale.ROOT), panelX + 28, section.y + 8, C_TEXT, false);
+            int titleWidth = this.font.width(section.title.toUpperCase(java.util.Locale.ROOT)) + 10;
+            String small = clip(section.subtitle, Math.max(0, panelW - 78 - titleWidth));
+            if (!small.isEmpty()) graphics.drawString(this.font, small, panelX + 28 + titleWidth, section.y + 8, C_TEXT_DIM, false);
         }
+
+        for (RowVisual row : rows) {
+            if (row.y + row.height <= contentTop || row.y >= contentBottom) continue;
+            boolean hovered = mouseX >= panelX + 16 && mouseX <= panelX + panelW - 16
+                && mouseY >= row.y + 2 && mouseY <= row.y + row.height - 2;
+            int bg = hovered ? C_ROW_HOVER : (row.alternate ? C_ROW_ALT : C_ROW);
+            int left = panelX + 16;
+            int right = panelX + panelW - 16;
+            graphics.fill(left, row.y + 3, right, row.y + row.height - 3, bg);
+            graphics.fill(left, row.y + 3, left + 2, row.y + row.height - 3, withAlpha(accent, hovered ? 220 : 72));
+            if (hovered) {
+                int travel = Math.max(1, right - left - 32);
+                int sparkX = left + 10 + (int) ((now / 7L) % travel);
+                graphics.fill(sparkX, row.y + 3, sparkX + 18, row.y + 4, withAlpha(accent, 180));
+                graphics.fill(left + 4, row.y + row.height - 4, right - 4, row.y + row.height - 3, withAlpha(accent, 58));
+            }
+            graphics.drawString(this.font, clip(row.label, Math.max(92, panelW - 310)), panelX + 28, row.y + 10, C_TEXT, false);
+            graphics.drawString(this.font, clip(row.description, Math.max(100, panelW - 320)), panelX + 28, row.y + 27, C_TEXT_DIM, false);
+        }
+
+        for (InfoLine line : infoLines) {
+            if (line.y >= contentTop && line.y < contentBottom) {
+                graphics.drawString(this.font, clip(line.text, panelW - 285), panelX + 28, line.y, line.color, false);
+            }
+        }
+
         graphics.disableScissor();
 
+        // Footer is a separate command deck, not part of the scrolling list.
+        graphics.fill(panelX + 10, contentBottom, panelX + panelW - 10, contentBottom + 1, withAlpha(accent, 90));
+        graphics.fill(panelX + 12, contentBottom + 6, panelX + panelW - 12, panelY + panelH - 8, 0x9A0C0F17);
+        graphics.drawString(this.font, activeTab == Tab.CLIENT ? "SCOPE: CLIENT" : "SCOPE: SERVER", panelX + 20, contentBottom + 8, withAlpha(accent, 190), false);
+
+        if (maxScroll > 0) {
+            int trackTop = contentTop + 5;
+            int trackBottom = contentBottom - 5;
+            int trackH = trackBottom - trackTop;
+            int thumbH = Math.max(24, (int) (trackH * (trackH / (double) (trackH + maxScroll))));
+            int thumbY = trackTop + (int) ((trackH - thumbH) * (scrollOffset / (double) maxScroll));
+            graphics.fill(panelX + panelW - 10, trackTop, panelX + panelW - 7, trackBottom, 0x55303848);
+            graphics.fill(panelX + panelW - 10, thumbY, panelX + panelW - 7, thumbY + thumbH, withAlpha(accent, 210));
+            graphics.fill(panelX + panelW - 11, thumbY + 2, panelX + panelW - 6, thumbY + thumbH - 2, withAlpha(accent, 48));
+        }
+
+        drawCornerRunes(graphics, panelX, panelY, panelW, panelH, accent, now);
         super.render(graphics, mouseX, mouseY, partialTick);
+    }
+
+    private void renderArcaneBackdrop(GuiGraphics graphics, long now, int accent) {
+        graphics.fill(0, 0, this.width, this.height, C_SCREEN);
+
+        // Slowly drifting one-pixel motes. Positions are deterministic, so the backdrop feels alive
+        // without allocations, particles, textures, or random state.
+        for (int i = 0; i < 28; i++) {
+            int speed = 7 + (i % 5) * 3;
+            int x = Math.floorMod(i * 83 + (int) (now / speed), Math.max(1, this.width));
+            int baseY = Math.floorMod(i * 47, Math.max(1, this.height));
+            int y = baseY + (int) Math.round(Math.sin(now / 750.0 + i * 1.7) * 5.0);
+            int alpha = 24 + (i % 4) * 10;
+            graphics.fill(x, y, x + 1 + (i % 2), y + 1 + (i % 2), withAlpha(accent, alpha));
+        }
+
+        // Faint horizontal magic traces moving in the opposite direction.
+        int traceOffset = (int) ((now / 24L) % 96L);
+        for (int y = 18; y < this.height; y += 46) {
+            for (int x = -96 + traceOffset; x < this.width; x += 96) {
+                graphics.fill(x, y, x + 24, y + 1, withAlpha(accent, 13));
+            }
+        }
+    }
+
+    private void drawArcaneSigil(GuiGraphics graphics, int cx, int cy, int radius, int accent, long now) {
+        double phase = now / 550.0;
+        int pulseAlpha = 130 + (int) (70 * (0.5 + 0.5 * Math.sin(now / 300.0)));
+        // Core
+        graphics.fill(cx - 2, cy - 2, cx + 3, cy + 3, withAlpha(accent, 235));
+        glowRect(graphics, cx - 4, cy - 4, cx + 5, cy + 5, accent, 30);
+        // Two orbiting motes plus a dotted ring.
+        for (int i = 0; i < 20; i++) {
+            double a = (Math.PI * 2.0 * i / 20.0) + phase * 0.18;
+            int x = cx + (int) Math.round(Math.cos(a) * radius);
+            int y = cy + (int) Math.round(Math.sin(a) * radius);
+            graphics.fill(x, y, x + 1, y + 1, withAlpha(accent, 74));
+        }
+        for (int i = 0; i < 2; i++) {
+            double a = phase * (i == 0 ? 1.0 : -0.72) + i * Math.PI;
+            int r = radius - 3 + i * 5;
+            int x = cx + (int) Math.round(Math.cos(a) * r);
+            int y = cy + (int) Math.round(Math.sin(a) * r);
+            graphics.fill(x - 1, y - 1, x + 2, y + 2, withAlpha(accent, pulseAlpha));
+        }
+        // Four rune spokes.
+        graphics.fill(cx - radius + 4, cy, cx - 5, cy + 1, withAlpha(accent, 80));
+        graphics.fill(cx + 6, cy, cx + radius - 3, cy + 1, withAlpha(accent, 80));
+        graphics.fill(cx, cy - radius + 4, cx + 1, cy - 5, withAlpha(accent, 80));
+        graphics.fill(cx, cy + 6, cx + 1, cy + radius - 3, withAlpha(accent, 80));
+    }
+
+    private void drawTabBed(GuiGraphics graphics, int x, int y, int w, int h, boolean active, int color, long now) {
+        int alpha = active ? 112 + (int) (38 * (0.5 + 0.5 * Math.sin(now / 330.0))) : 34;
+        graphics.fill(x - 1, y - 1, x + w + 1, y + h + 1, withAlpha(color, alpha));
+        graphics.fill(x + 2, y + h - 2, x + w - 2, y + h, withAlpha(color, active ? 230 : 64));
+        if (active) glowRect(graphics, x - 2, y - 2, x + w + 2, y + h + 2, color, 16);
+    }
+
+    private void drawCornerRunes(GuiGraphics graphics, int x, int y, int w, int h, int accent, long now) {
+        int a = 90 + (int) (50 * (0.5 + 0.5 * Math.sin(now / 480.0)));
+        int c = withAlpha(accent, a);
+        // Top-left / bottom-right bracket glyphs.
+        graphics.fill(x + 10, y + 9, x + 30, y + 10, c);
+        graphics.fill(x + 10, y + 9, x + 11, y + 22, c);
+        graphics.fill(x + w - 30, y + h - 10, x + w - 10, y + h - 9, c);
+        graphics.fill(x + w - 11, y + h - 22, x + w - 10, y + h - 9, c);
+    }
+
+    private static void glowRect(GuiGraphics graphics, int x1, int y1, int x2, int y2, int color, int baseAlpha) {
+        for (int i = 3; i >= 1; i--) {
+            int alpha = Math.max(2, baseAlpha / (i + 1));
+            graphics.fill(x1 - i, y1 - i, x2 + i, y1 - i + 1, withAlpha(color, alpha));
+            graphics.fill(x1 - i, y2 + i - 1, x2 + i, y2 + i, withAlpha(color, alpha));
+            graphics.fill(x1 - i, y1 - i, x1 - i + 1, y2 + i, withAlpha(color, alpha));
+            graphics.fill(x2 + i - 1, y1 - i, x2 + i, y2 + i, withAlpha(color, alpha));
+        }
+    }
+
+    private static int withAlpha(int argb, int alpha) {
+        return (Math.max(0, Math.min(255, alpha)) << 24) | (argb & 0x00FFFFFF);
+    }
+
+    private String clip(String text, int width) {
+        if (width <= 8) return "";
+        if (font.width(text) <= width) return text;
+        String ellipsis = "…";
+        return font.plainSubstrByWidth(text, Math.max(1, width - font.width(ellipsis))) + ellipsis;
     }
 
     private static String fmt(float v) {
@@ -543,11 +729,14 @@ public class ConfigScreen extends Screen {
     }
 
     private static String prettyEnum(String name) {
+        if (name == null || name.isBlank()) return "Unknown";
         String[] parts = name.split("_");
         StringBuilder sb = new StringBuilder();
         for (String part : parts) {
+            if (part.isBlank()) continue;
             if (!sb.isEmpty()) sb.append(' ');
-            sb.append(part.charAt(0)).append(part.substring(1).toLowerCase(java.util.Locale.ROOT));
+            sb.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) sb.append(part.substring(1).toLowerCase(java.util.Locale.ROOT));
         }
         return sb.toString();
     }
@@ -562,28 +751,25 @@ public class ConfigScreen extends Screen {
         return parent == null;
     }
 
-    /**
-     * Generic float slider - same shape as DragonBondScreen's own LimiterSlider, generalized with
-     * min/max/a label FORMATTER (fixed per bug report - see this class's own top-level doc for why a
-     * frozen string wasn't enough to keep the displayed number live during a drag).
-     */
+    /** Compact value-only slider; the row label and explanation live beside it rather than inside it. */
     private static class FloatSlider extends AbstractSliderButton {
-        private final Function<Float, String> labelFormatter;
+        private final Function<Float, String> formatter;
         private final float min;
         private final float max;
         private final java.util.function.Consumer<Float> onCommit;
 
-        FloatSlider(int x, int y, int w, int h, Function<Float, String> labelFormatter, float initial, float min, float max, java.util.function.Consumer<Float> onCommit) {
-            super(x, y, w, h, Component.literal(labelFormatter.apply(initial)), clampFraction((initial - min) / (max - min)));
-            this.labelFormatter = labelFormatter;
+        FloatSlider(int x, int y, int w, int h, Function<Float, String> formatter,
+                    float initial, float min, float max, java.util.function.Consumer<Float> onCommit) {
+            super(x, y, w, h, Component.literal(formatter.apply(initial)), clampFraction((initial - min) / (max - min)));
+            this.formatter = formatter;
             this.min = min;
             this.max = max;
             this.onCommit = onCommit;
         }
 
-        private static double clampFraction(double v) {
-            if (Double.isNaN(v)) return 0.0;
-            return Math.max(0.0, Math.min(1.0, v));
+        private static double clampFraction(double value) {
+            if (Double.isNaN(value)) return 0.0;
+            return Math.max(0.0, Math.min(1.0, value));
         }
 
         private float currentValue() {
@@ -592,16 +778,12 @@ public class ConfigScreen extends Screen {
 
         @Override
         protected void updateMessage() {
-            // Recomputed from the LIVE dragged value every time vanilla calls this (continuously
-            // during a drag) - this is the actual live-update fix, not just a cosmetic rename.
-            this.setMessage(Component.literal(labelFormatter.apply(currentValue())));
+            setMessage(Component.literal(formatter.apply(currentValue())));
         }
 
         @Override
         protected void applyValue() {
-            if (onCommit != null) {
-                onCommit.accept(currentValue());
-            }
+            if (onCommit != null) onCommit.accept(currentValue());
         }
     }
 }

@@ -68,7 +68,7 @@ public class ScholarsFragmentItem extends Item {
                 case ANCIENT_TEXT -> 3;
                 case MENTOR_NPC -> 2;
                 case ELVEN_TRIAL -> 1;
-                case ADMIN_GRANTED, GUESSED -> 0;
+                case DANGER_WORD, ADMIN_GRANTED, GUESSED -> 0;
             };
             for (int i = 0; i < weight; i++) {
                 pool.add(id);

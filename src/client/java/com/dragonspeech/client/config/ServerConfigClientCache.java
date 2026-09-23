@@ -97,6 +97,10 @@ public final class ServerConfigClientCache {
         return getFloat("egg_hatch_speed_multiplier", 1.0f);
     }
 
+    public static boolean bonusChestDragonEggEnabled() {
+        return getBool("bonus_chest_dragon_egg_enabled", true);
+    }
+
     public static int aiComputeBudget() {
         return lastSync != null && lastSync.has("ai_compute_budget") ? lastSync.get("ai_compute_budget").getAsInt() : 0;
     }

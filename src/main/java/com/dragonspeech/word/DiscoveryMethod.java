@@ -18,6 +18,7 @@ public enum DiscoveryMethod implements StringRepresentable {
     MENTOR_NPC,
     ANCIENT_TEXT,
     ELVEN_TRIAL,
+    DANGER_WORD,
     ADMIN_GRANTED,
     GUESSED;
 

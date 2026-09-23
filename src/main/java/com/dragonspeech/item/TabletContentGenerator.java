@@ -130,7 +130,7 @@ public final class TabletContentGenerator {
             case ANCIENT_TEXT -> tier == 1 ? 3 : (tier == 2 ? 5 : 3);
             case MENTOR_NPC -> 2;
             case ELVEN_TRIAL -> tier == 1 ? 0 : (tier == 2 ? 2 : 6);
-            case ADMIN_GRANTED, GUESSED -> 0;
+            case DANGER_WORD, ADMIN_GRANTED, GUESSED -> 0;
         };
     }
 

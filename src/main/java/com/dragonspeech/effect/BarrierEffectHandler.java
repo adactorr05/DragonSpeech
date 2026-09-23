@@ -7,6 +7,7 @@ import com.dragonspeech.entity.BarrierShape;
 import com.dragonspeech.entity.DragonSpeechEntities;
 import com.dragonspeech.entity.MagicBarrierEntity;
 import com.dragonspeech.spell.RepetitionCost;
+import com.dragonspeech.spell.SustainMode;
 import com.dragonspeech.word.Word;
 import com.dragonspeech.word.WordCategory;
 import net.minecraft.resources.ResourceLocation;
@@ -209,10 +210,14 @@ public class BarrierEffectHandler implements EffectHandler {
         BarrierShape shape = resolveShape(invocation);
         boolean cage = isCage(invocation);
         boolean aflbound = isAflbound(invocation);
+        SustainMode sustainMode = SustainMode.from(invocation.composition());
         boolean flat = shape == BarrierShape.WALL;
         MagicAffinity affinity = resolveAffinity(invocation);
 
         float strength = 12f + power * 4f;
+        if (sustainMode == SustainMode.RESERVE) {
+            strength *= 1f + Math.max(0, invocation.composition().occurrencesOf("afla") - 1) * 0.5f;
+        }
         int lifetimeTicks = Math.round(20 * (8 + power * 2));
 
         // A CAGE traps whatever you're looking at - it has no reason to
@@ -242,7 +247,7 @@ public class BarrierEffectHandler implements EffectHandler {
             affinity,
             affinity == MagicAffinity.ARCANE ? defaultColor : affinity.color(),
             affinity == MagicAffinity.ARCANE ? defaultFade : affinity.fadeColor(),
-            strength, lifetimeTicks, false, false, cageTarget, aflbound);
+            strength, lifetimeTicks, false, false, cageTarget, aflbound, sustainMode);
         barrier.setReflective(hasWord(invocation, "sveigja"));
 
         if (!level.addFreshEntity(barrier)) {
@@ -281,6 +286,7 @@ public class BarrierEffectHandler implements EffectHandler {
         BarrierShape shape = resolveShape(invocation);
         boolean cage = isCage(invocation);
         boolean aflbound = isAflbound(invocation);
+        SustainMode sustainMode = SustainMode.from(invocation.composition());
         MagicAffinity affinity = resolveAffinity(invocation);
 
         float verbPrecision = invocation.composition().wordsOf(WordCategory.VERB).stream()
@@ -288,6 +294,9 @@ public class BarrierEffectHandler implements EffectHandler {
         float power = 3f + verbPrecision * 4f + Math.max(0f, invocation.modifierMagnitudeSum()) * 3f;
         power = Math.max(1f, Math.min(power, CAPS.maxMagnitudePerTarget()));
         float strength = 16f + power * 4.5f;
+        if (sustainMode == SustainMode.RESERVE) {
+            strength *= 1f + Math.max(0, invocation.composition().occurrencesOf("afla") - 1) * 0.5f;
+        }
         int lifetimeTicks = Math.round(20f * (10f + power * 2.5f));
 
         float yaw = caster.getYRot();
@@ -300,7 +309,7 @@ public class BarrierEffectHandler implements EffectHandler {
             affinity,
             affinity == MagicAffinity.ARCANE ? defaultColor : affinity.color(),
             affinity == MagicAffinity.ARCANE ? defaultFade : affinity.fadeColor(),
-            strength, lifetimeTicks, false, true, null, aflbound);
+            strength, lifetimeTicks, false, true, null, aflbound, sustainMode);
         barrier.setReflective(hasWord(invocation, "sveigja"));
 
         if (!level.addFreshEntity(barrier)) {
@@ -325,6 +334,7 @@ public class BarrierEffectHandler implements EffectHandler {
         BarrierShape shape = resolveShape(invocation);
         boolean cage = isCage(invocation);
         boolean aflbound = isAflbound(invocation);
+        SustainMode sustainMode = SustainMode.from(invocation.composition());
         MagicAffinity affinity = resolveAffinity(invocation);
 
         float verbPrecision = invocation.composition().wordsOf(WordCategory.VERB).stream()
@@ -332,6 +342,10 @@ public class BarrierEffectHandler implements EffectHandler {
         float power = 3f + verbPrecision * 4f + Math.max(0f, invocation.modifierMagnitudeSum()) * 3f;
 
         float strength = 20f + power * 5f;
+        if (sustainMode == SustainMode.RESERVE) {
+            strength *= 1f + Math.max(0, invocation.composition().occurrencesOf("afla") - 1) * 0.5f;
+        }
+        int lifetimeTicks = Math.round(20f * (14f + power * 3f));
 
         int defaultColor = cage ? MagicBarrierEntity.CAGE_DEFAULT_COLOR : MagicBarrierEntity.DEFAULT_COLOR;
         int defaultFade = cage ? MagicBarrierEntity.CAGE_DEFAULT_FADE : MagicBarrierEntity.DEFAULT_FADE;
@@ -342,7 +356,7 @@ public class BarrierEffectHandler implements EffectHandler {
             affinity,
             affinity == MagicAffinity.ARCANE ? defaultColor : affinity.color(),
             affinity == MagicAffinity.ARCANE ? defaultFade : affinity.fadeColor(),
-            strength, Integer.MAX_VALUE / 2, true, true, null, aflbound);
+            strength, lifetimeTicks, true, true, null, aflbound, sustainMode);
         barrier.setReflective(hasWord(invocation, "sveigja"));
 
         if (!level.addFreshEntity(barrier)) {

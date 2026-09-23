@@ -98,6 +98,9 @@ public record WorkingContext(
 
     /** Applies every woven element to a living target. Weaving splits, not stacks: each element lands at reduced power so two elements never simply double a working for free. */
     public void hitEntity(Entity target, float powerScale) {
+        if (target instanceof LivingEntity living && invocation.composition().occurrencesOf("sprengja") > 0
+                && com.dragonspeech.ward.WardInterception.blocks(living, com.dragonspeech.ward.WardType.EXPLOSION,
+                    Math.max(1f, power * Math.max(0.25f, powerScale)))) return;
         float split = elements.size() <= 1 ? 1f : (float) (1.0 / Math.sqrt(elements.size()));
         float focus = WorkingModifiers.compressionPowerScale(this);
         for (Element element : elements) {

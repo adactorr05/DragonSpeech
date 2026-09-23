@@ -4,41 +4,7 @@ import com.dragonspeech.ward.WardType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-/**
- * One custom (ward/blessing/curse) enchantment living on an item -
- * DELIBERATELY NOT the same system as vanilla enchantments (Sharpness
- * etc; see ApplyVanillaEnchantEffectHandler and this class's own
- * earlier doc for why those two systems stay separate).
- *
- * `wordId` is the true_name of whichever specific word applied this.
- *
- * `powerSource`/`durabilityCurrent`/`durabilityMax` only mean anything
- * for kind=WARD.
- *
- * `wardDamageType` - ALSO only meaningful for kind=WARD. Empty string
- * means "generic, absorbs any wardable damage type" (galdrverja, the
- * original proof-of-concept word). A non-empty value holds a
- * WardType.name() (e.g. "FIRE") for the later damage-type-specific ward
- * words (eldgaldr, hoggaldr, sprengaldr, fallgaldr) - see
- * MagicWardCombat for where this actually gets filtered against
- * incoming damage.
- *
- * `removable` is true for wards by default and MUST be false forever
- * for any blessing/curse - baked in at creation time rather than
- * checked against `kind` everywhere removal is attempted, so Curse of
- * the Grave locking an item's OTHER enchantments permanently can do
- * that by flipping this flag, without special-case kind-checking at
- * every removal call site.
- *
- * `hidden` - Curse of Hiding's actual mechanism (see
- * ApplyHidingCurseEffectHandler). True on the TARGET entry being
- * concealed, never on the Hiding curse's own entry (that one always
- * shows in the tooltip, just without its level number - see
- * MagicEnchantmentTooltips). A hidden entry still fully exists and
- * still fully functions (a hidden ward still absorbs damage, a hidden
- * curse still curses) - hidden only ever means "not shown in the
- * tooltip," never "not active."
- */
+/** One Dragon Speech ward/blessing/curse entry stored on an item. */
 public record MagicEnchantment(
     String wordId,
     EnchantmentKind kind,
@@ -48,7 +14,9 @@ public record MagicEnchantment(
     int level,
     boolean removable,
     String wardDamageType,
-    boolean hidden
+    boolean hidden,
+    long expiresAt,
+    String boundCasterId
 ) {
     public static final Codec<MagicEnchantment> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("word_id").forGetter(MagicEnchantment::wordId),
@@ -59,41 +27,65 @@ public record MagicEnchantment(
         Codec.INT.fieldOf("level").forGetter(MagicEnchantment::level),
         Codec.BOOL.fieldOf("removable").forGetter(MagicEnchantment::removable),
         Codec.STRING.optionalFieldOf("ward_damage_type", "").forGetter(MagicEnchantment::wardDamageType),
-        Codec.BOOL.optionalFieldOf("hidden", false).forGetter(MagicEnchantment::hidden)
+        Codec.BOOL.optionalFieldOf("hidden", false).forGetter(MagicEnchantment::hidden),
+        Codec.LONG.optionalFieldOf("expires_at", -1L).forGetter(MagicEnchantment::expiresAt),
+        Codec.STRING.optionalFieldOf("bound_caster_id", "").forGetter(MagicEnchantment::boundCasterId)
     ).apply(instance, MagicEnchantment::new));
 
-    /** A fresh generic WARD entry (galdrverja) - freshly filled if durability-sourced. */
-    public static MagicEnchantment newWard(String wordId, WardPowerSource powerSource, float durabilityMax, int level) {
-        return new MagicEnchantment(wordId, EnchantmentKind.WARD, powerSource, durabilityMax, durabilityMax, level, true, "", false);
+    public static MagicEnchantment newWard(String wordId, WardPowerSource source, float reserveMax, int level,
+                                            long expiresAt, String casterId) {
+        float stored = (source == WardPowerSource.RESERVE || source == WardPowerSource.DURABILITY) ? reserveMax : 0f;
+        return new MagicEnchantment(wordId, EnchantmentKind.WARD, source, stored, reserveMax, level, true, "", false,
+            expiresAt, casterId == null ? "" : casterId);
     }
 
-    /** A fresh damage-type-specific WARD entry (eldgaldr etc). */
-    public static MagicEnchantment newTypedWard(String wordId, WardPowerSource powerSource, float durabilityMax, int level, WardType wardType) {
-        return new MagicEnchantment(wordId, EnchantmentKind.WARD, powerSource, durabilityMax, durabilityMax, level, true, wardType.name(), false);
+    public static MagicEnchantment newTypedWard(String wordId, WardPowerSource source, float reserveMax, int level,
+                                                 WardType wardType, long expiresAt, String casterId) {
+        float stored = (source == WardPowerSource.RESERVE || source == WardPowerSource.DURABILITY) ? reserveMax : 0f;
+        return new MagicEnchantment(wordId, EnchantmentKind.WARD, source, stored, reserveMax, level, true, wardType.name(), false,
+            expiresAt, casterId == null ? "" : casterId);
+    }
+
+    /** Legacy constructor used by old callers: legacy stored-power ward. */
+    public static MagicEnchantment newWard(String wordId, WardPowerSource source, float durabilityMax, int level) {
+        return newWard(wordId, source, durabilityMax, level, -1L, "");
+    }
+    public static MagicEnchantment newTypedWard(String wordId, WardPowerSource source, float durabilityMax, int level, WardType wardType) {
+        return newTypedWard(wordId, source, durabilityMax, level, wardType, -1L, "");
     }
 
     public static MagicEnchantment newBlessing(String wordId, int level) {
-        return new MagicEnchantment(wordId, EnchantmentKind.BLESSING, WardPowerSource.DURABILITY, 0f, 0f, level, false, "", false);
+        return new MagicEnchantment(wordId, EnchantmentKind.BLESSING, WardPowerSource.RESERVE, 0f, 0f, level, false, "", false, -1L, "");
     }
 
     public static MagicEnchantment newCurse(String wordId, int level) {
-        return new MagicEnchantment(wordId, EnchantmentKind.CURSE, WardPowerSource.DURABILITY, 0f, 0f, level, false, "", false);
+        return new MagicEnchantment(wordId, EnchantmentKind.CURSE, WardPowerSource.RESERVE, 0f, 0f, level, false, "", false, -1L, "");
     }
 
     public boolean isActive() {
-        return kind != EnchantmentKind.WARD || powerSource == WardPowerSource.STAMINA_LINKED || durabilityCurrent > 0f;
+        return kind != EnchantmentKind.WARD || powerSource == WardPowerSource.DURATION
+            || powerSource == WardPowerSource.STAMINA_LINKED || durabilityCurrent > 0f;
     }
 
-    /** True if this ward absorbs the given damage type - generic (empty wardDamageType) wards absorb anything wardable; typed ones only match their own type. */
+    public boolean isActive(long gameTime) {
+        if (kind != EnchantmentKind.WARD) return true;
+        if (powerSource == WardPowerSource.DURATION) return expiresAt < 0L || gameTime < expiresAt;
+        if (powerSource == WardPowerSource.STAMINA_LINKED) return true;
+        return durabilityCurrent > 0f;
+    }
+
     public boolean wardMatches(WardType incoming) {
         return wardDamageType.isEmpty() || wardDamageType.equals(incoming.name());
     }
 
     public MagicEnchantment withDurability(float newCurrent) {
-        return new MagicEnchantment(wordId, kind, powerSource, Math.max(0f, Math.min(durabilityMax, newCurrent)), durabilityMax, level, removable, wardDamageType, hidden);
+        return new MagicEnchantment(wordId, kind, powerSource,
+            Math.max(0f, Math.min(durabilityMax, newCurrent)), durabilityMax, level, removable,
+            wardDamageType, hidden, expiresAt, boundCasterId);
     }
 
     public MagicEnchantment withHidden(boolean newHidden) {
-        return new MagicEnchantment(wordId, kind, powerSource, durabilityCurrent, durabilityMax, level, removable, wardDamageType, newHidden);
+        return new MagicEnchantment(wordId, kind, powerSource, durabilityCurrent, durabilityMax, level,
+            removable, wardDamageType, newHidden, expiresAt, boundCasterId);
     }
 }

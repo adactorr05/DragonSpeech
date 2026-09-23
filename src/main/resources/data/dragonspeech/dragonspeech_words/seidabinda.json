@@ -1,0 +1,17 @@
+{
+  "true_name": "seidabinda",
+  "hashed_true_name": "5c78d44b8f220969b67720f4f05999dfcb5ee8cfd191d4478fc3b2f6611e073c",
+  "meaning": "to bind conjured matter into a stable but temporary named form",
+  "category": "verb",
+  "domain": "weapon",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:seida"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:conjure_weapon"
+}

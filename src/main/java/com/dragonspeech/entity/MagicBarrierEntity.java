@@ -2,6 +2,7 @@ package com.dragonspeech.entity;
 
 import com.dragonspeech.DragonSpeech;
 import com.dragonspeech.engine.MagicAffinity;
+import com.dragonspeech.spell.SustainMode;
 import com.dragonspeech.fx.DragonSpeechParticles;
 import com.dragonspeech.fx.SpellFx;
 import net.minecraft.nbt.CompoundTag;
@@ -93,6 +94,8 @@ public class MagicBarrierEntity extends Entity {
     private UUID targetId;
     /** "aflbinda" - see absorbDamage(): when true, hits drain the CASTER's stamina instead of this shield's own strength pool. */
     private boolean aflbound;
+    /** Authoritative sustain semantics. aflbound remains serialized for old-world compatibility. */
+    private SustainMode sustainMode = SustainMode.DURATION;
     /** sveigja: surviving impacts are bent back/away instead of only being absorbed. */
     private boolean reflective;
     private MagicAffinity affinity = MagicAffinity.ARCANE; // semantic material/affinity of the barrier
@@ -125,10 +128,11 @@ public class MagicBarrierEntity extends Entity {
     /** Called once, immediately after spawning, by BarrierEffectHandler. */
     public void configure(ServerPlayer caster, double radius, BarrierShape shape, boolean cage, float facingYaw,
                           MagicAffinity affinity, int color, int fadeColor, float strength, int lifetimeTicks,
-                          boolean ground, boolean stationary, LivingEntity cageTarget, boolean aflbound) {
+                          boolean ground, boolean stationary, LivingEntity cageTarget, boolean aflbound, SustainMode sustainMode) {
         this.casterId = caster.getUUID();
         this.targetId = cageTarget != null ? cageTarget.getUUID() : null;
-        this.aflbound = aflbound;
+        this.sustainMode = sustainMode == null ? (aflbound ? SustainMode.CASTER : SustainMode.DURATION) : sustainMode;
+        this.aflbound = this.sustainMode == SustainMode.CASTER;
         this.entityData.set(DATA_RADIUS, (float) radius);
         this.entityData.set(DATA_SHAPE, shape.ordinal());
         this.entityData.set(DATA_CAGE, cage);
@@ -172,6 +176,10 @@ public class MagicBarrierEntity extends Entity {
 
     /** "skjoldr ristmark afla [mikla/litla]" on an existing ground shield: adds stored energy and/or grows or shrinks its radius. Anyone can feed a ground shield, not just whoever planted it - a village shield is meant to be communal. */
     public void feed(float bonusEnergy, double radiusDelta) {
+        if (bonusEnergy > 0f) {
+            this.sustainMode = SustainMode.RESERVE;
+            this.aflbound = false;
+        }
         this.strength = Math.max(1f, this.strength + bonusEnergy);
         this.maxStrength = Math.max(this.maxStrength, this.strength);
 
@@ -269,10 +277,17 @@ public class MagicBarrierEntity extends Entity {
     public boolean absorbSpellImpact(float spellPower, java.util.List<com.dragonspeech.engine.Element> incoming, Vec3 hitPos) {
         if (!(level() instanceof ServerLevel level) || isRemoved()) return false;
         float pressure = Math.max(.5f, spellPower * 4.0f) * affinity.pressureMultiplier(incoming);
-        strength -= pressure;
+        boolean collapsed = false;
+        if (sustainMode == SustainMode.RESERVE) {
+            strength -= pressure;
+            collapsed = strength <= 0f;
+        } else if (sustainMode == SustainMode.CASTER) {
+            collapsed = !drainCasterStamina(level, pressure);
+        }
+        // DURATION barriers have no durability pool: spell impacts are blocked until the timer ends.
         SpellFx.burst(level, DragonSpeechParticles.SPARKLE, color(), fadeColor(), hitPos, 12, 0.14);
         SpellFx.flash(level, color(), hitPos);
-        if (strength <= 0f) {
+        if (collapsed) {
             SpellFx.burst(level, DragonSpeechParticles.SPARKLE, color(), fadeColor(), hitPos, 24, 0.25);
             discard();
             return false;
@@ -609,8 +624,14 @@ public class MagicBarrierEntity extends Entity {
             return;
         }
 
-        float remaining = aflbound ? drainCasterStamina(level, amount) : amount;
-        strength -= remaining;
+        boolean collapsed = false;
+        if (sustainMode == SustainMode.RESERVE) {
+            strength -= amount;
+            collapsed = strength <= 0f;
+        } else if (sustainMode == SustainMode.CASTER) {
+            collapsed = !drainCasterStamina(level, amount);
+        }
+        // DURATION barriers do not possess a durability pool. Hits are blocked until their timer ends.
 
         Vec3 fxPos = position();
         SpellFx.burst(level, DragonSpeechParticles.SPARKLE, color(), fadeColor(), fxPos, 8, 0.1);
@@ -622,7 +643,7 @@ public class MagicBarrierEntity extends Entity {
             }
         }
 
-        if (strength <= 0f) {
+        if (collapsed) {
             SpellFx.flash(level, color(), fxPos);
             SpellFx.burst(level, DragonSpeechParticles.SPARKLE, color(), fadeColor(), fxPos, 20, 0.2);
             if (!ground && level.getServer() != null) {
@@ -677,22 +698,18 @@ public class MagicBarrierEntity extends Entity {
      * someone" wrapper (finding the caster, applying this system's own
      * damage-to-energy conversion rate) around that shared cascade.
      */
-    private float drainCasterStamina(ServerLevel level, float amount) {
-        if (casterId == null || level.getServer() == null) {
-            return amount; // no caster to charge - falls back to normal strength damage
-        }
+    private boolean drainCasterStamina(ServerLevel level, float amount) {
+        if (casterId == null || level.getServer() == null) return false;
         ServerPlayer caster = level.getServer().getPlayerList().getPlayer(casterId);
-        if (caster == null) {
-            return amount;
+        if (caster == null) return true; // don't destroy a binding only because its caster is offline
+        var data = com.dragonspeech.stamina.StaminaAccess.get(caster);
+        float requested = Math.max(0f, amount * STAMINA_PER_DAMAGE);
+        if (data.stamina() <= 0f || data.stamina() < requested) {
+            com.dragonspeech.stamina.StaminaAccess.set(caster, data.withStamina(0f));
+            return false;
         }
-
-        float requestedCost = amount * STAMINA_PER_DAMAGE;
-        float uncoveredCost = com.dragonspeech.stamina.CasterStaminaCascade.drain(caster, requestedCost);
-
-        // Whatever's STILL uncovered after stamina, hunger, AND health-to-the-floor
-        // is genuinely the caster's limit - this is what falls through to the
-        // shield's own strength now, correctly, instead of vanishing.
-        return uncoveredCost / STAMINA_PER_DAMAGE;
+        com.dragonspeech.stamina.StaminaAccess.set(caster, data.withStamina(data.stamina() - requested));
+        return true;
     }
 
     // ============================== Tick / lifetime ==============================
@@ -724,14 +741,20 @@ public class MagicBarrierEntity extends Entity {
             enforceExclusion(level);
         }
 
-        // Ground shields don't expire from age - only from strength
-        // depletion (handled in absorbDamage) or an explicit dispel.
-        if (!ground && tickCount >= lifetimeTicks) {
-            if (level() instanceof ServerLevel level) {
-                SpellFx.flash(level, color(), position());
-            }
+        // Default constructs are duration-based, including placed/ground barriers. `afla` and
+        // `aflbinda` explicitly replace that timer with reserve/caster-stamina sustain.
+        if (sustainMode == SustainMode.DURATION && tickCount >= lifetimeTicks) {
+            if (level() instanceof ServerLevel level) SpellFx.flash(level, color(), position());
             discard();
             return;
+        }
+        if (sustainMode == SustainMode.CASTER && level() instanceof ServerLevel level && casterId != null && level.getServer() != null) {
+            ServerPlayer caster = level.getServer().getPlayerList().getPlayer(casterId);
+            if (caster != null && com.dragonspeech.stamina.StaminaAccess.get(caster).stamina() <= 0f) {
+                SpellFx.flash(level, color(), position());
+                discard();
+                return;
+            }
         }
 
         if (tickCount % FX_INTERVAL_TICKS == 0 && level() instanceof ServerLevel level) {
@@ -833,7 +856,7 @@ public class MagicBarrierEntity extends Entity {
                 .color(color())
                 .fade(fadeColor())
                 .scale((float) (radius() / 10.0)) // matches ShieldShellParticle's quadSize*10 fallback math, in case entity linking is ever delayed further than expected
-                .time(ground ? Integer.MAX_VALUE / 2 : lifetimeTicks + 20)
+                .time(sustainMode == SustainMode.DURATION ? lifetimeTicks + 20 : Integer.MAX_VALUE / 2)
                 .spawn(level);
     }
 
@@ -882,13 +905,22 @@ public class MagicBarrierEntity extends Entity {
         }
         this.entityData.set(DATA_CAGE, tag.getBoolean("cage"));
         this.aflbound = tag.getBoolean("aflbound");
+        try {
+            this.sustainMode = tag.contains("sustainMode")
+                ? SustainMode.valueOf(tag.getString("sustainMode").toUpperCase(java.util.Locale.ROOT))
+                : (this.aflbound ? SustainMode.CASTER : SustainMode.RESERVE);
+        } catch (IllegalArgumentException ignored) {
+            this.sustainMode = this.aflbound ? SustainMode.CASTER : SustainMode.RESERVE;
+        }
         this.reflective = tag.getBoolean("reflective");
         this.entityData.set(DATA_FACING_YAW, tag.getFloat("facing_yaw"));
         this.colorOverride = tag.getInt("color");
         this.fadeOverride = tag.getInt("fade_color");
         this.strength = tag.getFloat("strength");
         this.maxStrength = tag.getFloat("max_strength");
-        this.lifetimeTicks = Integer.MAX_VALUE / 2;
+        this.lifetimeTicks = sustainMode == SustainMode.DURATION
+                ? Math.max(1, tag.getInt("remaining_lifetime"))
+                : Integer.MAX_VALUE / 2;
         if (tag.contains("caster_id")) {
             this.casterId = tag.getUUID("caster_id");
         }
@@ -925,12 +957,16 @@ public class MagicBarrierEntity extends Entity {
         tag.putBoolean("flat", flat()); // legacy field, kept for backward-read safety - "shape" is authoritative now
         tag.putBoolean("cage", cage());
         tag.putBoolean("aflbound", aflbound);
+        tag.putString("sustainMode", sustainMode.name().toLowerCase(java.util.Locale.ROOT));
         tag.putBoolean("reflective", reflective);
         tag.putFloat("facing_yaw", facingYaw());
         tag.putInt("color", colorOverride);
         tag.putInt("fade_color", fadeOverride);
         tag.putFloat("strength", strength);
         tag.putFloat("max_strength", maxStrength);
+        if (sustainMode == SustainMode.DURATION) {
+            tag.putInt("remaining_lifetime", Math.max(1, lifetimeTicks - tickCount));
+        }
         if (casterId != null) {
             tag.putUUID("caster_id", casterId);
         }

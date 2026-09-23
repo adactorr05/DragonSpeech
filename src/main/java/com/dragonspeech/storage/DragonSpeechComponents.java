@@ -219,6 +219,94 @@ public final class DragonSpeechComponents {
                     .build()
     );
 
+    // --- Temporary conjured items (see com.dragonspeech.weapon.ConjuredWeaponItems) ---
+
+    /** Absolute world game-time tick when a weapon created from nothing unravels. Presence of this component is also the authoritative "this is a temporary conjured item" marker. */
+    public static final DataComponentType<Long> CONJURED_EXPIRES_AT = register(
+            "conjured_expires_at",
+            DataComponentType.<Long>builder()
+                    .persistent(Codec.LONG)
+                    .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                    .build()
+    );
+
+    /** Sustain rule for a conjured object: duration, reserve (afla), or caster (aflbinda). */
+    public static final DataComponentType<String> CONJURED_SUSTAIN_MODE = register(
+            "conjured_sustain_mode",
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+
+    /** Caster UUID for aflbinda-bound constructs. Stored as text for simple codec/network compatibility. */
+    public static final DataComponentType<String> CONJURED_OWNER = register(
+            "conjured_owner",
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+
+    /** Current/max independent spell reserve for constructs made with afla. */
+    public static final DataComponentType<Float> CONJURED_RESERVE = register(
+            "conjured_reserve",
+            DataComponentType.<Float>builder()
+                    .persistent(Codec.FLOAT)
+                    .networkSynchronized(ByteBufCodecs.FLOAT)
+                    .build()
+    );
+    public static final DataComponentType<Float> CONJURED_MAX_RESERVE = register(
+            "conjured_max_reserve",
+            DataComponentType.<Float>builder()
+                    .persistent(Codec.FLOAT)
+                    .networkSynchronized(ByteBufCodecs.FLOAT)
+                    .build()
+    );
+
+    /** Word-of-Words can pause a duration-based construct's countdown without converting it to durability. */
+    public static final DataComponentType<Boolean> CONJURED_DURATION_FROZEN = register(
+            "conjured_duration_frozen",
+            DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build()
+    );
+    public static final DataComponentType<Long> CONJURED_FROZEN_REMAINING = register(
+            "conjured_frozen_remaining",
+            DataComponentType.<Long>builder()
+                    .persistent(Codec.LONG)
+                    .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                    .build()
+    );
+
+    /** The magical substance the temporary weapon was created from (ice/fire/time/etc.), so its identity survives inventory storage and a later `taka` throw. */
+    public static final DataComponentType<String> CONJURED_AFFINITY = register(
+            "conjured_affinity",
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+
+    /** Spoken physical/tool form of a temporary weapon (sword/axe/spear/etc.). Needed because some forms intentionally share the same vanilla backing item. */
+    public static final DataComponentType<String> CONJURED_TOOL_TYPE = register(
+            "conjured_tool_type",
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+
+    /** Spoken material tier of a temporary weapon. Kept separately from affinity so `jarn sverd` and `is sverd` retain the sentence that formed them. */
+    public static final DataComponentType<String> CONJURED_MATERIAL = register(
+            "conjured_material",
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+
     // --- Enchantment system (see com.dragonspeech.enchant) ---
 
     /** The list of ward/blessing/curse enchantments carried on this item - see MagicEnchantments/MagicEnchantment. Deliberately separate from vanilla's own real ItemEnchantments component (used for the vanilla-enchantment side of this system, Phase 2 - not built yet). */

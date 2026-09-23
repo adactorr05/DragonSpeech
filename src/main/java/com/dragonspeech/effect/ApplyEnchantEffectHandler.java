@@ -141,6 +141,7 @@ public class ApplyEnchantEffectHandler implements EffectHandler {
         Set<String> trueNames = words.stream().map(Word::trueName).collect(java.util.stream.Collectors.toSet());
         boolean dispel = trueNames.contains("letta");
         boolean staminaLinked = trueNames.contains("aflbinda");
+        boolean reserveLinked = trueNames.contains("afla");
 
         float magnitudeSum = (float) words.stream()
             .filter(Word::isModifierWord)
@@ -163,7 +164,7 @@ public class ApplyEnchantEffectHandler implements EffectHandler {
             WardType type = wardTypeWord.map(WARD_TYPE_WORDS::get).orElse(null);
             return dispel
                 ? applyWardDispel(held, wordId)
-                : applyWard(held, wordId, type, staminaLinked, magnitudeMultiplier);
+                : applyWard(caster, held, wordId, type, staminaLinked, reserveLinked, magnitudeMultiplier);
         }
 
         Optional<String> blessingWord = trueNames.stream().filter(BLESSING_MAX_LEVEL::containsKey).findFirst();
@@ -190,24 +191,31 @@ public class ApplyEnchantEffectHandler implements EffectHandler {
 
     // ============================== Ward ==============================
 
-    private EffectResult applyWard(ItemStack held, String wordId, WardType type, boolean staminaLinked, float magnitudeMultiplier) {
-        WardPowerSource powerSource = staminaLinked ? WardPowerSource.STAMINA_LINKED : WardPowerSource.DURABILITY;
-        float durabilityMax = Math.max(WARD_DURABILITY_BASE * 0.1f, WARD_DURABILITY_BASE * magnitudeMultiplier);
+    private EffectResult applyWard(ServerPlayer caster, ItemStack held, String wordId, WardType type,
+                                   boolean staminaLinked, boolean reserveLinked, float magnitudeMultiplier) {
+        WardPowerSource powerSource = staminaLinked ? WardPowerSource.STAMINA_LINKED
+            : (reserveLinked ? WardPowerSource.RESERVE : WardPowerSource.DURATION);
+        float reserveMax = Math.max(WARD_DURABILITY_BASE * 0.1f, WARD_DURABILITY_BASE * magnitudeMultiplier);
+        long expiresAt = powerSource == WardPowerSource.DURATION
+            ? caster.level().getGameTime() + Math.max(20L * 5L, Math.min(20L * 60L * 12L, Math.round(20f * 45f * magnitudeMultiplier)))
+            : -1L;
 
         MagicEnchantments existing = held.getOrDefault(DragonSpeechComponents.MAGIC_ENCHANTMENTS, MagicEnchantments.EMPTY);
         MagicEnchantment entry = type == null
-            ? MagicEnchantment.newWard(wordId, powerSource, durabilityMax, 1)
-            : MagicEnchantment.newTypedWard(wordId, powerSource, durabilityMax, 1, type);
+            ? MagicEnchantment.newWard(wordId, powerSource, reserveMax, 1, expiresAt, caster.getUUID().toString())
+            : MagicEnchantment.newTypedWard(wordId, powerSource, reserveMax, 1, type, expiresAt, caster.getUUID().toString());
 
         MagicEnchantments updated = existing.has(wordId) ? existing.replacing(wordId, entry) : existing.with(entry);
         held.set(DragonSpeechComponents.MAGIC_ENCHANTMENTS, updated);
 
-        String message = existing.has(wordId)
-            ? "The ward already bound here unravels and reweaves anew."
-            : (staminaLinked
-                ? "A ward binds itself into what you hold, drawing on your own strength to hold its shape."
-                : "A ward binds itself into what you hold, filled with strength of its own to spend.");
-        return EffectResult.success(1, message);
+        String sourceText = switch (powerSource) {
+            case STAMINA_LINKED -> "bound directly to your stamina";
+            case RESERVE, DURABILITY -> "filled with its own afla reserve";
+            case DURATION -> "held by duration alone";
+        };
+        return EffectResult.success(1, (existing.has(wordId)
+            ? "The ward already bound here unravels and reweaves, now "
+            : "A ward binds itself into what you hold, ") + sourceText + ".");
     }
 
     private EffectResult applyWardDispel(ItemStack held, String wordId) {

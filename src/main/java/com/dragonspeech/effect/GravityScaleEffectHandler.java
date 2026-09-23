@@ -94,6 +94,14 @@ public class GravityScaleEffectHandler implements EffectHandler {
     }
 
     private static float computeMultiplier(EffectInvocation invocation) {
+        // thyngdleysa names the removal of weight directly. Bare = exactly zero gravity. Lesser
+        // magnitude leaves some gravity behind; greater magnitude crosses through zero into an
+        // upward/negative pull. This same word is also understood by hurled weapons as no-gravity.
+        if (invocation.composition().occurrencesOf("thyngdleysa") > 0) {
+            float removal = Math.max(0.05f, 1f + invocation.modifierMagnitudeSum());
+            return clamp(1f - removal, MIN_MULTIPLIER, 1.0f);
+        }
+
         List<String> tags = invocation.composition().directionTags();
         boolean up = tags.contains("up");
         boolean down = tags.contains("down");

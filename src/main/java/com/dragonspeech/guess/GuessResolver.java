@@ -57,6 +57,10 @@ public final class GuessResolver {
     }
 
     private static GuessOutcome resolveExactMatch(ServerPlayer player, ResourceLocation id, Word word) {
+        if (word.discoveryMethod() == DiscoveryMethod.DANGER_WORD) {
+            BacklashResolver.applyBacklash(player, RiskTier.CATASTROPHIC, 1.0f);
+            return GuessOutcome.miss("The word answers violently, then tears itself from your grasp. Some names refuse to be stolen by guessing.");
+        }
         VocabularyService.LearnResult result = VocabularyService.learnWord(player, id, DiscoveryMethod.GUESSED);
 
         return switch (result) {
@@ -73,6 +77,7 @@ public final class GuessResolver {
         int bestDistance = Integer.MAX_VALUE;
 
         for (Word word : WordRegistry.getAllWords().values()) {
+            if (word.discoveryMethod() == DiscoveryMethod.DANGER_WORD) continue;
             int distance = levenshtein(candidate, normalize(word.trueName()));
             if (distance < bestDistance) {
                 bestDistance = distance;

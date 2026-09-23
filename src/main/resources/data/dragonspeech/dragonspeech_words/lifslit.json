@@ -1,0 +1,15 @@
+{
+  "true_name": "lifslit",
+  "hashed_true_name": "e8e332f7c6d2b32d16954d9a56c62d546eeedbb46fcd93877f8d537239ce30d1",
+  "meaning": "to sever the bond by which life holds to flesh",
+  "precision": 0.93,
+  "category": "verb",
+  "domain": "death",
+  "prerequisite_words": [],
+  "discovery_method": "danger_word",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:danger_word"
+}

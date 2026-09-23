@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /** Custom reality-editing interface opened only by speaking the current world's Word of Words. */
 public final class WordOfWordsScreen extends Screen {
-    private enum Page { ROOT, REMOVE, ADD, CHANGE, HALT, TIME, REVEAL, BIND, RESTORE, CONFIRM }
+    private enum Page { ROOT, REMOVE, ADD, CHANGE, HALT, TIME, REVEAL, BIND, CONSTRUCT, RESTORE, CONFIRM }
 
     private UUID sessionId;
     private JsonObject context;
@@ -65,8 +65,8 @@ public final class WordOfWordsScreen extends Screen {
     }
 
     private void buildRoot() {
-        String[] labels = {"Remove", "Add", "Change", "Halt", "Time", "Reveal", "Bind", "Restore"};
-        Page[] pages = {Page.REMOVE, Page.ADD, Page.CHANGE, Page.HALT, Page.TIME, Page.REVEAL, Page.BIND, Page.RESTORE};
+        String[] labels = {"Remove", "Add", "Change", "Halt", "Time", "Reveal", "Bind", "Construct", "Restore"};
+        Page[] pages = {Page.REMOVE, Page.ADD, Page.CHANGE, Page.HALT, Page.TIME, Page.REVEAL, Page.BIND, Page.CONSTRUCT, Page.RESTORE};
         int w = 190, h = 42, gapX = 18, gapY = 12;
         int startX = panelX + (PANEL_W - (w * 2 + gapX)) / 2;
         int y = panelY + 88;
@@ -124,15 +124,20 @@ public final class WordOfWordsScreen extends Screen {
             case ADD -> {
                 int colW = (w - 12) / 2;
                 int leftY = y, rightY = y;
-                for (String type : new String[]{"projectile","explosion","fall","melee","fire","magic"}) {
+                for (String type : new String[]{"projectile","explosion","fall","melee","magic"}) {
                     float c = wordCost(130f);
                     leftY = actionButton("Add " + cap(type) + " Ward — " + Math.round(c), "add_ward", type, c, false, x, leftY, colW, h, gap);
                 }
                 float revival = wordCost(950f);
                 leftY = actionButton("Revival Ward — " + Math.round(revival), "add_ward", "revival", revival, true, x, leftY, colW, h, gap);
-                for (String e : new String[]{"fire","ice","lightning","earth","wind"}) {
-                    float c = wordCost(115f);
-                    rightY = actionButton("Prepare " + cap(e) + " Sigil — " + Math.round(c), "add_sigil", e, c, false, x + colW + 12, rightY, colW, h, gap);
+                for (String type : new String[]{"fire","ice","lightning","earth"}) {
+                    float c = wordCost(130f);
+                    rightY = actionButton("Add " + cap(type) + " Ward — " + Math.round(c), "add_ward", type, c, false, x + colW + 12, rightY, colW, h, gap);
+                }
+                JsonArray dangerWards = array("known_danger_wards");
+                for (int i=0; i<dangerWards.size(); i++) {
+                    JsonObject d=dangerWards.get(i).getAsJsonObject(); String type=d.get("type").getAsString(), word=d.get("word").getAsString(); float c=wordCost(130f);
+                    rightY = actionButton("Ward against " + word + " — " + Math.round(c), "add_ward", type, c, true, x + colW + 12, rightY, colW, h, gap);
                 }
                 y = Math.max(leftY, rightY);
             }
@@ -197,6 +202,26 @@ public final class WordOfWordsScreen extends Screen {
                 y = actionButton("Bind selected mob to place (30s) — " + Math.round(b30), "bind_target", "600", b30, true, x, y, w, h, gap);
                 y = actionButton("Bind selected mob to place (2m) — " + Math.round(b2), "bind_target", "2400", b2, true, x, y, w, h, gap);
                 y = actionButton("Bind selected mob to place (5m) — " + Math.round(b5), "bind_target", "6000", b5, true, x, y, w, h, gap);
+            }
+            case CONSTRUCT -> {
+                if (!bool("held_conjured")) {
+                    y = infoButton("Hold a conjured weapon or tool to alter its sustaining law.", x, y, w);
+                } else {
+                    y = infoButton("Held: " + str("held_conjured_name", "Conjured weapon") + " [" + str("held_conjured_mode", "duration") + "]", x, y, w);
+                    y = infoButton("Duration is time. afla is a private reserve. aflbinda ties the construct to caster stamina.", x, y, w);
+                    float d1 = num("held_add_1m_cost", wordCost(140f));
+                    float d5 = num("held_add_5m_cost", wordCost(300f));
+                    y = actionButton("Add 1 minute of duration — " + Math.round(d1), "conjured_add_duration", "1200", d1, false, x, y, w, h, gap);
+                    y = actionButton("Add 5 minutes of duration — " + Math.round(d5), "conjured_add_duration", "6000", d5, true, x, y, w, h, gap);
+                    float bind = num("held_bind_cost", wordCost(320f));
+                    y = actionButton("Bind held construct to MY stamina — " + Math.round(bind), "conjured_bind_stamina", "", bind, true, x, y, w, h, gap);
+                    if ("duration".equals(str("held_conjured_mode", ""))) {
+                        boolean frozen = bool("held_duration_frozen");
+                        float freeze = num(frozen ? "held_unfreeze_cost" : "held_freeze_cost", wordCost(frozen ? 80f : 420f));
+                        y = actionButton((frozen ? "Unfreeze" : "Freeze") + " held construct duration — " + Math.round(freeze),
+                            "conjured_freeze_duration", Boolean.toString(!frozen), freeze, !frozen, x, y, w, h, gap);
+                    }
+                }
             }
             case RESTORE -> {
                 float selfHeal = num("restore_self_health_cost", wordCost(45f));

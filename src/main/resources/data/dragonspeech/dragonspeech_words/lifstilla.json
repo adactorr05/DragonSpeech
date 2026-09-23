@@ -1,0 +1,15 @@
+{
+  "true_name": "lifstilla",
+  "hashed_true_name": "011cc712b505b470dc215e1e64c0cda972f4b639e34b4969eeebb46a285aa160",
+  "meaning": "to still the living force within; to force life toward silence",
+  "precision": 0.96,
+  "category": "verb",
+  "domain": "death",
+  "prerequisite_words": [],
+  "discovery_method": "danger_word",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:danger_word"
+}

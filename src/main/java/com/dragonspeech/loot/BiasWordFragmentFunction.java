@@ -56,7 +56,8 @@ public class BiasWordFragmentFunction extends LootItemConditionalFunction {
         List<ResourceLocation> pool = new ArrayList<>();
         WordRegistry.getAllWords().forEach((id, word) -> {
             if (word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.ADMIN_GRANTED
-                    || word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.GUESSED) {
+                    || word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.GUESSED
+                    || word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.DANGER_WORD) {
                 return;
             }
             int weight = word.discoveryMethod() == com.dragonspeech.word.DiscoveryMethod.ELVEN_TRIAL ? 6 : 1;

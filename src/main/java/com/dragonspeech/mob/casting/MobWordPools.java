@@ -188,6 +188,10 @@ public final class MobWordPools {
      * in any mob's fighting vocabulary at all, so those four stay
      * exclusive to the trade path.
      */
+    public static final List<ResourceLocation> DANGER_WORDS = of(
+        "lifskad", "lifrof", "lifslit", "lifstilla", "lifthagn"
+    );
+
     public static final List<ResourceLocation> ELVEN_TRIAL_WORDS = of(
         "kallbinda", "steinbinda", "eitrbinda", "graedbinda", "hugbinda", "aftrlifga", "heimbinda", "nafn"
     );

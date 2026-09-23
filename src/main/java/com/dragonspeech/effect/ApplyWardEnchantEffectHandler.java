@@ -98,12 +98,17 @@ public class ApplyWardEnchantEffectHandler implements EffectHandler {
         }
 
         boolean staminaLinked = invocation.composition().words().stream().anyMatch(w -> "aflbinda".equals(w.trueName()));
-        WardPowerSource powerSource = staminaLinked ? WardPowerSource.STAMINA_LINKED : WardPowerSource.DURABILITY;
+        boolean reserveLinked = invocation.composition().words().stream().anyMatch(w -> "afla".equals(w.trueName()));
+        WardPowerSource powerSource = staminaLinked ? WardPowerSource.STAMINA_LINKED
+            : (reserveLinked ? WardPowerSource.RESERVE : WardPowerSource.DURATION);
+        long expiresAt = powerSource == WardPowerSource.DURATION
+            ? caster.level().getGameTime() + 20L * 45L
+            : -1L;
 
         MagicEnchantments existing = held.getOrDefault(DragonSpeechComponents.MAGIC_ENCHANTMENTS, MagicEnchantments.EMPTY);
         MagicEnchantment entry = wardType == null
-            ? MagicEnchantment.newWard(wordId, powerSource, WARD_DURABILITY_MAX, 1)
-            : MagicEnchantment.newTypedWard(wordId, powerSource, WARD_DURABILITY_MAX, 1, wardType);
+            ? MagicEnchantment.newWard(wordId, powerSource, WARD_DURABILITY_MAX, 1, expiresAt, caster.getUUID().toString())
+            : MagicEnchantment.newTypedWard(wordId, powerSource, WARD_DURABILITY_MAX, 1, wardType, expiresAt, caster.getUUID().toString());
 
         MagicEnchantments updated = existing.has(wordId)
             ? existing.replacing(wordId, entry)
@@ -111,13 +116,14 @@ public class ApplyWardEnchantEffectHandler implements EffectHandler {
 
         held.set(DragonSpeechComponents.MAGIC_ENCHANTMENTS, updated);
 
-        String message = existing.has(wordId)
-            ? (staminaLinked
-                ? "The ward already bound here unravels and reweaves - now it draws on you directly, not on itself."
-                : "The ward already bound here unravels and reweaves - now it holds its own strength, not yours.")
-            : (staminaLinked
-                ? "A ward binds itself into what you hold, drawing on your own strength to hold its shape."
-                : "A ward binds itself into what you hold, filled with strength of its own to spend.");
+        String sourceText = switch (powerSource) {
+            case STAMINA_LINKED -> "bound directly to your stamina";
+            case RESERVE, DURABILITY -> "filled with an independent afla reserve";
+            case DURATION -> "held by duration alone";
+        };
+        String message = (existing.has(wordId)
+            ? "The ward already bound here unravels and reweaves, now "
+            : "A ward binds itself into what you hold, ") + sourceText + ".";
 
         return EffectResult.success(1, message);
     }

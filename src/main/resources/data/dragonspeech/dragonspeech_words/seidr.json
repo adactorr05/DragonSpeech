@@ -1,0 +1,16 @@
+{
+  "true_name": "seidr",
+  "hashed_true_name": "9f86eb7250bf52e313c4494df922571097d08794198b16472f5a4b6b2c08e4eb",
+  "meaning": "pure magic itself; power given form without elemental or material substance",
+  "category": "noun_target",
+  "domain": "force",
+  "precision": 0.9,
+  "prerequisite_words": [
+    "dragonspeech:seida"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

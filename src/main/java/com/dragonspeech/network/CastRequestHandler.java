@@ -14,6 +14,7 @@ import com.dragonspeech.effect.SpellCastResolver;
 import com.dragonspeech.effect.TargetResolver;
 import com.dragonspeech.growth.AttunementService;
 import com.dragonspeech.spell.SpellComposition;
+import com.dragonspeech.spell.SustainMode;
 import com.dragonspeech.stamina.DrainResolver;
 import com.dragonspeech.word.WordRegistry;
 import com.dragonspeech.vocabulary.VocabularyService;
@@ -91,6 +92,10 @@ public final class CastRequestHandler {
         boolean hasVerb = !composition.wordsOf(WordCategory.VERB).isEmpty();
 
         boolean hasBinding = !composition.wordsOf(WordCategory.BINDING).isEmpty();
+        if (composition.occurrencesOf("nafnverja") > 0) {
+            if (composition.hasControlWord()) dispelOwnWards(player, composition); else placeWard(player, composition);
+            return;
+        }
 
         // CONTROL + BINDING with no verb: "cease the ward," not "stop a
         // channel" - the caster lowers their own wards of that word's type.
@@ -113,6 +118,38 @@ public final class CastRequestHandler {
         if (!hasVerb && hasBinding) {
             placeWard(player, composition);
             return;
+        }
+
+        // `taka` can stand as the action when a weapon/tool is named: it means "take the one I
+        // already possess and throw it." Route it through the precise hurl handler. This check MUST
+        // precede bare `seida`, because a phrase such as `taka eldr sverd seida marklaust` names a
+        // previously-conjured sword; it must not accidentally create a second sword in the hand.
+        if (!hasVerb && composition.occurrencesOf("taka") > 0
+                && composition.words().stream().anyMatch(w -> w.toolType().isPresent())) {
+            Word internalHurlVerb = WordRegistry.get(DragonSpeech.id("vopnbinda"));
+            if (internalHurlVerb != null) {
+                java.util.ArrayList<Word> rewritten = new java.util.ArrayList<>();
+                rewritten.add(internalHurlVerb);
+                rewritten.addAll(composition.words());
+                handleComposition(player, new SpellComposition(java.util.List.copyOf(rewritten)));
+                return;
+            }
+        }
+
+        // `seida` is both a useful qualifier inside vopnbinda ("make the weapon from nothing")
+        // and, when no other verb is present, the creation action itself.  Internally route bare
+        // `seida + weapon` through the existing conjure handler alias so the ordinary resolver,
+        // stamina pricing, scars, attunement and server validation still apply unchanged.
+        if (!hasVerb && composition.occurrencesOf("seida") > 0
+                && composition.words().stream().anyMatch(w -> w.toolType().isPresent())) {
+            Word internalConjureVerb = WordRegistry.get(DragonSpeech.id("seidabinda"));
+            if (internalConjureVerb != null) {
+                java.util.ArrayList<Word> rewritten = new java.util.ArrayList<>();
+                rewritten.add(internalConjureVerb);
+                rewritten.addAll(composition.words());
+                handleComposition(player, new SpellComposition(java.util.List.copyOf(rewritten)));
+                return;
+            }
         }
 
         if (!hasVerb) {
@@ -182,7 +219,10 @@ public final class CastRequestHandler {
             // that, and the handler's own ray decides what actually gets hit.
             targets = List.of(directionTarget(player, composition));
         } else {
-            targets = TargetResolver.resolveLookTarget(player, MAX_TARGET_REACH);
+            boolean dangerWord = handlerPeek.map(h -> "danger_word".equals(h.id().getPath())).orElse(false);
+            targets = dangerWord
+                ? TargetResolver.resolveLivingLookTargetIgnoringBarriers(player, MAX_TARGET_REACH)
+                : TargetResolver.resolveLookTarget(player, MAX_TARGET_REACH);
             if (targets.isEmpty()) {
                 player.sendSystemMessage(Component.literal("There is nothing there to work the word upon."));
                 return;
@@ -342,12 +382,20 @@ public final class CastRequestHandler {
         return living;
     }
 
+    private record WardSpec(WardType type, float precision) {}
+    private static List<WardSpec> dragonspeech$wardSpecs(SpellComposition composition) {
+        java.util.LinkedHashMap<WardType,Float> specs=new java.util.LinkedHashMap<>();
+        for(Word b:composition.wordsOf(WordCategory.BINDING)){if("nafnverja".equals(b.trueName()))continue;b.wardType().ifPresent(t->specs.merge(t,b.precision(),(a,c)->Math.max(a,c)));}
+        Word binder=composition.wordsOf(WordCategory.BINDING).stream().filter(w->"nafnverja".equals(w.trueName())).findFirst().orElse(null);
+        if(binder!=null)for(Word w:composition.words()){w.element().flatMap(WardType::fromElement).ifPresent(t->specs.merge(t,binder.precision(),(a,c)->Math.max(a,c)));com.dragonspeech.danger.DangerWordType.fromTrueName(w.trueName()).ifPresent(t->specs.merge(t.wardType(),binder.precision(),(a,c)->Math.max(a,c)));if("seidr".equals(w.trueName()))specs.merge(WardType.MAGIC,binder.precision(),(a,c)->Math.max(a,c));}
+        return specs.entrySet().stream().map(e->new WardSpec(e.getKey(),e.getValue())).toList();
+    }
+
     private static void placeWard(ServerPlayer player, SpellComposition composition) {
         List<Word> bindingWords = composition.wordsOf(WordCategory.BINDING);
-        if (bindingWords.isEmpty()) {
-            player.sendSystemMessage(Component.literal("A ward needs a binding word."));
-            return;
-        }
+        if (bindingWords.isEmpty()) { player.sendSystemMessage(Component.literal("A ward needs a binding word.")); return; }
+        List<WardSpec> wardSpecs=dragonspeech$wardSpecs(composition);
+        if(wardSpecs.isEmpty()){player.sendSystemMessage(Component.literal(composition.occurrencesOf("nafnverja")>0?"nafnverja needs the name of an element, pure magic, or a Danger Word to ward against.":"That binding does not name a ward the language can raise."));return;}
 
         // FIX + explicit direction: "a ward cannot really be applied on
         // its own. It should need a scope" - naerum/sjalfan/thetta/
@@ -357,39 +405,11 @@ public final class CastRequestHandler {
         // per scope type below is what actually lets "verja thetta"
         // reach an ally instead of yourself.
         Optional<Word> scopeWord = composition.scopeWord();
-        if (scopeWord.isEmpty()) {
-            player.sendSystemMessage(Component.literal(
-                    "A ward needs a direction - sjalfan for yourself, thetta for who you're looking at, "
-                            + "naerum/umhverf/viddum to ward everyone nearby."));
-            return;
-        }
-
         List<LivingEntity> resolved;
-        if (scopeWord.get().scopeSelf()) {
-            resolved = List.of(player);
-        } else if (scopeWord.get().scopeRadius() > 0f) {
-            resolved = dragonspeech$livingAmong(TargetResolver.resolveArea(player, scopeWord.get().scopeRadius()));
-            if (resolved.isEmpty()) {
-                player.sendSystemMessage(Component.literal("Nobody else is close enough to ward."));
-                return;
-            }
-        } else {
-            // "thetta" - the single thing in front of you.
-            List<LivingEntity> looked = dragonspeech$livingAmong(TargetResolver.resolveLookTarget(player, 12.0));
-            if (looked.isEmpty()) {
-                player.sendSystemMessage(Component.literal("You aren't looking at anyone you can ward."));
-                return;
-            }
-            resolved = List.of(looked.get(0));
-        }
+        if (scopeWord.isPresent() && scopeWord.get().scopeSelf()) resolved=List.of(player);
+        else if (scopeWord.isPresent() && scopeWord.get().scopeRadius()>0f) { resolved=dragonspeech$livingAmong(TargetResolver.resolveArea(player,scopeWord.get().scopeRadius())); if(resolved.isEmpty()){player.sendSystemMessage(Component.literal("No other living target is close enough to ward."));return;} }
+        else { List<LivingEntity> looked=dragonspeech$livingAmong(TargetResolver.resolveLookTarget(player,12.0)); if(looked.isEmpty()){player.sendSystemMessage(Component.literal("There is no living entity under your crosshair to ward."));return;} resolved=List.of(looked.get(0)); }
 
-        // "I should be able to ward any entity unless it has a ward
-        // that wards against magic" per explicit direction - placing a
-        // ward on someone else is itself "magic affecting them
-        // directly," so it's gated by their OWN magic ward the same way
-        // any other direct effect now is (self always exempt, since
-        // `resolved` only ever contains the caster in the self-scope
-        // case above).
         List<LivingEntity> recipients = resolved.stream()
                 .filter(r -> r == player || !com.dragonspeech.ward.MagicWardGate.isBlocked(player, r, "verja"))
                 .toList();
@@ -421,9 +441,14 @@ public final class CastRequestHandler {
         int aflaSpoken = composition.occurrencesOf("afla");
         float aflaCostMultiplier = aflaSpoken > 0 ? com.dragonspeech.spell.RepetitionCost.multiplier(aflaSpoken) : 0f;
 
-        // aflbinda: not repeatable in the stacking sense - a ward is
-        // either bound to the caster's own strength or it isn't.
-        boolean staminaBound = composition.occurrencesOf("aflbinda") > 0;
+        // Sustain source is exclusive: plain wards are timed, afla gives them their own
+        // reserve, and aflbinda binds them directly to the original caster's stamina.
+        SustainMode sustainMode = SustainMode.from(composition);
+        int wardDurationTicks = Math.max(20 * 5, Math.min(20 * 60 * 12,
+            Math.round((20f * 45f) * (float) Math.pow(2.0, composition.modifierMagnitudeSum()))));
+        long expiresAt = sustainMode == SustainMode.DURATION
+            ? player.level().getGameTime() + wardDurationTicks
+            : -1L;
 
         // litla/mikla (or any other MODIFIER word) scale the ward's own
         // durability up or down, same modifierMagnitudeSum() every
@@ -436,9 +461,9 @@ public final class CastRequestHandler {
         float totalCost = 0f;
         List<String> raisedTypeNames = new java.util.ArrayList<>();
 
-        for (Word bindingWord : bindingWords) {
-            WardType type = bindingWord.wardType().orElse(WardType.PROJECTILE);
-            float precision = bindingWord.precision();
+        for (WardSpec spec : wardSpecs) {
+            WardType type = spec.type();
+            float precision = spec.precision();
 
             float baseEnergy = (10f + (precision * 30f)) * magnitudeScale;
             int baseCharges = 1 + Math.round(precision * 2f);
@@ -456,7 +481,7 @@ public final class CastRequestHandler {
 
             for (LivingEntity recipient : recipients) {
                 for (int i = 0; i < copies; i++) {
-                    WardService.place(recipient, type, wardEnergy, baseCharges, true, staminaBound);
+                    WardService.place(recipient, player.getUUID(), type, wardEnergy, baseCharges, true, sustainMode, expiresAt);
                 }
             }
 
@@ -482,13 +507,14 @@ public final class CastRequestHandler {
         } else if (recipients.size() == 1) {
             message.append(copies > 1 ? " settle around " : " settles around ").append(recipients.get(0).getName().getString());
         } else {
-            message.append(copies > 1 ? " settle around " : " settles around ").append(recipients.size()).append(" nearby ally/allies");
+            message.append(copies > 1 ? " settle around " : " settles around ").append(recipients.size()).append(" nearby living target(s)");
         }
-        if (aflaSpoken > 0) {
-            message.append(", swollen with poured-in strength");
-        }
-        if (staminaBound) {
-            message.append(", bound to your own stamina");
+        if (sustainMode == SustainMode.RESERVE) {
+            message.append(", carrying its own reserve");
+        } else if (sustainMode == SustainMode.CASTER) {
+            message.append(", bound directly to your stamina");
+        } else {
+            message.append(", lasting for ").append(Math.max(1, wardDurationTicks / 20)).append(" seconds");
         }
         message.append(".");
         player.sendSystemMessage(Component.literal(message.toString()));
@@ -507,12 +533,8 @@ public final class CastRequestHandler {
 
     /** Lowers the caster's own wards matching EVERY binding word's type in the sentence - free (releasing a binding costs nothing; holding one never did either). "verja ok eldverja letta" drops both at once. */
     private static void dispelOwnWards(ServerPlayer player, SpellComposition composition) {
-        java.util.Set<WardType> types = composition.wordsOf(WordCategory.BINDING).stream()
-                .map(w -> w.wardType().orElse(WardType.PROJECTILE))
-                .collect(java.util.stream.Collectors.toSet());
-        if (types.isEmpty()) {
-            types = java.util.Set.of(WardType.PROJECTILE);
-        }
+        java.util.Set<WardType> types = dragonspeech$wardSpecs(composition).stream().map(WardSpec::type).collect(java.util.stream.Collectors.toSet());
+        if(types.isEmpty()){player.sendSystemMessage(Component.literal("That wording does not identify a ward for you to release."));return;}
 
         var wards = com.dragonspeech.ward.WardAccess.get(player);
         int removed = 0;

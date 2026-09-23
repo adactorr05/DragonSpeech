@@ -84,7 +84,7 @@ public class WordRegistry extends SimpleJsonResourceReloadListener implements Id
 
     private static boolean hasNaturalWorldRoute(DiscoveryMethod method) {
         return switch (method) {
-            case RUIN_TABLET, MENTOR_NPC, ANCIENT_TEXT, ELVEN_TRIAL -> true;
+            case RUIN_TABLET, MENTOR_NPC, ANCIENT_TEXT, ELVEN_TRIAL, DANGER_WORD -> true;
             case ADMIN_GRANTED, GUESSED -> false;
         };
     }

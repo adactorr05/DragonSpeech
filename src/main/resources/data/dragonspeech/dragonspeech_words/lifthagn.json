@@ -1,0 +1,15 @@
+{
+  "true_name": "lifthagn",
+  "hashed_true_name": "682655334d16ed19670a8d1da8391188876a0919cc9a006d34112f752dd4346d",
+  "meaning": "to silence life at its root",
+  "precision": 0.98,
+  "category": "verb",
+  "domain": "death",
+  "prerequisite_words": [],
+  "discovery_method": "danger_word",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:danger_word"
+}

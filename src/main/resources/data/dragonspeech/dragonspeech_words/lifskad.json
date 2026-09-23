@@ -1,0 +1,15 @@
+{
+  "true_name": "lifskad",
+  "hashed_true_name": "2ad380ca4a7c849930d7076828c45bda77d98746e971035e4971656aa96717d7",
+  "meaning": "to wound the life held within a living thing",
+  "precision": 0.86,
+  "category": "verb",
+  "domain": "death",
+  "prerequisite_words": [],
+  "discovery_method": "danger_word",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false,
+  "effect_handler": "dragonspeech:danger_word"
+}

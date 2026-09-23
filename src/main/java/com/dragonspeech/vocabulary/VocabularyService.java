@@ -48,6 +48,8 @@ public final class VocabularyService {
         if (word == null) {
             return LearnResult.UNKNOWN_WORD;
         }
+        if (word.discoveryMethod() == DiscoveryMethod.DANGER_WORD
+                && method != DiscoveryMethod.DANGER_WORD && method != DiscoveryMethod.ADMIN_GRANTED) return LearnResult.UNKNOWN_WORD;
 
         PlayerVocabulary vocabulary = VocabularyAccess.get(player);
         if (vocabulary.knows(wordId)) {

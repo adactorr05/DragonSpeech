@@ -150,6 +150,8 @@ public final class DragonSpeechConfig {
     private static float wordLootChanceMultiplier = 1.0f;
     /** Multiplies a dragon egg's per-tick hatch-roll chance (VariantDragonEggBlock#randomTick). Higher = hatches faster on average. 1.0 = unchanged. */
     private static float eggHatchSpeedMultiplier = 1.0f;
+    /** Whether a random Dragon Speech egg may be added to the vanilla bonus chest. Default true. */
+    private static boolean bonusChestDragonEggEnabled = true;
 
     /**
      * "A server owner might want to cap total AI compute regardless of which addon is running" - a
@@ -265,6 +267,7 @@ public final class DragonSpeechConfig {
         allowControlOfPlayers = false;
         wordLootChanceMultiplier = 1.0f;
         eggHatchSpeedMultiplier = 1.0f;
+        bonusChestDragonEggEnabled = true;
         aiComputeBudget = 0;
         save();
     }
@@ -362,6 +365,13 @@ public final class DragonSpeechConfig {
         save();
     }
 
+    public static boolean bonusChestDragonEggEnabled() { return bonusChestDragonEggEnabled; }
+
+    public static void setBonusChestDragonEggEnabled(boolean value) {
+        bonusChestDragonEggEnabled = value;
+        save();
+    }
+
     public static int aiComputeBudget() {
         return aiComputeBudget;
     }
@@ -435,6 +445,9 @@ public final class DragonSpeechConfig {
                 if (root.has("egg_hatch_speed_multiplier")) {
                     eggHatchSpeedMultiplier = root.get("egg_hatch_speed_multiplier").getAsFloat();
                 }
+                if (root.has("bonus_chest_dragon_egg_enabled")) {
+                    bonusChestDragonEggEnabled = root.get("bonus_chest_dragon_egg_enabled").getAsBoolean();
+                }
                 if (root.has("ai_compute_budget")) {
                     aiComputeBudget = root.get("ai_compute_budget").getAsInt();
                 }
@@ -486,6 +499,8 @@ public final class DragonSpeechConfig {
         root.addProperty("allow_control_of_players", allowControlOfPlayers);
         root.addProperty("word_loot_chance_multiplier", wordLootChanceMultiplier);
         root.addProperty("egg_hatch_speed_multiplier", eggHatchSpeedMultiplier);
+        root.addProperty("bonus_chest_dragon_egg_enabled", bonusChestDragonEggEnabled);
+        root.addProperty("_bonus_chest_dragon_egg_enabled_options", "true | false - whether a random Dragon Speech dragon egg can appear in the vanilla bonus chest when bonus chests are enabled for a world.");
         root.addProperty("ai_compute_budget", aiComputeBudget);
         root.addProperty("_ai_compute_budget_options", "Caps how many mind-duel AI actor-decisions run per pulse, total, server-wide - applies to the built-in heuristic AND any addon-registered brain alike. 0 = unlimited.");
         Files.writeString(path, new GsonBuilder().setPrettyPrinting().create().toJson(root));

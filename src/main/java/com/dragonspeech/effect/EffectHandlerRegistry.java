@@ -62,6 +62,8 @@ public final class EffectHandlerRegistry {
         // (sword/axe/tool, in whatever material was named). See the
         // weapon package.
         register(new HurlWeaponEffectHandler());
+        // seidabinda - creates a real temporary weapon item whose lifetime is paid for with magnitude words.
+        register(new ConjureWeaponEffectHandler());
         // The composed elemental spell system: ONE handler, many forms -
         // every form verb (kasta/geisla/kula/sprengja/hringr/skyja/
         // umljomi/ristmark/regnfalla) and element-verb (eldingkast, ...)
@@ -85,5 +87,6 @@ public final class EffectHandlerRegistry {
         register(new GravityScaleEffectHandler());
         // marka - a lasting good/bad tag, currently read by MagicBarrierEntity's ward/cage exclusion. See com.dragonspeech.engine.MarkRegistry.
         register(new MarkEffectHandler());
+        register(new DangerWordEffectHandler());
     }
 }

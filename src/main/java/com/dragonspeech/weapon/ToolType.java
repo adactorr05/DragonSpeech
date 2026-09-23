@@ -26,6 +26,7 @@ public enum ToolType implements StringRepresentable {
     PICKAXE,
     SHOVEL,
     HOE,
+    SPEAR,
     TRIDENT;
 
     public static final Codec<ToolType> CODEC = StringRepresentable.fromEnum(ToolType::values);
@@ -37,6 +38,7 @@ public enum ToolType implements StringRepresentable {
             case PICKAXE -> 6.0f;
             case SHOVEL -> 4.5f;
             case HOE -> 3.0f;
+            case SPEAR -> 8.0f;
             case TRIDENT -> 8.5f;
         };
     }

@@ -69,6 +69,24 @@ public final class MobEffectExecutor {
             return;
         }
 
+        com.dragonspeech.engine.Element directElement = switch (effectPath) {
+            case "ignite" -> com.dragonspeech.engine.Element.FIRE;
+            case "freeze" -> com.dragonspeech.engine.Element.ICE;
+            case "shock" -> com.dragonspeech.engine.Element.LIGHTNING;
+            case "poison" -> com.dragonspeech.engine.Element.POISON;
+            default -> null;
+        };
+        if (target != null && directElement != null && com.dragonspeech.ward.WardInterception.blocksElement(
+                target, directElement, 8f + Math.max(0f, composition.modifierMagnitudeSum()) * 4f)) return;
+
+        boolean elementalPayload = target != null && composition.words().stream().anyMatch(w -> w.element().isPresent());
+        if (elementalPayload) {
+            for (Word word : composition.words()) {
+                if (word.element().isPresent() && com.dragonspeech.ward.WardInterception.blocksElement(
+                        target, word.element().get(), 8f + Math.max(0f, composition.modifierMagnitudeSum()) * 4f)) return;
+            }
+        }
+
         // FIX: "some of the direct spells... bypassed my wards (blindness,
         // nausea, fatigue)" per explicit direction - MagicWardGate was
         // only ever wired into CastRequestHandler, the PLAYER-cast
@@ -81,7 +99,7 @@ public final class MobEffectExecutor {
         // could never have caught them either - this single check
         // upstream of the whole switch is what actually closes the gap,
         // the same way it already does for marka in the player pipeline.
-        if (target != null && com.dragonspeech.ward.MagicWardGate.isBlocked(self, target, effectPath)) {
+        if (target != null && !elementalPayload && com.dragonspeech.ward.MagicWardGate.isBlocked(self, target, effectPath)) {
             return;
         }
         if (target instanceof com.dragonspeech.dragon.DragonEntity dragon) {
@@ -92,6 +110,7 @@ public final class MobEffectExecutor {
             }
         }
 
+        Runnable applyEffect = () -> {
         switch (effectPath) {
             case "push" -> {
                 if (target != null) {
@@ -129,6 +148,15 @@ public final class MobEffectExecutor {
                     target.addEffect(new MobEffectInstance(MobEffects.POISON, ticks, 0));
                 }
             }
+            case "danger_word" -> {
+                if (target != null) {
+                    var danger = composition.wordsOf(WordCategory.VERB).stream().map(w -> com.dragonspeech.danger.DangerWordType.fromTrueName(w.trueName()).orElse(null)).filter(java.util.Objects::nonNull).findFirst().orElse(null);
+                    if (danger != null && !com.dragonspeech.danger.DangerWordService.isNaturallyImmune(target)
+                            && !com.dragonspeech.ward.WardInterception.blocks(target, danger.wardType(), danger.wardPressure())) {
+                        com.dragonspeech.danger.DangerWordService.applyDirectDamage(self, target, com.dragonspeech.danger.DangerWordService.damageFor(danger, target));
+                    }
+                }
+            }
             case "confuse" -> {
                 if (target != null) {
                     int ticks = 100 + Math.round(60 * Math.max(0f, composition.modifierMagnitudeSum()));
@@ -164,6 +192,8 @@ public final class MobEffectExecutor {
             case "shape_block" -> shapeBlock(level, composition, self, target);
             default -> DragonSpeech.LOGGER.warn("[DragonSpeech] Spellcasting mob tried unhandled effect '{}'", effectPath);
         }
+        };
+        if (elementalPayload) com.dragonspeech.ward.WardInterception.runElementPayload(applyEffect); else applyEffect.run();
     }
 
     private static float magnitudeBonus(SpellComposition composition, float scale) {

@@ -4,6 +4,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.Optional;
+
 /**
  * Maps a (ToolMaterial, ToolType) pair to the real vanilla item it should
  * look/act like when it's picked up off the ground after a hurled-weapon
@@ -39,10 +41,19 @@ public final class WeaponItems {
      * item already sitting in the caster's own inventory.
      */
     public static Item canonicalItem(ToolMaterial material, ToolType type) {
-        if (type == ToolType.TRIDENT) {
+        if (type == ToolType.TRIDENT || type == ToolType.SPEAR) {
             return Items.TRIDENT;
         }
         return vanillaItem(material, type);
+    }
+
+    /** Best-effort reverse lookup used when `taka` names a tool but intentionally omits material. */
+    public static Optional<ToolMaterial> materialOf(ItemStack stack, ToolType type) {
+        if (stack == null || stack.isEmpty()) return Optional.empty();
+        for (ToolMaterial material : ToolMaterial.values()) {
+            if (stack.is(canonicalItem(material, type))) return Optional.of(material);
+        }
+        return Optional.empty();
     }
 
     private static Item vanillaItem(ToolMaterial material, ToolType type) {
@@ -53,6 +64,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.WOODEN_PICKAXE;
                 case SHOVEL -> Items.WOODEN_SHOVEL;
                 case HOE -> Items.WOODEN_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
             case GOLD -> switch (type) {
@@ -61,6 +73,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.GOLDEN_PICKAXE;
                 case SHOVEL -> Items.GOLDEN_SHOVEL;
                 case HOE -> Items.GOLDEN_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
             case STONE -> switch (type) {
@@ -69,6 +82,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.STONE_PICKAXE;
                 case SHOVEL -> Items.STONE_SHOVEL;
                 case HOE -> Items.STONE_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
             case IRON -> switch (type) {
@@ -77,6 +91,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.IRON_PICKAXE;
                 case SHOVEL -> Items.IRON_SHOVEL;
                 case HOE -> Items.IRON_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
             case DIAMOND -> switch (type) {
@@ -85,6 +100,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.DIAMOND_PICKAXE;
                 case SHOVEL -> Items.DIAMOND_SHOVEL;
                 case HOE -> Items.DIAMOND_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
             case NETHERITE -> switch (type) {
@@ -93,6 +109,7 @@ public final class WeaponItems {
                 case PICKAXE -> Items.NETHERITE_PICKAXE;
                 case SHOVEL -> Items.NETHERITE_SHOVEL;
                 case HOE -> Items.NETHERITE_HOE;
+                case SPEAR -> Items.TRIDENT;
                 case TRIDENT -> Items.TRIDENT;
             };
         };

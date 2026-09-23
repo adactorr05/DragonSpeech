@@ -132,7 +132,10 @@ public class ChargeItemEffectHandler implements EffectHandler {
             return EffectResult.failure("What you hold carries no such ward to feed.");
         }
         if (ward.get().powerSource() == WardPowerSource.STAMINA_LINKED) {
-            return EffectResult.failure("That ward draws on you directly - it has no pool of its own to fill.");
+            return EffectResult.failure("That ward draws on its bound caster directly - it has no pool of its own to fill.");
+        }
+        if (ward.get().powerSource() == WardPowerSource.DURATION) {
+            return EffectResult.failure("That ward is sustained by duration, not a reserve. Use afla when creating it if you want a refillable pool.");
         }
         if (ward.get().durabilityCurrent() >= ward.get().durabilityMax()) {
             return EffectResult.failure("That ward already holds all the strength it can.");

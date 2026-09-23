@@ -1,0 +1,17 @@
+{
+  "true_name": "nafnverja",
+  "hashed_true_name": "c6937c86afeedf78758a5cc854cb1d35938b60c0e08218cc79cf02f71340b849",
+  "meaning": "to ward by name; to bind protection specifically against the thing named in the same working",
+  "category": "binding",
+  "domain": "binding",
+  "precision": 0.95,
+  "prerequisite_words": [
+    "dragonspeech:nafn",
+    "dragonspeech:verja"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "catastrophic",
+  "is_modifier_word": false,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

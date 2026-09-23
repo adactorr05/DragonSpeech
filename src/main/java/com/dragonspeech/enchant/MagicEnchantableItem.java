@@ -60,7 +60,7 @@ public class MagicEnchantableItem extends Item {
         float lowest = 1.0f;
         boolean anyDurabilitySourced = false;
         for (MagicEnchantment e : enchantments.entries()) {
-            if (e.kind() == EnchantmentKind.WARD && e.powerSource() == WardPowerSource.DURABILITY && e.durabilityMax() > 0f) {
+            if (e.kind() == EnchantmentKind.WARD && (e.powerSource() == WardPowerSource.RESERVE || e.powerSource() == WardPowerSource.DURABILITY) && e.durabilityMax() > 0f) {
                 anyDurabilitySourced = true;
                 float fraction = e.durabilityCurrent() / e.durabilityMax();
                 lowest = Math.min(lowest, fraction);

@@ -73,11 +73,16 @@ public final class MagicEnchantmentTooltips {
                 if (!verbose) {
                     yield Component.literal("Ward: " + label).withStyle(style -> style.withColor(0xFF55CCFF));
                 }
-                String state = entry.powerSource() == WardPowerSource.STAMINA_LINKED
-                    ? "bound to your own strength"
-                    : (entry.isActive()
-                        ? Math.round(entry.durabilityCurrent()) + "/" + Math.round(entry.durabilityMax())
-                        : "empty");
+                String state;
+                if (entry.powerSource() == WardPowerSource.STAMINA_LINKED) {
+                    state = "aflbinda: caster stamina";
+                } else if (entry.powerSource() == WardPowerSource.DURATION) {
+                    var level = net.minecraft.client.Minecraft.getInstance().level;
+                    long remaining = level == null || entry.expiresAt() < 0L ? -1L : Math.max(0L, entry.expiresAt() - level.getGameTime());
+                    state = remaining < 0L ? "duration-bound" : "duration: " + Math.max(0L, remaining / 20L) + "s";
+                } else {
+                    state = "afla reserve: " + Math.round(entry.durabilityCurrent()) + "/" + Math.round(entry.durabilityMax());
+                }
                 yield Component.literal("Ward: " + label + " (" + state + ")").withStyle(style -> style.withColor(0xFF55CCFF));
             }
             case BLESSING -> {

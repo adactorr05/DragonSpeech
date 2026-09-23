@@ -86,7 +86,8 @@ public class WordScrollItem extends Item {
         }
 
         Word word = WordRegistry.get(wordId);
-        VocabularyService.LearnResult result = VocabularyService.learnWord(serverPlayer, wordId, DiscoveryMethod.MENTOR_NPC);
+        DiscoveryMethod source = word != null && word.discoveryMethod() == DiscoveryMethod.DANGER_WORD ? DiscoveryMethod.DANGER_WORD : DiscoveryMethod.MENTOR_NPC;
+        VocabularyService.LearnResult result = VocabularyService.learnWord(serverPlayer, wordId, source);
 
         return switch (result) {
             case LEARNED -> {

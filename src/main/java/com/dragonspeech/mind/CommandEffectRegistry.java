@@ -337,6 +337,7 @@ public final class CommandEffectRegistry {
             }
             List<ResourceLocation> candidates = defenderWords.stream()
                 .filter(id -> !com.dragonspeech.vocabulary.VocabularyService.knowsWord(attackerPlayer, id))
+                .filter(id -> { var w = com.dragonspeech.word.WordRegistry.get(id); return w == null || w.discoveryMethod() != com.dragonspeech.word.DiscoveryMethod.DANGER_WORD; })
                 .toList();
             if (candidates.isEmpty()) {
                 attackerPlayer.sendSystemMessage(Component.literal(

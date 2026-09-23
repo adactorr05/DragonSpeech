@@ -60,6 +60,7 @@ public class FreezeEffectHandler implements EffectHandler {
         for (EffectTarget target : invocation.targets()) {
             switch (target) {
                 case EffectTarget.OfEntity(Entity entity) -> {
+                    if (entity instanceof LivingEntity living && com.dragonspeech.ward.WardInterception.blocksElement(living, Element.ICE, Math.max(1f, severitySeconds))) continue;
                     if (entity instanceof LivingEntity living) {
                         living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 3));
                         living.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, ticks, 1));

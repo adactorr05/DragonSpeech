@@ -37,6 +37,23 @@ public final class TargetResolver {
             .toList();
     }
 
+    /**
+     * Living-only ray for direct life-force workings. Nonliving magical barrier entities are ignored,
+     * but a real block still shortens the ray so this is not a through-walls targeting exploit.
+     */
+    public static List<EffectTarget> resolveLivingLookTargetIgnoringBarriers(ServerPlayer player, double maxReach) {
+        Vec3 start = player.getEyePosition();
+        Vec3 look = player.getViewVector(1.0f);
+        Vec3 fullEnd = start.add(look.scale(maxReach));
+        HitResult wall = player.level().clip(new ClipContext(start, fullEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        Vec3 end = wall.getType() == HitResult.Type.BLOCK ? wall.getLocation() : fullEnd;
+        double reachSqr = start.distanceToSqr(end);
+        var searchBox = player.getBoundingBox().expandTowards(end.subtract(start)).inflate(1.0);
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(player, start, end, searchBox,
+            candidate -> candidate instanceof net.minecraft.world.entity.LivingEntity && !candidate.isSpectator() && candidate.isPickable(), reachSqr);
+        return hit == null ? List.of() : List.of(new EffectTarget.OfEntity(hit.getEntity()));
+    }
+
     public static List<EffectTarget> resolveLookTarget(ServerPlayer player, double maxReach) {
         Vec3 start = player.getEyePosition();
         Vec3 look = player.getViewVector(1.0f);

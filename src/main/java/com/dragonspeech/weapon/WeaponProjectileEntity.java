@@ -33,7 +33,10 @@ import java.util.UUID;
  * come from the same proven, decades-stable vanilla code path a real
  * arrow uses - this class only supplies WHAT it looks like when picked
  * up (getDefaultPickupItem()) and HOW HARD it hits (setBaseDamage(),
- * called by whoever spawns one - see HurlWeaponEffectHandler).
+ * called by whoever spawns one - see HurlWeaponEffectHandler). Temporary
+ * weapons spoken into being carry an actual pickup stack with an expiry
+ * component, so they can be recovered and used until their paid-for
+ * lifetime ends.
  *
  * CONFIRMED AGAINST A REAL 1.21.1 BUILD:
  *   - The abstract method to implement is getDefaultPickupItem(), not
@@ -81,6 +84,8 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         SynchedEntityData.defineId(WeaponProjectileEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_CONJURED =
         SynchedEntityData.defineId(WeaponProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_HOLOGRAPHIC =
+        SynchedEntityData.defineId(WeaponProjectileEntity.class, EntityDataSerializers.BOOLEAN);
 
     /** Brief server-only immunity to the barrier just struck, preventing a reflected projectile
      * from immediately touching the same mathematical barrier volume again on the next tick. */
@@ -99,6 +104,7 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         builder.define(DATA_TOOL_TYPE, ToolType.SWORD.ordinal());
         builder.define(DATA_AFFINITY, MagicAffinity.ARCANE.ordinal());
         builder.define(DATA_CONJURED, true);
+        builder.define(DATA_HOLOGRAPHIC, false);
     }
 
     public ToolMaterial material() {
@@ -117,8 +123,9 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         return this.entityData.get(DATA_CONJURED);
     }
 
+    /** True when the projectile should use Dragon Speech's translucent construct geometry. */
     public boolean isMagicalConstruct() {
-        return isConjured() && magicAffinity() != MagicAffinity.ARCANE;
+        return this.entityData.get(DATA_HOLOGRAPHIC);
     }
 
     private static <T> T safeOrdinal(T[] values, int ordinal, T fallback) {
@@ -130,21 +137,14 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
      * immediately after construction to actually launch it - this
      * constructor only positions and arms the entity.
      *
-     * @param drawnFromInventory the REAL item this weapon was drawn from
-     *        (via the "taka" word finding a matching item already in the
-     *        caster's inventory - see HurlWeaponEffectHandler), or null
-     *        if this weapon was conjured from nothing instead. A drawn
-     *        weapon keeps its actual durability/enchantments and can be
-     *        picked back up afterward, exactly like it never left your
-     *        hand; a conjured one is a temporary construct - it deals
-     *        the same damage, but it unravels rather than leaving
-     *        anything behind, so pickup is disabled for it.
+     * @param backingStack the real item represented by this projectile, either drawn with `taka`
+     *        or spoken into being by Dragon Speech
+     * @param conjured true when the backing stack is temporary matter rather than a permanent ordinary item
+     * @param holographic true when the projectile uses elemental/pure-magic construct geometry; physical
+     *        material conjurations are still temporary but render as the corresponding vanilla item
      */
-    public WeaponProjectileEntity(Level level, LivingEntity owner, ToolMaterial material, ToolType toolType, float damage, ItemStack drawnFromInventory) {
-        this(level, owner, material, toolType, damage, drawnFromInventory, MagicAffinity.ARCANE);
-    }
-
-    public WeaponProjectileEntity(Level level, LivingEntity owner, ToolMaterial material, ToolType toolType, float damage, ItemStack drawnFromInventory, MagicAffinity affinity) {
+    public WeaponProjectileEntity(Level level, LivingEntity owner, ToolMaterial material, ToolType toolType, float damage,
+                                  ItemStack backingStack, boolean conjured, boolean holographic, MagicAffinity affinity) {
         super(com.dragonspeech.entity.DragonSpeechEntities.WEAPON_PROJECTILE, level);
         this.entityData.set(DATA_MATERIAL, material.ordinal());
         this.entityData.set(DATA_TOOL_TYPE, toolType.ordinal());
@@ -152,32 +152,27 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         this.setOwner(owner);
         this.setPos(owner.getX(), owner.getEyeY() - 0.1, owner.getZ());
         this.setBaseDamage(damage);
-        boolean drawn = drawnFromInventory != null && !drawnFromInventory.isEmpty();
-        this.entityData.set(DATA_CONJURED, !drawn);
-        // `pickup` is a plain inherited field on AbstractArrow (no
-        // setter method exists), so it's set directly here. Only a
-        // weapon actually drawn from the caster's own inventory can be
-        // recovered afterward - see the parameter doc above.
-        this.pickup = drawn ? AbstractArrow.Pickup.ALLOWED : AbstractArrow.Pickup.DISALLOWED;
-        // Replace AbstractArrow's cached default (a wood sword, computed
-        // before the entityData above was set - see class doc) with the
-        // REAL item now that we actually know it: either the exact stack
-        // drawn from inventory (preserving its durability/enchantments)
-        // or, for a conjured throw, a fresh generic stack used only for
-        // display since pickup is disallowed anyway. setPickupItemStack
-        // is the same protected setter AbstractArrow's own subclasses
-        // use for exactly this kind of "the real item wasn't known yet
-        // at construction time" fixup - this part only matters
-        // server-side (drop-on-pickup uses it), the client-visible model
-        // comes from getItem()/entityData below.
-        this.setPickupItemStack(drawn ? drawnFromInventory.copy() : WeaponItems.stackFor(material, toolType));
-        // No enchantment-style extra knockback beyond the impact itself -
-        // AbstractArrow's own knockback already defaults to 0, so there
-        // is nothing to set here.
-        // A thrown tool has real heft - let it drop out of the air over
-        // distance and time out like any other stuck projectile rather
-        // than lingering forever.
+        this.entityData.set(DATA_CONJURED, conjured);
+        this.entityData.set(DATA_HOLOGRAPHIC, holographic);
+
+        // Every hurled weapon now has a real ItemStack behind it. A weapon created by words is a
+        // temporary, recoverable item rather than visual-only geometry; its expiry component remains
+        // on this stack through flight and pickup. Ordinary `taka` weapons remain ordinary forever.
+        ItemStack carried = backingStack == null || backingStack.isEmpty()
+            ? WeaponItems.stackFor(material, toolType)
+            : backingStack.copyWithCount(1);
+        this.pickup = AbstractArrow.Pickup.ALLOWED;
+        this.setPickupItemStack(carried);
         this.setNoGravity(false);
+    }
+
+    /**
+     * Direct `vopnbinda ... seida ...` ammunition is created only for that cast and cannot be
+     * collected. `taka` throws something the caster already possesses, so that path remains
+     * recoverable (including temporary weapons previously made with bare `seida`).
+     */
+    public void setRecoverable(boolean recoverable) {
+        this.pickup = recoverable ? AbstractArrow.Pickup.ALLOWED : AbstractArrow.Pickup.DISALLOWED;
     }
 
     @Override
@@ -186,6 +181,11 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         // allowed to cross them. Hurled magical/real weapon projectiles therefore need their own
         // swept-path barrier test BEFORE AbstractArrow advances the projectile this tick.
         if (!level().isClientSide() && !isRemoved()) {
+            if (level() instanceof ServerLevel serverLevel
+                    && com.dragonspeech.weapon.ConjuredWeaponItems.shouldDissolve(this.getPickupItem(), serverLevel.getServer(), level().getGameTime())) {
+                discard();
+                return;
+            }
             if (barrierRehitCooldown > 0) {
                 barrierRehitCooldown--;
                 if (barrierRehitCooldown == 0) lastBarrierHit = null;
@@ -229,6 +229,10 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         float power = (float) Math.max(1.0, getBaseDamage());
         boolean survives = best.absorbSpellImpact(power,
             affinity.element().map(java.util.List::of).orElseGet(java.util.List::of), bestHit);
+        if (!payConstructStress(level, power * 0.65f)) {
+            discard();
+            return true;
+        }
 
         if (!survives) {
             // Barrier broke: the projectile continues through with reduced force.
@@ -257,7 +261,7 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         }
 
         if (isConjured()) {
-            // A conjured construct has no persistent matter to recover; a barrier that fully
+            // A conjured construct is temporary magical matter. A barrier that fully
             // defeats it simply unravels the construct.
             discard();
         } else {
@@ -272,6 +276,21 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
             barrierRehitCooldown = 4;
         }
         return true;
+    }
+
+    /**
+     * Pays for stress placed on a conjured weapon. Duration constructs do not have durability,
+     * afla constructs spend their own reserve, and aflbinda constructs spend only their caster's
+     * stamina. Returning false means the construct can no longer exist.
+     */
+    private boolean payConstructStress(ServerLevel level, float amount) {
+        ItemStack stack = this.getPickupItem();
+        if (!ConjuredWeaponItems.isTemporary(stack)) return true;
+        return switch (ConjuredWeaponItems.sustainMode(stack)) {
+            case DURATION -> true;
+            case RESERVE -> ConjuredWeaponItems.consumeReserve(stack, Math.max(0.5f, amount));
+            case CASTER -> ConjuredWeaponItems.consumeCasterStamina(level.getServer(), stack, Math.max(0.25f, amount * 0.35f));
+        };
     }
 
     /** First intersection of a finite segment with an AABB, or null. */
@@ -328,6 +347,10 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
             float power = (float) Math.max(1.0, getBaseDamage());
             boolean survives = barrier.absorbSpellImpact(power,
                 affinity.element().map(java.util.List::of).orElseGet(java.util.List::of), hit.getLocation());
+            if (level() instanceof ServerLevel server && !payConstructStress(server, power * 0.65f)) {
+                discard();
+                return;
+            }
             if (survives) {
                 discard();
             } else {
@@ -342,7 +365,12 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         }
 
         super.onHitEntity(hit);
-        if (!level().isClientSide() && affinity != MagicAffinity.ARCANE
+        if (!level().isClientSide() && level() instanceof ServerLevel server) {
+            if (!payConstructStress(server, (float)Math.max(1.0, getBaseDamage()))) {
+                discard();
+            }
+        }
+        if (!level().isClientSide() && isMagicalConstruct()
             && getOwner() instanceof ServerPlayer caster && target instanceof LivingEntity living) {
             affinity.applyConstructHit(caster, living, (float) Math.max(1.0, getBaseDamage() * 0.32));
         }
@@ -355,6 +383,7 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         tag.putString("ToolType", toolType().getSerializedName());
         tag.putString("MagicAffinity", magicAffinity().getSerializedName());
         tag.putBoolean("Conjured", isConjured());
+        tag.putBoolean("Holographic", isMagicalConstruct());
     }
 
     @Override
@@ -384,6 +413,12 @@ public class WeaponProjectileEntity extends AbstractArrow implements ItemSupplie
         }
         if (tag.contains("Conjured")) {
             this.entityData.set(DATA_CONJURED, tag.getBoolean("Conjured"));
+        }
+        if (tag.contains("Holographic")) {
+            this.entityData.set(DATA_HOLOGRAPHIC, tag.getBoolean("Holographic"));
+        } else {
+            // Backward compatibility for projectiles saved before the appearance flag existed.
+            this.entityData.set(DATA_HOLOGRAPHIC, isConjured() && magicAffinity() != MagicAffinity.ARCANE);
         }
     }
 }

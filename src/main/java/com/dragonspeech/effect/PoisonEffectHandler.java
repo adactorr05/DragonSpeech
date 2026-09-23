@@ -1,6 +1,7 @@
 package com.dragonspeech.effect;
 
 import com.dragonspeech.DragonSpeech;
+import com.dragonspeech.engine.Element;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -56,6 +57,7 @@ public class PoisonEffectHandler implements EffectHandler {
         int affected = 0;
         for (EffectTarget target : invocation.targets()) {
             if (target instanceof EffectTarget.OfEntity(Entity entity) && entity instanceof LivingEntity living) {
+                if (com.dragonspeech.ward.WardInterception.blocksElement(living, Element.POISON, Math.max(1f, severitySeconds))) continue;
                 living.addEffect(new MobEffectInstance(MobEffects.POISON, ticks, amplifier));
                 affected++;
             }

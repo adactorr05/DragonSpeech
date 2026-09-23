@@ -78,6 +78,9 @@ public class DragonSpeech implements ModInitializer {
 		DragonSpeechParticles.register();
 		LootInjection.register();
 		EffectHandlerRegistry.bootstrap();
+		// Temporary weapons spoken into being dissolve when their paid-for lifetime ends.
+		com.dragonspeech.weapon.ConjuredWeaponItems.register();
+		com.dragonspeech.ward.WardService.register();
 		com.dragonspeech.mind.CommandEffectRegistry.bootstrap();
 		PlayerMagicAttachments.bootstrap();
 		com.dragonspeech.dragon.PlayerBondAttachments.bootstrap();

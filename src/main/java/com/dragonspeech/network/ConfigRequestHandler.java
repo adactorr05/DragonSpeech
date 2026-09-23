@@ -73,6 +73,9 @@ public final class ConfigRequestHandler {
             if (root.has("egg_hatch_speed_multiplier")) {
                 DragonSpeechConfig.setEggHatchSpeedMultiplier(root.get("egg_hatch_speed_multiplier").getAsFloat());
             }
+            if (root.has("bonus_chest_dragon_egg_enabled")) {
+                DragonSpeechConfig.setBonusChestDragonEggEnabled(root.get("bonus_chest_dragon_egg_enabled").getAsBoolean());
+            }
             if (root.has("ai_compute_budget")) {
                 DragonSpeechConfig.setAiComputeBudget(root.get("ai_compute_budget").getAsInt());
             }
@@ -212,6 +215,7 @@ public final class ConfigRequestHandler {
         root.addProperty("allow_control_of_players", DragonSpeechConfig.allowControlOfPlayers());
         root.addProperty("word_loot_chance_multiplier", DragonSpeechConfig.wordLootChanceMultiplier());
         root.addProperty("egg_hatch_speed_multiplier", DragonSpeechConfig.eggHatchSpeedMultiplier());
+        root.addProperty("bonus_chest_dragon_egg_enabled", DragonSpeechConfig.bonusChestDragonEggEnabled());
         root.addProperty("ai_compute_budget", DragonSpeechConfig.aiComputeBudget());
 
         // Sentience Editor (Server tab) - current overrides only, NOT the full entity list (the

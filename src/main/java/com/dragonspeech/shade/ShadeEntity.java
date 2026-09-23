@@ -1,6 +1,9 @@
 package com.dragonspeech.shade;
 
 import com.dragonspeech.elf.ElderElfEntity;
+import com.dragonspeech.danger.DangerWordService;
+import com.dragonspeech.danger.DangerWordType;
+import com.dragonspeech.ward.WardType;
 import com.dragonspeech.elf.ElfEntity;
 import com.dragonspeech.human.HumanMageEntity;
 import com.dragonspeech.mob.casting.*;
@@ -57,9 +60,8 @@ import java.util.UUID;
  */
 public class ShadeEntity extends Monster implements SpellcastingMob, Warded, WardLearner {
 
-    private static final List<MobWards.WardType> KNOWN_WARD_TYPES = List.of(
-        MobWards.WardType.MELEE, MobWards.WardType.FIRE, MobWards.WardType.EXPLOSION, MobWards.WardType.MAGIC
-    );
+    private static final String NBT_WARD_KNOWLEDGE = "dragonspeech_known_ward_types";
+    private static final List<WardType> BASE_WARD_TYPES = List.of(WardType.MELEE, WardType.FIRE, WardType.EXPLOSION, WardType.MAGIC);
 
     /** "Advanced" (see WardLearner/applyElementalAffinity) starts at 3 elements - the ~30% roll, not the 70% baseline of exactly 2. */
     private static final int ADVANCED_ELEMENT_THRESHOLD = 3;
@@ -81,7 +83,8 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
     );
 
     private final SpellcasterState spellState = new SpellcasterState(MobPowerTier.CATASTROPHIC);
-    private final Map<MobWards.WardType, MobWards.WardInstance> activeWards;
+    private final List<WardType> knownWardTypes = new ArrayList<>(BASE_WARD_TYPES);
+    private final Map<WardType, MobWards.WardInstance> activeWards;
     private int elementalDomainCount;
 
     // WardLearner state - deliberately NOT persisted, see that interface's own doc.
@@ -93,7 +96,10 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
         spellState.vocabulary().learnAll(MobWordPools.SHADE_SHARED);
         applyElementalAffinity();
         applyRareCatastrophicKnowledge();
-        this.activeWards = MobWards.rollStartingWards(this.getRandom(), MobPowerTier.CATASTROPHIC, this.vocabulary());
+        rollDangerWardKnowledge();
+        this.activeWards = MobWards.rollStartingWards(this.getRandom(), MobPowerTier.CATASTROPHIC, this.vocabulary(), knownWardTypes);
+        float reserve = MobWards.durabilityFor(MobPowerTier.CATASTROPHIC);
+        for (WardType wardType : knownWardTypes) if (wardType.isDangerWordWard()) activeWards.put(wardType, new MobWards.WardInstance(wardType, reserve));
     }
 
     /**
@@ -148,6 +154,13 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
         for (int i = 0; i < Math.min(count, pool.size()); i++) {
             spellState.vocabulary().learnAll(List.of(com.dragonspeech.DragonSpeech.id(pool.get(i))));
         }
+    }
+
+    private void rollDangerWardKnowledge() {
+        List<DangerWordType> pool = new ArrayList<>(List.of(DangerWordType.values()));
+        Collections.shuffle(pool, new Random(this.getUUID().getLeastSignificantBits() ^ 0x5348414445574152L));
+        int count = this.getRandom().nextFloat() < 0.85f ? pool.size() : Math.min(3, pool.size());
+        for (int i = 0; i < count; i++) { WardType type=pool.get(i).wardType(); if(!knownWardTypes.contains(type)) knownWardTypes.add(type); }
     }
 
     /** "This should be another aspect of the ADVANCED shades" per direction - only the rarer multi-element rolls (3+) actually learn from being warded off; a baseline 2-element Shade doesn't. */
@@ -216,12 +229,13 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
     }
 
     @Override
-    public Map<MobWards.WardType, MobWards.WardInstance> activeWards() {
+    public Map<WardType, MobWards.WardInstance> activeWards() {
         return activeWards;
     }
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
+        if (DangerWordService.isApplyingDirectDamage()) return super.hurt(source, amount);
         MobWards.WardResult result = MobWards.applyWards(activeWards, this, source, amount);
         if (result.blocked()) {
             return false; // no hurt sound/red flash - see MobWards.applyWards' own doc
@@ -285,6 +299,7 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
         super.addAdditionalSaveData(tag);
         tag.put("dragonspeech_spellcaster", spellState.save());
         tag.putBoolean("dragonspeech_true_name_pursued", trueNamePursued);
+        MobWards.save(tag, activeWards); MobWards.saveKnowledge(tag, NBT_WARD_KNOWLEDGE, knownWardTypes);
     }
 
     @Override
@@ -294,6 +309,7 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
         if (tag.contains("dragonspeech_spellcaster")) {
             spellState.load(tag.getCompound("dragonspeech_spellcaster"));
         }
+        MobWards.load(tag, activeWards); MobWards.loadKnowledge(tag, NBT_WARD_KNOWLEDGE, knownWardTypes);
     }
 
     @Override
@@ -307,7 +323,7 @@ public class ShadeEntity extends Monster implements SpellcastingMob, Warded, War
         this.goalSelector.addGoal(3, new RandomStrollGoal(this, 0.7));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 10.0f));
         this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(6, new MobSelfWardGoal(this, this, MobPowerTier.CATASTROPHIC, KNOWN_WARD_TYPES));
+        this.goalSelector.addGoal(6, new MobSelfWardGoal(this, this, MobPowerTier.CATASTROPHIC, () -> knownWardTypes));
         // MobDetectionCastGoal deliberately NOT registered here - per
         // explicit direction, stamina/mark detection is a player-facing
         // spell, not something mobs should cast on their own.

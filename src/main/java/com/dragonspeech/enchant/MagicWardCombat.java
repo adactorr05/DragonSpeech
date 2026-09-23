@@ -1,7 +1,7 @@
 package com.dragonspeech.enchant;
 
 import com.dragonspeech.accessory.AccessorySlotsAccess;
-import com.dragonspeech.stamina.CasterStaminaCascade;
+import com.dragonspeech.stamina.StaminaAccess;
 import com.dragonspeech.storage.DragonSpeechComponents;
 import com.dragonspeech.ward.WardType;
 import net.minecraft.network.chat.Component;
@@ -56,49 +56,61 @@ public final class MagicWardCombat {
         boolean anyChanged = false;
         boolean anyStaminaDrained = false;
         boolean anyDepleted = false;
+        long now = defender.level().getGameTime();
 
         for (ItemStack stack : accessories) {
-            if (remaining <= 0.0001f || stack.isEmpty()) {
-                continue;
-            }
+            if (remaining <= 0.0001f || stack.isEmpty()) continue;
             MagicEnchantments enchantments = stack.getOrDefault(DragonSpeechComponents.MAGIC_ENCHANTMENTS, MagicEnchantments.EMPTY);
-            if (enchantments.isEmpty()) {
-                continue;
-            }
+            if (enchantments.isEmpty()) continue;
 
             List<MagicEnchantment> entries = new ArrayList<>(enchantments.entries());
             boolean stackChanged = false;
 
             for (int i = 0; i < entries.size() && remaining > 0.0001f; i++) {
                 MagicEnchantment ward = entries.get(i);
-                if (ward.kind() != EnchantmentKind.WARD || !ward.wardMatches(damageType)) {
-                    continue;
-                }
+                if (ward.kind() != EnchantmentKind.WARD || !ward.wardMatches(damageType) || !ward.isActive(now)) continue;
 
-                if (ward.powerSource() == WardPowerSource.DURABILITY) {
-                    if (!ward.isActive()) {
-                        continue; // already empty - see MagicEnchantableItem for how that shows on the bar
+                switch (ward.powerSource()) {
+                    case DURATION -> {
+                        totalAbsorbed += remaining;
+                        remaining = 0f;
                     }
-                    float portion = Math.min(ward.durabilityCurrent(), remaining);
-                    if (portion <= 0f) {
-                        continue;
-                    }
-                    MagicEnchantment updated = ward.withDurability(ward.durabilityCurrent() - portion);
-                    entries.set(i, updated);
-                    stackChanged = true;
-                    remaining -= portion;
-                    totalAbsorbed += portion;
-                    if (updated.durabilityCurrent() <= 0f) {
-                        anyDepleted = true;
-                    }
-                } else {
-                    float uncovered = CasterStaminaCascade.drain(defender, remaining);
-                    float portion = remaining - uncovered;
-                    if (portion > 0f) {
-                        anyStaminaDrained = true;
+                    case RESERVE, DURABILITY -> {
+                        float portion = Math.min(ward.durabilityCurrent(), remaining);
+                        if (portion <= 0f) continue;
+                        MagicEnchantment updated = ward.withDurability(ward.durabilityCurrent() - portion);
+                        entries.set(i, updated);
+                        stackChanged = true;
+                        remaining -= portion;
                         totalAbsorbed += portion;
+                        if (updated.durabilityCurrent() <= 0f) anyDepleted = true;
                     }
-                    remaining = uncovered;
+                    case STAMINA_LINKED -> {
+                        ServerPlayer caster = defender;
+                        if (ward.boundCasterId() != null && !ward.boundCasterId().isBlank()) {
+                            try {
+                                ServerPlayer found = defender.getServer().getPlayerList().getPlayer(java.util.UUID.fromString(ward.boundCasterId()));
+                                if (found == null) continue; // binding is dormant while its original caster is offline
+                                caster = found;
+                            } catch (IllegalArgumentException ignored) {}
+                        }
+                        var stamina = StaminaAccess.get(caster);
+                        float portion = Math.min(stamina.stamina(), remaining);
+                        if (portion > 0f) {
+                            float after = stamina.stamina() - portion;
+                            StaminaAccess.set(caster, stamina.withStamina(after));
+                            remaining -= portion;
+                            totalAbsorbed += portion;
+                            anyStaminaDrained = true;
+                            if (after <= 0.0001f) {
+                                entries.remove(i--); // aflbinda ends with the caster's stamina; no hidden reserve remains
+                                stackChanged = true;
+                            }
+                        } else {
+                            entries.remove(i--);
+                            stackChanged = true;
+                        }
+                    }
                 }
             }
 
@@ -108,20 +120,18 @@ public final class MagicWardCombat {
             }
         }
 
-        if (anyChanged) {
-            AccessorySlotsAccess.set(defender, accessories);
-        }
+        if (anyChanged) AccessorySlotsAccess.set(defender, accessories);
 
         if (anyStaminaDrained) {
-            defender.sendSystemMessage(Component.literal("Your bound ward holds - but you feel it drink from you directly."));
+            defender.sendSystemMessage(Component.literal("A bound ward holds, drawing only from its caster's stamina."));
         } else if (anyDepleted && remaining > 0.0001f) {
-            defender.sendSystemMessage(Component.literal("A ward bound into what you wear runs dry, spent before the blow was."));
+            defender.sendSystemMessage(Component.literal("An afla ward runs out of its stored reserve before the blow is spent."));
         } else if (anyDepleted) {
-            defender.sendSystemMessage(Component.literal("A ward bound into what you wear runs dry, its strength spent."));
+            defender.sendSystemMessage(Component.literal("An afla ward spends the last of its own reserve."));
         } else if (totalAbsorbed > 0f) {
-            defender.sendSystemMessage(Component.literal("A ward bound into what you wear drinks the blow."));
+            defender.sendSystemMessage(Component.literal("A ward bound into what you wear turns the blow aside."));
         }
-
         return totalAbsorbed;
     }
+
 }

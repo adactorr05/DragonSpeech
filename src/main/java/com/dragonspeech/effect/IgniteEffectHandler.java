@@ -68,6 +68,8 @@ public class IgniteEffectHandler implements EffectHandler {
         for (EffectTarget target : invocation.targets()) {
             switch (target) {
                 case EffectTarget.OfEntity(Entity entity) -> {
+                    if (entity instanceof net.minecraft.world.entity.LivingEntity living
+                            && com.dragonspeech.ward.WardInterception.blocksElement(living, Element.FIRE, Math.max(1f, severitySeconds))) continue;
                     entity.setRemainingFireTicks(Math.max(entity.getRemainingFireTicks(), fireTicks));
                     if (entity.level() instanceof ServerLevel serverLevel) {
                         Vec3 focus = entity.position().add(0, entity.getBbHeight() * .52, 0);

@@ -2,7 +2,7 @@
 
 *Generated from the live word data - regenerate with `gen_dictionary.py` whenever the vocabulary changes. Never edit this file by hand; it will be overwritten.*
 
-**238 words.**
+**247 words.**
 
 ## How sentences work
 
@@ -77,6 +77,11 @@ Grammar patterns the working understands:
 |---|---|---|---|---|
 | **kalla** | to call out, crude and undirected | 0.40 | ruin tablet | effect: `summon` |
 | **kallbinda** | to call and bind a creature to service | 0.78 | elven trial | effect: `summon`; requires: kalla, vaettr; guess-risk: CATASTROPHIC |
+| **lifskad** | to wound the life held within a living thing | 0.86 | danger word | effect: `danger_word`; guess-risk: CATASTROPHIC |
+| **lifrof** | to tear the living force partly loose from the body | 0.90 | danger word | effect: `danger_word`; guess-risk: CATASTROPHIC |
+| **lifslit** | to sever the bond by which life holds to flesh | 0.93 | danger word | effect: `danger_word`; guess-risk: CATASTROPHIC |
+| **lifstilla** | to still the living force within; to force life toward silence | 0.96 | danger word | effect: `danger_word`; guess-risk: CATASTROPHIC |
+| **lifthagn** | to silence life at its root | 0.98 | danger word | effect: `danger_word`; guess-risk: CATASTROPHIC |
 
 ### Earth
 
@@ -210,6 +215,7 @@ Grammar patterns the working understands:
 |---|---|---|---|---|
 | **vopnkasta** | to hurl a weapon, crude and undirected | 0.45 | mentor npc | effect: `hurl_weapon`; guess-risk: SEVERE |
 | **vopnbinda** | to hurl a bound weapon along a single true path | 0.88 | elven trial | effect: `hurl_weapon`; requires: vopnkasta; guess-risk: SEVERE |
+| **seidabinda** | to bind conjured matter into a stable but temporary named form | 0.90 | elven trial | effect: `conjure_weapon`; requires: seida; guess-risk: SEVERE |
 
 ## Nouns (things - they sharpen a sentence's precision)
 
@@ -277,6 +283,7 @@ Grammar patterns the working understands:
 |---|---|---|---|---|
 | **afl** | raw strength; force unshaped | 0.80 | mentor npc |  |
 | **ferdafl** | force carried by motion; momentum or inertia | 0.88 | elven trial | requires: ferd, afl; guess-risk: SEVERE |
+| **seidr** | pure magic itself; power given form without elemental or material substance | 0.90 | elven trial | requires: seida; guess-risk: SEVERE |
 
 ### Gravity
 
@@ -358,7 +365,7 @@ Grammar patterns the working understands:
 | **oxi** | axe; a heavy blade for the felling stroke | 0.85 | mentor npc | weapon: axe |
 | **sverd** | sword; a blade for the hand | 0.85 | mentor npc | weapon: sword |
 | **thrivoddr** | trident; a three-pronged spear for the deep | 0.85 | elven trial | weapon: trident; guess-risk: SEVERE |
-| **voddr** | a long piercing point; the form of a spear or lance | 0.88 | elven trial | guess-risk: SEVERE |
+| **voddr** | a long piercing point; the form of a spear or lance | 0.88 | elven trial | weapon: spear; guess-risk: SEVERE |
 
 ## Modifiers & Particles (manner, degree, direction, and the sentence glue)
 
@@ -385,6 +392,12 @@ Grammar patterns the working understands:
 | **litla** | slightly; to a small degree | 0.90 | mentor npc | magnitude -0.6 |
 | **mikla** | greatly; to a high degree | 0.90 | mentor npc | magnitude +0.6 |
 | **stodugt** | with constant, unwavering force | 0.95 | ancient text |  |
+
+### Gravity
+
+| Word | Meaning | Precision | Found via | Notes |
+|---|---|---|---|---|
+| **thyngdleysa** | to loosen weight; to thin gravity until a thing is weightless | 0.88 | elven trial | requires: thungi; guess-risk: SEVERE |
 
 ### Life
 
@@ -457,6 +470,7 @@ Grammar patterns the working understands:
 |---|---|---|---|---|
 | **verja** | to ward; to bind protection around a target | 0.85 | mentor npc | wards: projectile; guess-risk: SEVERE |
 | **seidverja** | to ward against workings of the old tongue | 0.90 | elven trial | requires: verja; wards: magic; guess-risk: CATASTROPHIC |
+| **nafnverja** | to ward by name; to bind protection specifically against the thing named in the same working | 0.95 | elven trial | requires: nafn, verja; guess-risk: CATASTROPHIC |
 
 ### Fire
 

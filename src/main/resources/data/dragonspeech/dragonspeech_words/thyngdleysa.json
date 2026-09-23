@@ -1,0 +1,16 @@
+{
+  "true_name": "thyngdleysa",
+  "hashed_true_name": "9e91b7e0dee8343a6cf478665507ef5014157845b30a8616e70392ed7636d3ba",
+  "meaning": "to loosen weight; to thin gravity until a thing is weightless",
+  "category": "modifier",
+  "domain": "gravity",
+  "precision": 0.88,
+  "prerequisite_words": [
+    "dragonspeech:thungi"
+  ],
+  "discovery_method": "elven_trial",
+  "risk_tier": "severe",
+  "is_modifier_word": true,
+  "modifier_magnitude": 0.0,
+  "eldunari_amplified": false
+}

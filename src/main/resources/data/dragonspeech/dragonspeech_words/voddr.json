@@ -11,5 +11,6 @@
   "is_modifier_word": false,
   "modifier_magnitude": 0.0,
   "eldunari_amplified": false,
-  "shape": "lance"
+  "shape": "lance",
+  "tool_type": "spear"
 }

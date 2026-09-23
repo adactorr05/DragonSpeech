@@ -2,8 +2,10 @@ package com.dragonspeech.effect;
 
 import com.dragonspeech.DragonSpeech;
 import com.dragonspeech.engine.MagicAffinity;
+import com.dragonspeech.weapon.ConjuredWeaponItems;
 import com.dragonspeech.weapon.ToolMaterial;
 import com.dragonspeech.weapon.ToolType;
+import com.dragonspeech.spell.SustainMode;
 import com.dragonspeech.weapon.WeaponItems;
 import com.dragonspeech.weapon.WeaponProjectileEntity;
 import net.minecraft.core.BlockPos;
@@ -13,7 +15,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
@@ -25,7 +26,7 @@ import java.util.Set;
  * Backs the Weapon domain's hurl ladder (vopnkasta / vopnbinda) - "throw
  * a real tool/weapon at them (or at that spot) as a genuine flying,
  * embedding projectile." Named tool/weapon required (sverd/oxi/haki/
- * skofla/herfi/thrivoddr); a named material (jarn/gull/steinn/vidr/
+ * skofla/herfi/voddr/thrivoddr); a named material (jarn/gull/steinn/vidr/
  * demantr/svartmalmr) is OPTIONAL and defaults to wood, the weakest tier.
  *
  * Unlike BlockThrowEffectHandler (hurl_block), this spawns a REAL
@@ -52,8 +53,9 @@ import java.util.Set;
  *
  * "taka" - DRAWING A REAL WEAPON VS CONJURING ONE: by default this
  * conjures a weapon out of nothing (costs more stamina - see
- * CONJURE_COST_MULTIPLIER - and can never be picked back up, since
- * there's no real item behind it). Speaking "taka" alongside the verb
+ * CONJURE_COST_MULTIPLIER). That construct now has a REAL temporary
+ * ItemStack behind it for sustain/identity, but a weapon created specifically by this hurl is
+ * ephemeral ammunition and cannot be picked up. Speaking "taka" alongside the verb
  * asks the working to instead reach into the caster's own inventory (or
  * offhand) for a real matching item: if one is found, it's actually
  * removed from that inventory slot (preserving its durability/
@@ -105,18 +107,29 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         if (namedTool.isEmpty()) {
             return 1f; // no valid tool named - apply() will refuse; keep the cost estimate harmless
         }
-        ToolMaterial material = namedMaterial(invocation).orElse(ToolMaterial.WOOD);
-        MagicAffinity affinity = MagicAffinity.resolve(invocation.composition().words());
+        Optional<ToolMaterial> requestedMaterial = namedMaterial(invocation);
         boolean wantsDraw = spokeTaka(invocation);
-        boolean magicalConstruct = !wantsDraw && affinity != MagicAffinity.ARCANE;
+        ConjuredWeaponItems.Substance spokenSubstance = ConjuredWeaponItems.resolveSubstance(invocation.composition().words());
+        MagicAffinity spokenAffinity = spokenSubstance.affinity();
+
+        // If `taka` draws a weapon that was itself previously spoken into being, its stored affinity
+        // survives the trip through inventory. If material was omitted, `taka` means the matching
+        // tool already in hand/inventory rather than silently assuming wood.
+        ItemStack preview = wantsDraw ? findMatchingItem(invocation.caster(), requestedMaterial, namedTool.get()).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
+        ToolMaterial material = requestedMaterial.orElseGet(() -> inferMaterial(preview, namedTool.get()).orElse(ToolMaterial.WOOD));
+        MagicAffinity affinity = spokenSubstance.holographic()
+            ? spokenAffinity
+            : ConjuredWeaponItems.affinity(preview).orElse(MagicAffinity.ARCANE);
+        boolean conjuredMatter = !wantsDraw || ConjuredWeaponItems.isTemporary(preview);
+        boolean magicalConstruct = conjuredMatter
+            && (spokenSubstance.holographic() || ConjuredWeaponItems.isHolographic(preview));
         float perThrow = computeDamage(namedTool.get(), material, affinity, magicalConstruct, speedIntensity(invocation));
         float total = perThrow * Math.max(invocation.targets().size(), 1);
 
-        // A pure read of the caster's inventory - no mutation - just to
-        // estimate whether this throw will likely draw a real item or
-        // conjure one. EffectHandler.estimateBaseMagnitude's contract
-        // explicitly allows reads, only forbids mutating game state.
-        boolean willDraw = wantsDraw && hasMatchingItem(invocation.caster(), material, namedTool.get());
+        // Drawing something already owned is cheaper than creating new matter. A temporary weapon
+        // created earlier with `seida` still counts as drawn here - its creation was paid for
+        // on the earlier cast and should not be charged a second time.
+        boolean willDraw = wantsDraw && !preview.isEmpty();
         return willDraw ? total : total * CONJURE_COST_MULTIPLIER;
     }
 
@@ -128,10 +141,15 @@ public class HurlWeaponEffectHandler implements EffectHandler {
                 "The word reaches for a shape and finds none named - a hurling must name what it throws: a blade, an axe, some tool.");
         }
         ToolType toolType = namedTool.get();
-        ToolMaterial material = namedMaterial(invocation).orElse(ToolMaterial.WOOD);
+        Optional<ToolMaterial> requestedMaterial = namedMaterial(invocation);
         boolean wantsDraw = spokeTaka(invocation);
-        MagicAffinity affinity = MagicAffinity.resolve(invocation.composition().words());
-        boolean magicalConstruct = !wantsDraw && affinity != MagicAffinity.ARCANE;
+        boolean weightless = spokeWeightless(invocation);
+        ConjuredWeaponItems.Substance spokenSubstance = ConjuredWeaponItems.resolveSubstance(invocation.composition().words());
+        MagicAffinity spokenAffinity = spokenSubstance.affinity();
+        ItemStack drawPreview = wantsDraw
+            ? findMatchingItem(invocation.caster(), requestedMaterial, toolType).orElse(ItemStack.EMPTY)
+            : ItemStack.EMPTY;
+        ToolMaterial material = requestedMaterial.orElseGet(() -> inferMaterial(drawPreview, toolType).orElse(ToolMaterial.WOOD));
 
         // "taka" means "draw a REAL one, don't conjure" - if there isn't
         // one to draw, the working simply fails rather than quietly
@@ -141,7 +159,7 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         // hint, and a broken promise should fail loudly, not paper over
         // itself). Checked once here, before any targeting/throwing, so
         // a doomed cast fails cleanly instead of partially happening.
-        if (wantsDraw && !hasMatchingItem(invocation.caster(), material, toolType)) {
+        if (wantsDraw && drawPreview.isEmpty()) {
             return EffectResult.failure(
                 "You reach for one you carry, but find none there - and the working will not conjure in its place.");
         }
@@ -157,22 +175,38 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         }
 
         float speedSum = speedIntensity(invocation);
-        float damage = computeDamage(toolType, material, affinity, magicalConstruct, speedSum);
         double velocity = BASE_VELOCITY * clamp(1f + speedSum * 0.5f, 0.5f, 2.0f);
+        int conjuredLifetime = ConjuredWeaponItems.lifetimeTicks(invocation);
+        SustainMode conjuredMode = SustainMode.from(invocation.composition());
+        float conjuredReserve = ConjuredWeaponItems.reserveAmount(invocation, toolType);
 
         int thrown = 0;
         int drawnCount = 0;
+        float lastDamage = 0f;
         for (EffectTarget target : invocation.targets()) {
-            ItemStack drawnStack = wantsDraw ? takeMatchingItem(caster, material, toolType).orElse(null) : null;
-            if (wantsDraw && drawnStack == null) {
+            ItemStack weaponStack = wantsDraw
+                ? takeMatchingItem(caster, requestedMaterial, toolType).orElse(null)
+                : ConjuredWeaponItems.create(material, toolType, spokenAffinity, spokenSubstance.holographic(),
+                    level.getGameTime(), conjuredLifetime, conjuredMode, caster.getUUID(), conjuredReserve);
+            if (wantsDraw && weaponStack == null) {
                 // Ran out of real ones partway through a multi-target
                 // "rain" - skip this one entirely rather than conjuring
                 // to fill the gap; same "taka never conjures" rule.
                 continue;
             }
-            if (drawnStack != null) {
+            if (wantsDraw) {
                 drawnCount++;
             }
+
+            boolean conjuredMatter = !wantsDraw || ConjuredWeaponItems.isTemporary(weaponStack);
+            MagicAffinity affinity = spokenSubstance.holographic()
+                ? spokenAffinity
+                : ConjuredWeaponItems.affinity(weaponStack).orElse(MagicAffinity.ARCANE);
+            boolean magicalConstruct = conjuredMatter
+                && (spokenSubstance.holographic() || ConjuredWeaponItems.isHolographic(weaponStack));
+            boolean recoverable = wantsDraw;
+            float damage = computeDamage(toolType, material, affinity, magicalConstruct, speedSum);
+            lastDamage = damage;
 
             switch (target) {
                 case EffectTarget.OfEntity(Entity entity) -> {
@@ -183,12 +217,12 @@ public class HurlWeaponEffectHandler implements EffectHandler {
                     boolean rain = invocation.targets().size() > 1;
                     if (rain) {
                         Vec3 from = entity.position().add(0, RAIN_DROP_HEIGHT, 0);
-                        spawnProjectile(level, caster, material, toolType, affinity, damage, from, new Vec3(0, -1, 0), velocity, drawnStack);
+                        spawnProjectile(level, caster, material, toolType, affinity, damage, from, new Vec3(0, -1, 0), velocity, weaponStack, conjuredMatter, magicalConstruct, recoverable, weightless);
                     } else {
                         Vec3 from = castingHandOrigin(caster);
                         Vec3 aim = entity.position().add(0, entity.getBbHeight() * 0.5, 0).subtract(from);
                         if (aim.lengthSqr() < 0.0001) aim = caster.getLookAngle();
-                        spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, drawnStack);
+                        spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, weaponStack, conjuredMatter, magicalConstruct, recoverable, weightless);
                     }
                     thrown++;
                 }
@@ -200,7 +234,7 @@ public class HurlWeaponEffectHandler implements EffectHandler {
                     Vec3 from = castingHandOrigin(caster);
                     Vec3 aim = Vec3.atCenterOf(pos).subtract(from);
                     if (aim.lengthSqr() < 0.0001) aim = caster.getLookAngle();
-                    spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, drawnStack);
+                    spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, weaponStack, conjuredMatter, magicalConstruct, recoverable, weightless);
                     thrown++;
                 }
                 case EffectTarget.OfDirection(Vec3 origin, Vec3 direction) -> {
@@ -208,7 +242,7 @@ public class HurlWeaponEffectHandler implements EffectHandler {
                     Vec3 gazePoint = origin.add(direction.normalize().scale(32.0));
                     Vec3 aim = gazePoint.subtract(from);
                     if (aim.lengthSqr() < 0.0001) aim = direction;
-                    spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, drawnStack);
+                    spawnProjectile(level, caster, material, toolType, affinity, damage, from, aim.normalize(), velocity, weaponStack, conjuredMatter, magicalConstruct, recoverable, weightless);
                     thrown++;
                 }
             }
@@ -219,17 +253,16 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         }
         String message;
         if (thrown > 1) {
-            message = "Steel answers in a hail, and falls true.";
+            message = wantsDraw ? "The weapons you carry answer in a hail and fall true." : "Conjured weapons answer in a hail and fall true.";
         } else if (drawnCount > 0) {
-            message = affinity == MagicAffinity.ARCANE
-                ? "You draw it from what you carry, and it flies true."
-                : "You draw the real weapon, bind it in " + affinity.getSerializedName() + " magic, and cast it true.";
-        } else if (magicalConstruct) {
-            message = "A " + affinity.getSerializedName() + " " + toolType.getSerializedName() + " takes shape in your hand and flies true.";
+            message = "You draw the weapon you carry, and it flies true.";
         } else {
-            message = "The bound weapon leaves your hand, and flies true.";
+            MagicAffinity affinity = spokenAffinity;
+            message = affinity == MagicAffinity.ARCANE
+                ? "A temporary " + toolType.getSerializedName() + " takes shape for the cast and flies true; it will not remain to be claimed."
+                : "A temporary " + affinity.getSerializedName() + " " + toolType.getSerializedName() + " takes shape for the cast and flies true; it will not remain to be claimed.";
         }
-        return EffectResult.success(damage, message);
+        return EffectResult.success(lastDamage, message);
     }
 
     /**
@@ -261,34 +294,44 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         return invocation.composition().words().stream().anyMatch(w -> "taka".equals(w.trueName()));
     }
 
-    /** Read-only check - is there a matching real item anywhere in the caster's inventory (main/hotbar or offhand)? Safe to call from estimateBaseMagnitude. */
-    private static boolean hasMatchingItem(ServerPlayer caster, ToolMaterial material, ToolType toolType) {
-        Item wanted = WeaponItems.canonicalItem(material, toolType);
-        for (ItemStack stack : caster.getInventory().items) {
-            if (!stack.isEmpty() && stack.is(wanted)) {
-                return true;
-            }
-        }
-        for (ItemStack stack : caster.getInventory().offhand) {
-            if (!stack.isEmpty() && stack.is(wanted)) {
-                return true;
-            }
-        }
-        return false;
+    /** Gravity-language modifier: a hurled projectile with thyngdleysa ignores vanilla gravity. */
+    private static boolean spokeWeightless(EffectInvocation invocation) {
+        return invocation.composition().occurrencesOf("thyngdleysa") > 0;
     }
 
-    /** Actually removes ONE matching item from the caster's inventory (main/hotbar checked first, then offhand) and returns a 1-count copy of the REAL stack (durability/enchantments intact) - or empty if nothing matched. Only ever call this from apply(), after payment. */
-    private static Optional<ItemStack> takeMatchingItem(ServerPlayer caster, ToolMaterial material, ToolType toolType) {
-        Item wanted = WeaponItems.canonicalItem(material, toolType);
+    /** Read-only lookup used for cost/affinity preview. Main hand is deliberately checked first. */
+    private static Optional<ItemStack> findMatchingItem(ServerPlayer caster, Optional<ToolMaterial> material, ToolType toolType) {
+        long now = caster.level().getGameTime();
+        ItemStack main = caster.getMainHandItem();
+        if (matchesRequested(main, material, toolType) && !ConjuredWeaponItems.isExpired(main, now)) return Optional.of(main);
+        ItemStack off = caster.getOffhandItem();
+        if (matchesRequested(off, material, toolType) && !ConjuredWeaponItems.isExpired(off, now)) return Optional.of(off);
         for (ItemStack stack : caster.getInventory().items) {
-            if (!stack.isEmpty() && stack.is(wanted)) {
-                ItemStack taken = stack.copyWithCount(1);
-                stack.shrink(1);
-                return Optional.of(taken);
-            }
+            if (stack == main) continue;
+            if (matchesRequested(stack, material, toolType) && !ConjuredWeaponItems.isExpired(stack, now)) return Optional.of(stack);
         }
-        for (ItemStack stack : caster.getInventory().offhand) {
-            if (!stack.isEmpty() && stack.is(wanted)) {
+        return Optional.empty();
+    }
+
+    /** Removes one matching item, preferring the item actually held by the caster. */
+    private static Optional<ItemStack> takeMatchingItem(ServerPlayer caster, Optional<ToolMaterial> material, ToolType toolType) {
+        long now = caster.level().getGameTime();
+        ItemStack main = caster.getMainHandItem();
+        if (!ConjuredWeaponItems.dissolveIfExpired(main, now) && matchesRequested(main, material, toolType)) {
+            ItemStack taken = main.copyWithCount(1);
+            main.shrink(1);
+            return Optional.of(taken);
+        }
+        ItemStack off = caster.getOffhandItem();
+        if (!ConjuredWeaponItems.dissolveIfExpired(off, now) && matchesRequested(off, material, toolType)) {
+            ItemStack taken = off.copyWithCount(1);
+            off.shrink(1);
+            return Optional.of(taken);
+        }
+        for (ItemStack stack : caster.getInventory().items) {
+            if (stack == main) continue;
+            if (ConjuredWeaponItems.dissolveIfExpired(stack, now)) continue;
+            if (matchesRequested(stack, material, toolType)) {
                 ItemStack taken = stack.copyWithCount(1);
                 stack.shrink(1);
                 return Optional.of(taken);
@@ -297,13 +340,33 @@ public class HurlWeaponEffectHandler implements EffectHandler {
         return Optional.empty();
     }
 
+    private static boolean matchesRequested(ItemStack stack, Optional<ToolMaterial> material, ToolType toolType) {
+        if (stack == null || stack.isEmpty()) return false;
+        if (material.isPresent()) return ConjuredWeaponItems.matches(stack, material.get(), toolType);
+        if (ConjuredWeaponItems.isTemporary(stack)) {
+            return ConjuredWeaponItems.toolType(stack).orElse(null) == toolType;
+        }
+        return WeaponItems.materialOf(stack, toolType).isPresent();
+    }
+
+    private static Optional<ToolMaterial> inferMaterial(ItemStack stack, ToolType toolType) {
+        Optional<ToolMaterial> stored = ConjuredWeaponItems.material(stack);
+        return stored.isPresent() ? stored : WeaponItems.materialOf(stack, toolType);
+    }
+
     private void spawnProjectile(ServerLevel level, ServerPlayer caster, ToolMaterial material, ToolType toolType, MagicAffinity affinity,
-                                  float damage, Vec3 from, Vec3 direction, double velocity, ItemStack drawnFromInventory) {
-        if (toolType == ToolType.TRIDENT && affinity == MagicAffinity.ARCANE) {
-            spawnTrident(level, caster, damage, from, direction, velocity, drawnFromInventory);
+                                  float damage, Vec3 from, Vec3 direction, double velocity, ItemStack weaponStack,
+                                  boolean conjuredMatter, boolean holographic, boolean recoverable, boolean weightless) {
+        // A genuinely-owned ordinary trident still gets vanilla's purpose-built thrown renderer.
+        // Conjured tridents use our entity so their temporary-item lifetime and magical identity can
+        // survive flight and pickup exactly like every other conjured weapon.
+        if (toolType == ToolType.TRIDENT && affinity == MagicAffinity.ARCANE && !conjuredMatter) {
+            spawnTrident(level, caster, damage, from, direction, velocity, weaponStack, weightless);
             return;
         }
-        WeaponProjectileEntity projectile = new WeaponProjectileEntity(level, caster, material, toolType, damage, drawnFromInventory, affinity);
+        WeaponProjectileEntity projectile = new WeaponProjectileEntity(level, caster, material, toolType, damage, weaponStack, conjuredMatter, holographic, affinity);
+        projectile.setRecoverable(recoverable);
+        projectile.setNoGravity(weightless);
         projectile.setPos(from.x, from.y, from.z);
         projectile.shoot(direction.x, direction.y, direction.z, (float) velocity, 0f);
         level.addFreshEntity(projectile);
@@ -332,13 +395,14 @@ public class HurlWeaponEffectHandler implements EffectHandler {
      * insofar as they affect thrown velocity, not damage.
      */
     private void spawnTrident(ServerLevel level, ServerPlayer caster, float damage, Vec3 from, Vec3 direction,
-                               double velocity, ItemStack drawnFromInventory) {
+                               double velocity, ItemStack drawnFromInventory, boolean weightless) {
         boolean drawn = drawnFromInventory != null && !drawnFromInventory.isEmpty();
         ItemStack stack = drawn ? drawnFromInventory.copy() : new ItemStack(Items.TRIDENT);
 
         ThrownTrident trident = new ThrownTrident(level, caster, stack);
         trident.setBaseDamage(damage); // no effect on tridents specifically - see method doc - kept for consistency/possible future vanilla changes
         trident.pickup = drawn ? AbstractArrow.Pickup.ALLOWED : AbstractArrow.Pickup.DISALLOWED;
+        trident.setNoGravity(weightless);
         trident.setPos(from.x, from.y, from.z);
         trident.shoot(direction.x, direction.y, direction.z, (float) velocity, 0f);
         level.addFreshEntity(trident);

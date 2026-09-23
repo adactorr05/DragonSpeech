@@ -1,5 +1,8 @@
 package com.dragonspeech.ward;
 
+import com.dragonspeech.spell.SustainMode;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -31,11 +34,50 @@ public final class WardService {
 
     private WardService() {}
 
-    public static ActiveWard place(LivingEntity entity, WardType type, float energy, int charges, boolean visible, boolean staminaBound) {
-        ActiveWard ward = new ActiveWard(UUID.randomUUID(), entity.getUUID(), type, energy, energy, charges, 0, visible, staminaBound);
+    /** Keeps timed/caster-bound wards honest even when no damage event happens. */
+    public static void register() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() % 10 != 0) return;
+            for (ServerLevel level : server.getAllLevels()) {
+                long now = level.getGameTime();
+                for (var entity : level.getAllEntities()) {
+                    if (!(entity instanceof LivingEntity living)) continue;
+                    List<ActiveWard> current = WardAccess.get(living).wards();
+                    if (current.isEmpty()) continue;
+                    List<ActiveWard> live = new ArrayList<>();
+                    boolean changed = false;
+                    for (ActiveWard ward : current) {
+                        boolean remove = ward.isExpired(now) || ward.isBroken();
+                        if (!remove && ward.sustainMode() == SustainMode.CASTER) {
+                            ServerPlayer caster = server.getPlayerList().getPlayer(ward.casterId());
+                            remove = caster != null && com.dragonspeech.stamina.StaminaAccess.get(caster).stamina() <= 0f;
+                        }
+                        if (remove) changed = true; else live.add(ward);
+                    }
+                    if (changed) {
+                        WardAccess.set(living, new PlayerWards(List.copyOf(live)));
+                        pushSync(living);
+                    }
+                }
+            }
+        });
+    }
+
+    public static ActiveWard place(LivingEntity entity, UUID casterId, WardType type, float reserve, int charges,
+                                   boolean visible, SustainMode mode, long expiresAt) {
+        SustainMode actual = mode == null ? SustainMode.DURATION : mode;
+        float stored = actual == SustainMode.RESERVE ? Math.max(1f, reserve) : 0f;
+        ActiveWard ward = new ActiveWard(UUID.randomUUID(), casterId, type, stored, Math.max(1f, reserve),
+            charges, 0, visible, actual == SustainMode.CASTER, actual, expiresAt);
         WardAccess.set(entity, WardAccess.get(entity).withAdded(ward));
         pushSync(entity);
         return ward;
+    }
+
+    /** Backward-compatible placement path for older callers. */
+    public static ActiveWard place(LivingEntity entity, WardType type, float energy, int charges, boolean visible, boolean staminaBound) {
+        return place(entity, entity.getUUID(), type, energy, charges, visible,
+            staminaBound ? SustainMode.CASTER : SustainMode.RESERVE, -1L);
     }
 
     /**
@@ -81,120 +123,84 @@ public final class WardService {
      * never reach this method at all since they don't deal damage.
      */
     public static float absorb(LivingEntity defender, WardType type, float incomingDamage) {
-        PlayerWards wards = WardAccess.get(defender);
-        List<ActiveWard> list = new ArrayList<>(wards.wards());
+        if (!(defender.level() instanceof ServerLevel level)) return 0f;
+        long now = level.getGameTime();
+        List<ActiveWard> list = new ArrayList<>(WardAccess.get(defender).wards());
         boolean changed = false;
-        Integer winningIndex = null;
-        boolean winningWasStaminaCovered = false;
 
-        // Pass 1: ordinary (non-staminaBound) wards, in stored order.
-        // FIX: "if a ward cannot handle the damage input... it gets
-        // stuck on 1 [durability]... this shouldn't happen, it should
-        // collapse" per explicit direction - a ward that can't fully
-        // cover a hit no longer just sits there untouched forever (the
-        // old bug: it never got a chance to mutate at all, so a sliver
-        // of leftover energy lingered permanently). It now drains
-        // completely trying, then gets cleared out below - same idea as
-        // a shield that shatters on a blow too strong for it, rather
-        // than one that mysteriously stops working but never breaks.
-        // The first one that CAN fully cover the hit wins outright and
-        // stops the search (no further wards need to try or collapse).
-        for (int i = 0; i < list.size() && winningIndex == null; i++) {
+        for (int i = 0; i < list.size(); i++) {
             ActiveWard ward = list.get(i);
-            if (ward.type() != type || ward.isBroken() || ward.staminaBound()) {
+            if (ward.type() != type) continue;
+
+            if (ward.isExpired(now) || ward.isBroken()) {
+                list.remove(i--);
+                changed = true;
                 continue;
             }
-            if (ward.remainingEnergy() >= incomingDamage) {
-                winningIndex = i;
-            } else {
-                list.set(i, ward.afterAbsorbing(ward.remainingEnergy())); // drains to 0 - collapses attempting to cover it
-                changed = true;
-            }
-        }
 
-        // Pass 2: staminaBound wards, only if nothing else covered it.
-        if (winningIndex == null) {
-            for (int i = 0; i < list.size(); i++) {
-                ActiveWard ward = list.get(i);
-                if (ward.type() != type || ward.isBroken() || !ward.staminaBound()) {
-                    continue;
+            boolean covered = false;
+            boolean collapsed = false;
+            switch (ward.sustainMode()) {
+                case DURATION -> {
+                    covered = true;
+                    list.set(i, ward.afterAbsorbing(0f));
                 }
-                if (ward.remainingEnergy() >= incomingDamage) {
-                    winningIndex = i;
-                    break;
+                case RESERVE -> {
+                    if (ward.remainingEnergy() >= incomingDamage) {
+                        ActiveWard updated = ward.afterAbsorbing(incomingDamage);
+                        list.set(i, updated);
+                        covered = true;
+                        if (updated.isBroken()) collapsed = true;
+                    } else {
+                        // A reserve ward spends what remains trying to stop the blow, then collapses.
+                        list.remove(i--);
+                        changed = true;
+                        continue;
+                    }
                 }
-                if (!(defender instanceof ServerPlayer player)) {
-                    continue; // can't drain stamina from a non-player wearer - this ward simply can't cover the shortfall
+                case CASTER -> {
+                    ServerPlayer caster = level.getServer().getPlayerList().getPlayer(ward.casterId());
+                    if (caster == null) {
+                        // Do not destroy a binding merely because its caster is temporarily offline.
+                        continue;
+                    }
+                    var stamina = com.dragonspeech.stamina.StaminaAccess.get(caster);
+                    if (stamina.stamina() + 0.0001f < incomingDamage) {
+                        com.dragonspeech.stamina.StaminaAccess.set(caster, stamina.withStamina(0f));
+                        list.remove(i--);
+                        changed = true;
+                        caster.sendSystemMessage(Component.literal("Your stamina-bound ward collapses as your stamina runs dry."));
+                        continue;
+                    }
+                    com.dragonspeech.stamina.StaminaAccess.set(caster, stamina.withStamina(stamina.stamina() - incomingDamage));
+                    list.set(i, ward.afterAbsorbing(0f));
+                    covered = true;
                 }
-                float shortfall = incomingDamage - ward.remainingEnergy();
-                var result = com.dragonspeech.stamina.DrainResolver.applyLethalDrain(player, shortfall);
-                changed = true;
-                if (result.overdrafted()) {
-                    // FIX: "if you run out of stamina, hunger and
-                    // health... this should collapse the connected ward.
-                    // Right now the ward will still protect you even if
-                    // you don't have enough stamina to continue" per
-                    // explicit direction - overdrafted() means item
-                    // reserves + stamina + hunger + survivable health
-                    // TOGETHER still couldn't cover the cost. The caster
-                    // has nothing left to draw on, so this binding can't
-                    // actually sustain itself anymore and collapses,
-                    // same as running dry does for an ordinary ward -
-                    // it does NOT keep "succeeding" forever regardless
-                    // of the caster's state, which is what it did before.
-                    //
-                    // Removed directly rather than drained to 0 energy:
-                    // isBroken() deliberately never returns true for a
-                    // staminaBound ward from energy alone (see that
-                    // method's own doc), so setting it to 0 here would
-                    // leave it stuck in storage forever, unremovable -
-                    // the exact bug this whole fix is for, just
-                    // relocated to the staminaBound branch.
-                    list.remove(i);
-                    i--;
-                    player.sendSystemMessage(Component.literal("Your bound ward finally collapses - you have nothing left to feed it."));
-                    continue; // try the next staminaBound ward, if any
-                }
-                winningIndex = i;
-                winningWasStaminaCovered = true;
-                break;
             }
-        }
 
-        boolean shattered = false;
-        if (winningIndex != null) {
-            ActiveWard ward = list.get(winningIndex);
-            if (!winningWasStaminaCovered) {
-                ActiveWard updated = ward.afterAbsorbing(incomingDamage);
-                list.set(winningIndex, updated);
-                shattered = updated.isBroken();
+            if (covered) {
+                changed = true;
+                if (collapsed) list.remove(i);
+                WardAccess.set(defender, new PlayerWards(List.copyOf(list)).withBrokenRemoved());
+                pushSync(defender);
+                playBlockFeedback(defender, type);
+                if (defender instanceof ServerPlayer player) {
+                    String message = switch (ward.sustainMode()) {
+                        case DURATION -> "Your timed ward turns the blow aside.";
+                        case RESERVE -> collapsed ? "Your ward shatters as it blocks the blow." : "Your ward holds, spending its own reserve.";
+                        case CASTER -> "Your bound ward holds, drawing directly from its caster's stamina.";
+                    };
+                    player.sendSystemMessage(Component.literal(message));
+                }
+                return incomingDamage;
             }
-            // (the staminaCovered case already drained energy+stamina above, in the search itself)
-            changed = true;
         }
 
         if (changed) {
-            PlayerWards newWards = new PlayerWards(List.copyOf(list)).withBrokenRemoved();
-            WardAccess.set(defender, newWards);
+            WardAccess.set(defender, new PlayerWards(List.copyOf(list)).withBrokenRemoved());
             pushSync(defender);
         }
-
-        if (winningIndex == null) {
-            return 0f; // nothing could fully cover this hit - not blocked at all (any wards that collapsed trying are already cleared above)
-        }
-
-        playBlockFeedback(defender, type);
-        if (defender instanceof ServerPlayer player) {
-            if (winningWasStaminaCovered) {
-                player.sendSystemMessage(Component.literal("Your ward holds - but you feel it drink from you directly."));
-            } else {
-                player.sendSystemMessage(Component.literal(shattered
-                    ? "A ward shatters, its purpose spent."
-                    : "Your ward holds, drinking the blow."));
-            }
-        }
-
-        return incomingDamage; // fully blocked
+        return 0f;
     }
 
     /**
@@ -210,24 +216,28 @@ public final class WardService {
             return;
         }
         Vector3f color = switch (type) {
-            case PROJECTILE -> new Vector3f(0.90f, 0.78f, 0.30f); // gold
-            case FIRE -> new Vector3f(0.95f, 0.35f, 0.15f);       // ember red
-            case FALL -> new Vector3f(0.40f, 0.85f, 0.40f);       // green
-            case EXPLOSION -> new Vector3f(0.95f, 0.55f, 0.15f);  // orange
-            case MELEE -> new Vector3f(0.80f, 0.85f, 0.90f);      // pale steel
-            case MAGIC -> new Vector3f(0.65f, 0.35f, 0.90f);      // violet
-            // COMPILE FIX: WardType actually has a 7th value this switch
-            // didn't account for - REVIVAL, the "aftrlifga sjalfan"
-            // resurrection-binding, not a damage-blocking ward at all
-            // (its own doc: "never returned by WardDamageMapper"). This
-            // method should never actually be called with it in
-            // practice, but the switch still has to be exhaustive to
-            // compile - pale gold as an inert fallback color.
-            case REVIVAL -> new Vector3f(0.85f, 0.80f, 0.55f);
+            case PROJECTILE -> new Vector3f(0.90f,0.78f,0.30f); case FIRE -> new Vector3f(0.95f,0.35f,0.15f);
+            case LIGHTNING -> new Vector3f(0.30f,0.72f,1f); case WIND -> new Vector3f(0.74f,0.93f,1f);
+            case ICE -> new Vector3f(0.64f,0.90f,1f); case WATER -> new Vector3f(0.18f,0.48f,0.84f);
+            case POISON -> new Vector3f(0.33f,0.79f,0.21f); case FORCE -> new Vector3f(0.95f,0.89f,0.55f);
+            case EARTH -> new Vector3f(0.54f,0.42f,0.23f); case LIGHT -> new Vector3f(1f,0.96f,0.72f);
+            case SHADOW -> new Vector3f(0.21f,0.16f,0.30f); case DEATH -> new Vector3f(0.34f,0.14f,0.43f);
+            case LIFE -> new Vector3f(0.55f,1f,0.55f); case VOID -> new Vector3f(0.20f,0.10f,0.30f);
+            case FALL -> new Vector3f(0.40f,0.85f,0.40f); case EXPLOSION -> new Vector3f(0.95f,0.55f,0.15f);
+            case MELEE -> new Vector3f(0.80f,0.85f,0.90f); case MAGIC -> new Vector3f(0.39f,0.85f,0.65f);
+            case DANGER_LIFSKAD -> new Vector3f(0.78f,0.25f,0.32f); case DANGER_LIFROF -> new Vector3f(0.72f,0.18f,0.40f);
+            case DANGER_LIFSLIT -> new Vector3f(0.62f,0.14f,0.50f); case DANGER_LIFSTILLA -> new Vector3f(0.49f,0.12f,0.58f);
+            case DANGER_LIFTHAGN -> new Vector3f(0.33f,0.08f,0.48f); case REVIVAL -> new Vector3f(0.85f,0.80f,0.55f);
         };
         DustParticleOptions options = new DustParticleOptions(color, 1.2f);
         level.sendParticles(options, defender.getX(), defender.getEyeY(), defender.getZ(), 10, 0.3, 0.3, 0.3, 0.02);
         level.playSound(null, defender.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 0.6f, 1.4f);
+    }
+
+    public static void deflectProjectile(LivingEntity defender, net.minecraft.world.entity.Entity projectile) {
+        if (projectile == null || projectile.isRemoved()) return;
+        if (defender.level() instanceof ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, defender.getX(), defender.getEyeY(), defender.getZ(), 12, .35,.35,.35,.08);
+        projectile.discard();
     }
 
     public static void disable(LivingEntity caster, UUID wardId) {
@@ -268,29 +278,44 @@ public final class WardService {
      * mattering the moment the ward's own pool runs dry.
      */
     public static void pushSync(LivingEntity entity) {
-        if (!(entity instanceof ServerPlayer player)) {
-            return;
-        }
-        var staminaData = com.dragonspeech.stamina.StaminaAccess.get(player);
+        if (!(entity instanceof ServerPlayer player)) return;
+        long now = player.level().getGameTime();
+        var ownStamina = com.dragonspeech.stamina.StaminaAccess.get(player);
         com.google.gson.JsonArray array = new com.google.gson.JsonArray();
+        List<ActiveWard> live = new ArrayList<>();
+
         for (ActiveWard ward : WardAccess.get(player).wards()) {
+            if (ward.isExpired(now) || ward.isBroken()) continue;
+            live.add(ward);
             com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
             obj.addProperty("type", ward.type().getSerializedName());
-            obj.addProperty("stamina_bound", ward.staminaBound());
+            obj.addProperty("stamina_bound", ward.sustainMode() == SustainMode.CASTER);
+            obj.addProperty("sustain_mode", ward.sustainMode().name().toLowerCase(java.util.Locale.ROOT));
 
             float remaining;
             float max;
-            if (ward.staminaBound()) {
-                remaining = staminaData.stamina();
-                max = staminaData.maxStamina();
+            if (ward.sustainMode() == SustainMode.CASTER) {
+                ServerPlayer caster = player.getServer().getPlayerList().getPlayer(ward.casterId());
+                var data = caster == null ? ownStamina : com.dragonspeech.stamina.StaminaAccess.get(caster);
+                remaining = data.stamina();
+                max = data.maxStamina();
+            } else if (ward.sustainMode() == SustainMode.DURATION) {
+                remaining = ward.expiresAt() < 0L ? 0f : Math.max(0L, ward.expiresAt() - now);
+                max = Math.max(1f, remaining);
             } else {
                 remaining = ward.remainingEnergy();
                 max = ward.maxEnergy();
             }
             obj.addProperty("remaining", remaining);
             obj.addProperty("max", max);
-            obj.addProperty("fraction", Math.max(0f, Math.min(1f, remaining / Math.max(max, 1f))));
+            obj.addProperty("fraction", ward.sustainMode() == SustainMode.DURATION
+                ? (remaining > 0f ? 1f : 0f)
+                : Math.max(0f, Math.min(1f, remaining / Math.max(max, 1f))));
             array.add(obj);
+        }
+
+        if (live.size() != WardAccess.get(player).wards().size()) {
+            WardAccess.set(player, new PlayerWards(List.copyOf(live)));
         }
         com.dragonspeech.network.DragonSpeechNetworking.sendWardSync(player, array.toString());
     }

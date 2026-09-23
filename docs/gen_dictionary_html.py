@@ -20,6 +20,7 @@ from collections import defaultdict
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(_ROOT, "src", "main", "resources", "data", "dragonspeech", "dragonspeech_words")
 OUT = os.path.join(_ROOT, "docs", "DICTIONARY.html")
+PREVIEW_OUT = os.path.join(_ROOT, "docs", "DICTIONARY_preview.html")
 
 CAT_ORDER = ["verb", "noun_target", "modifier", "scope", "binding", "control"]
 CAT_META = {
@@ -56,6 +57,22 @@ RISK_COLOR = {
     "severe":       "#c1562f",
     "catastrophic": "#9b2226",
 }
+
+
+def domain_color(domain):
+    """Return a stable color for every domain in the live vocabulary.
+
+    Known branches keep their hand-picked colors. New/future branches get a
+    deterministic fallback so they still render and receive a usable filter
+    without requiring this generator to be edited first.
+    """
+    if domain in DOMAIN_COLOR:
+        return DOMAIN_COLOR[domain]
+    palette = [
+        "#b86b77", "#6fa36d", "#5f8fb8", "#a479bf",
+        "#b68a55", "#59a6a0", "#9d7b61", "#7f8fc2",
+    ]
+    return palette[sum(ord(c) for c in domain) % len(palette)]
 
 
 def load_words():
@@ -138,7 +155,7 @@ def card_html(w, depth, extra_prereqs):
     return f"""
     <article class="card {indent_class}" data-name="{esc(w['true_name'])}" data-meaning="{esc(w['meaning'].lower())}"
               data-domain="{esc(w['domain'])}" data-category="{esc(w['category'])}" data-risk="{esc(risk)}"
-              data-type="{esc(word_type_tag(w))}">
+              data-type="{esc(word_type_tag(w))}" data-discovery="{esc(w['discovery_method'].replace('_',' '))}">
       <div class="card-top">
         <h3 class="true-name">{arrow}{esc(w['true_name'])}</h3>
         <span class="risk-pill" style="--risk-color:{risk_color}">{esc(risk)}</span>
@@ -217,7 +234,7 @@ def main():
 
         domain_blocks = []
         for dom in sorted(by_dom, key=lambda d: d):
-            color = DOMAIN_COLOR.get(dom, "#888")
+            color = domain_color(dom)
             family_html = build_family_html(by_dom[dom], cat)
             domain_blocks.append(f"""
             <div class="domain-block" style="--domain-color:{color}">
@@ -240,9 +257,10 @@ def main():
         f'<button class="filter-chip" data-filter-cat="{cat}">{CAT_META[cat][0]}</button>'
         for cat in CAT_ORDER if cat in by_cat
     )
+    live_domains = sorted({w["domain"] for w in words})
     filter_chips_domain = "".join(
-        f'<button class="filter-chip domain-chip" data-filter-domain="{d}" style="--domain-color:{DOMAIN_COLOR[d]}">{d.capitalize()}</button>'
-        for d in sorted(DOMAIN_COLOR)
+        f'<button class="filter-chip domain-chip" data-filter-domain="{d}" style="--domain-color:{domain_color(d)}">{d.capitalize()}</button>'
+        for d in live_domains
     )
     filter_chips_type = "".join(
         f'<button class="filter-chip type-chip" data-filter-type="{t}">{label}</button>'
@@ -258,9 +276,10 @@ def main():
     )
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    with open(OUT, "w") as f:
-        f.write(html)
-    print(f"HTML dictionary written: {len(words)} words -> {OUT}")
+    for output_path in (OUT, PREVIEW_OUT):
+        with open(output_path, "w") as f:
+            f.write(html)
+    print(f"HTML dictionaries written: {len(words)} words -> {OUT} and {PREVIEW_OUT}")
 
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -553,7 +572,11 @@ footer {{
       const matchesCat = activeCat === 'all' || card.dataset.category === activeCat;
       const matchesDomain = activeDomain === 'all' || card.dataset.domain === activeDomain;
       const matchesType = activeType === 'all' || card.dataset.type === activeType;
-      const matchesQuery = !q || card.dataset.name.toLowerCase().includes(q) || card.dataset.meaning.includes(q);
+      const searchable = [
+        card.dataset.name, card.dataset.meaning, card.dataset.domain,
+        card.dataset.category, card.dataset.type, card.dataset.discovery
+      ].filter(Boolean).join(' ').toLowerCase();
+      const matchesQuery = !q || searchable.includes(q);
       const show = matchesCat && matchesDomain && matchesType && matchesQuery;
       card.style.display = show ? '' : 'none';
       if (show) anyVisible = true;
